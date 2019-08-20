@@ -3,7 +3,15 @@ using System.Runtime.InteropServices;
 using System.Xml.Linq;
 using Lockstep.Math;
 using Lockstep.Util;
-
+namespace Lockstep.Collision2D {
+    public static class TransformHashCodeExtension {
+        public static int GetHash(this CTransform2D val){
+            return val.Pos3.GetHash() * 13
+                   + val.deg.GetHash() * 31;
+  
+        }
+    }
+}
 namespace Lockstep.Collision2D {
     [Serializable]
     public class CTransform2D {

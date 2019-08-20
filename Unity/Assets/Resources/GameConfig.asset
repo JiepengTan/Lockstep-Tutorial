@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7763ca32b12f41c2812eb39ed17f765b, type: 3}
+  m_Name: GameConfig
+  m_EditorClassIdentifier: 
+  enemies:
+  - prefabPath: Enemy
+    startingHealth: 100
+    currentHealth: 0
+    sinkSpeed:
+      _val: 2500
+    scoreValue: 10
+    deathClip: {fileID: 8300000, guid: 1d3bfb9269f136947bf8ac164cace1ff, type: 3}
+    timeBetweenAttacks:
+      _val: 500
+    attackDamage: 10
+  player:
+  - prefabPath: Player
+    startingHealth: 1000
+    currentHealth: 0
+    deathClip: {fileID: 8300000, guid: d36a393bca4582043982db9089e1694f, type: 3}
+    flashSpeed:
+      _val: 5000
+    flashColour: {r: 1, g: 0, b: 0, a: 0.078431375}
+    damagePerShot: 20
+    timeBetweenBullets:
+      _val: 119
+    range:
+      _val: 100000
+    faceLightName: GunBarrelEnd/FaceLight
+    attackTransName: GunBarrelEnd
+    speed:
+      _val: 6000
