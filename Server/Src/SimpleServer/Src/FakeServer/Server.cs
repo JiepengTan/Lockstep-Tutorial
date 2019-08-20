@@ -81,6 +81,7 @@ namespace Lockstep.FakeServer{
             //TODO load from db
             
             var msg = message as Msg_JoinRoom;
+            msg.name = msg.name + idCounter;
             var name = msg.name;
             if (name2Player.TryGetValue(name, out var val)) {
                 return;

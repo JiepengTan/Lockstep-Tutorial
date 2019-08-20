@@ -2,5 +2,8 @@
 clear
 dir="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
 cd $dir
+ps -ef | grep "SimpleServer" | grep -v grep |awk '{print $2}' | xargs kill -9
+ps -ef | grep "ARPGDemo" | grep -v grep |awk '{print $2}' | xargs kill -9
+
 open -n ./Unity/Build/ARPGDemo.app
 dotnet ./Server/bin/SimpleServer.dll

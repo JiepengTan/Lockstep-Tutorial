@@ -19,7 +19,7 @@ namespace LockstepTutorial {
         }
 
         private void OnGUI(){
-            GUI.Label(new Rect(0, 0, 100, 100), $"!!!Ping: {GameManager.PingVal}ms");
+            GUI.Label(new Rect(0, 0, 100, 100), $"!!Ping: {GameManager.PingVal}ms");
         }
     }
 }

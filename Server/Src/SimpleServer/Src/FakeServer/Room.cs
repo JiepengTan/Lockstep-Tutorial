@@ -72,6 +72,7 @@ namespace Lockstep.FakeServer {
         }
 
         public void OnPlayerInput(int useId, Msg_PlayerInput msg){
+            //Debug.Log($" Recv Input: {useId} {msg.input.inputUV}");
             int localId = 0;
             if (!id2LocalId.TryGetValue(useId, out localId)) return;
             PlayerInput[] inputs;

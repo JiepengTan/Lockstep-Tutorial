@@ -53,6 +53,7 @@ namespace LockstepTutorial {
                     skillId = skillId,
                     isSpeedUp = isSpeedUp,
                 };
+                
             }
         }
     }

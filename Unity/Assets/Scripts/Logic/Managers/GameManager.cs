@@ -170,6 +170,7 @@ namespace LockstepTutorial {
                 });
                 return;
             }
+
             predictTickCount = 2; //Mathf.Clamp(Mathf.CeilToInt(pingVal / 30), 1, 20);
             if (inputTick > predictTickCount + _maxServerFrameIdx) {
                 return;
@@ -180,6 +181,7 @@ namespace LockstepTutorial {
                 input = playerInput,
                 tick = inputTick
             });
+            //UnityEngine.Debug.Log("" + playerInput.inputUV);
             tick2SendTimer[inputTick] = Time.realtimeSinceStartup;
             //UnityEngine.Debug.Log("SendInput " + inputTick);
             inputTick++;
