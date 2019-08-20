@@ -1,0 +1,6 @@
+#!/bin/bash
+clear
+dir="$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)"
+cd $dir
+open -n ./Unity/Build/ARPGDemo.app
+dotnet ./Server/bin/SimpleServer.dll

@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleServer", "Server\Src\SimpleServer\SimpleServer.csproj", "{0C7FFE73-562F-43BF-BA62-214BAD86348C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LockstepEngine", "Server\Src\LockstepEngine\LockstepEngine.csproj", "{756E0DF1-A241-439F-8A1D-4C7DE2FCC76B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0C7FFE73-562F-43BF-BA62-214BAD86348C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C7FFE73-562F-43BF-BA62-214BAD86348C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C7FFE73-562F-43BF-BA62-214BAD86348C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C7FFE73-562F-43BF-BA62-214BAD86348C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{756E0DF1-A241-439F-8A1D-4C7DE2FCC76B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{756E0DF1-A241-439F-8A1D-4C7DE2FCC76B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{756E0DF1-A241-439F-8A1D-4C7DE2FCC76B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{756E0DF1-A241-439F-8A1D-4C7DE2FCC76B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -33,7 +33,7 @@ namespace LockstepTutorial {
         [HideInInspector] public int localPlayerId = 0;
         [HideInInspector] public int playerCount = 1;
         [HideInInspector] public int curMapId = 0;
-        [HideInInspector] public int curFrameIdx = 0;
+        public int curFrameIdx = 0;
         [HideInInspector] public FrameInput curFrameInput;
         [HideInInspector] public PlayerServerInfo[] playerServerInfos;
         [HideInInspector] public List<FrameInput> frames = new List<FrameInput>();
