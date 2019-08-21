@@ -10,6 +10,7 @@ namespace LockstepTutorial {
         public LFloat turnSpd = 360;
         public int curHealth;
         public int maxHealth = 100;
+        public int damage = 10;
         public bool isDead => curHealth <= 0;
 
         public BaseActor(){
@@ -27,8 +28,10 @@ namespace LockstepTutorial {
             }
         }
 
-        protected virtual void OnTakeDamage(int amount, LVector3 hitPoint){}
+        protected virtual void OnTakeDamage(int amount, LVector3 hitPoint){ }
 
-        protected virtual void OnDead(){}
+        protected virtual void OnDead(){
+            Debug.Log($"{EntityId} Dead");
+        }
     }
 }

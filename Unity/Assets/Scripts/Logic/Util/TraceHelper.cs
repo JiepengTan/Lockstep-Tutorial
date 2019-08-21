@@ -24,7 +24,6 @@ namespace LockstepTutorial {
 
             foreach (var entity in EnemyManager.Instance.allEnemy) {
                 //dumpSb.Append(" " + entity.timer);
-                dumpSb.Append(" " + (entity.target == null ? "" : entity.target.EntityId.ToString()));
                 DumpEntity(entity);
             }
 
