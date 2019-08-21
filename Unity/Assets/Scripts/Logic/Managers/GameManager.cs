@@ -18,6 +18,7 @@ namespace LockstepTutorial {
     public class GameManager : UnityBaseManager {
         public static GameManager Instance { get; private set; }
         public static PlayerInput CurGameInput = new PlayerInput();
+        public int MaxEnemyCount = 10;
 
         [Header("ClientMode")] public bool IsClientMode;
         public PlayerServerInfo ClientModeInfo = new PlayerServerInfo();
@@ -68,7 +69,7 @@ namespace LockstepTutorial {
             Screen.SetResolution(1024, 768, false);
             gameObject.AddComponent<PingMono>();
             gameObject.AddComponent<InputMono>();
-           
+            EnemyManager.maxCount = MaxEnemyCount;
             Lockstep.Logging.Logger.OnMessage += UnityLogHandler.OnLog;
             _Awake();
         }

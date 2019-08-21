@@ -1,0 +1,384 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2319177fd4148409581316fad5c7565e, type: 3}
+  m_Name: SkillBoxConfig
+  m_EditorClassIdentifier: 
+  skillInfos:
+  - CD:
+      _val: 1000
+    doneDelay:
+      _val: 300
+    targetLayer: 1
+    parts:
+    - _DebugShow: 0
+      startTimer:
+        _val: 300
+      collider:
+        pos:
+          _x: 0
+          _y: 1000
+        size:
+          _x: 4000
+          _y: 3000
+        radius:
+          _val: 3500
+        deg:
+          _val: 180000
+        maxY:
+          _val: 0
+      impulseForce:
+        _x: 0
+        _y: 6000
+        _z: 0
+      needForce: 1
+      isResetForce: 0
+      interval:
+        _val: 300
+      otherCount: 0
+      damage: 10
+      counter: 0
+    - _DebugShow: 0
+      startTimer:
+        _val: 569
+      collider:
+        pos:
+          _x: 0
+          _y: 1000
+        size:
+          _x: 4000
+          _y: 3000
+        radius:
+          _val: 3500
+        deg:
+          _val: 180000
+        maxY:
+          _val: 0
+      impulseForce:
+        _x: 0
+        _y: 3000
+        _z: 0
+      needForce: 0
+      isResetForce: 1
+      interval:
+        _val: 300
+      otherCount: 0
+      damage: 15
+      counter: 0
+    - _DebugShow: 0
+      startTimer:
+        _val: 768
+      collider:
+        pos:
+          _x: 0
+          _y: 1000
+        size:
+          _x: 4000
+          _y: 5000
+        radius:
+          _val: 3500
+        deg:
+          _val: 180000
+        maxY:
+          _val: 0
+      impulseForce:
+        _x: 0
+        _y: 3000
+        _z: 0
+      needForce: 0
+      isResetForce: 1
+      interval:
+        _val: 300
+      otherCount: 0
+      damage: 10
+      counter: 0
+    - _DebugShow: 0
+      startTimer:
+        _val: 870
+      collider:
+        pos:
+          _x: 0
+          _y: 1000
+        size:
+          _x: 4000
+          _y: 5000
+        radius:
+          _val: 3500
+        deg:
+          _val: 180000
+        maxY:
+          _val: 0
+      impulseForce:
+        _x: 0
+        _y: 3000
+        _z: 0
+      needForce: 0
+      isResetForce: 1
+      interval:
+        _val: 300
+      otherCount: 0
+      damage: 10
+      counter: 0
+    - _DebugShow: 0
+      startTimer:
+        _val: 1139
+      collider:
+        pos:
+          _x: 0
+          _y: 1000
+        size:
+          _x: 4000
+          _y: 5000
+        radius:
+          _val: 3500
+        deg:
+          _val: 180000
+        maxY:
+          _val: 0
+      impulseForce:
+        _x: 0
+        _y: 3000
+        _z: 0
+      needForce: 0
+      isResetForce: 1
+      interval:
+        _val: 300
+      otherCount: 0
+      damage: 15
+      counter: 0
+    - _DebugShow: 1
+      startTimer:
+        _val: 1289
+      collider:
+        pos:
+          _x: 0
+          _y: 1000
+        size:
+          _x: 4000
+          _y: 5000
+        radius:
+          _val: 4000
+        deg:
+          _val: 180000
+        maxY:
+          _val: 0
+      impulseForce:
+        _x: 0
+        _y: 0
+        _z: 7000
+      needForce: 1
+      isResetForce: 0
+      interval:
+        _val: 300
+      otherCount: 0
+      damage: 30
+      counter: 0
+  - CD:
+      _val: 1000
+    doneDelay:
+      _val: 300
+    targetLayer: 1
+    parts:
+    - _DebugShow: 0
+      startTimer:
+        _val: 216
+      collider:
+        pos:
+          _x: 0
+          _y: 1000
+        size:
+          _x: 0
+          _y: 0
+        radius:
+          _val: 2000
+        deg:
+          _val: 0
+        maxY:
+          _val: 0
+      impulseForce:
+        _x: 0
+        _y: 0
+        _z: 0
+      needForce: 0
+      isResetForce: 0
+      interval:
+        _val: 0
+      otherCount: 0
+      damage: 15
+      counter: 0
+    - _DebugShow: 0
+      startTimer:
+        _val: 400
+      collider:
+        pos:
+          _x: 0
+          _y: 1000
+        size:
+          _x: 0
+          _y: 0
+        radius:
+          _val: 3000
+        deg:
+          _val: 0
+        maxY:
+          _val: 0
+      impulseForce:
+        _x: 0
+        _y: 0
+        _z: 0
+      needForce: 0
+      isResetForce: 0
+      interval:
+        _val: 0
+      otherCount: 0
+      damage: 15
+      counter: 0
+    - _DebugShow: 0
+      startTimer:
+        _val: 740
+      collider:
+        pos:
+          _x: 0
+          _y: 1000
+        size:
+          _x: 0
+          _y: 0
+        radius:
+          _val: 3000
+        deg:
+          _val: 0
+        maxY:
+          _val: 0
+      impulseForce:
+        _x: 0
+        _y: 1000
+        _z: 5000
+      needForce: 1
+      isResetForce: 0
+      interval:
+        _val: 0
+      otherCount: 0
+      damage: 40
+      counter: 0
+  - CD:
+      _val: 0
+    doneDelay:
+      _val: 300
+    targetLayer: 1
+    parts:
+    - _DebugShow: 0
+      startTimer:
+        _val: 280
+      collider:
+        pos:
+          _x: 0
+          _y: 1000
+        size:
+          _x: 0
+          _y: 0
+        radius:
+          _val: 2000
+        deg:
+          _val: 0
+        maxY:
+          _val: 0
+      impulseForce:
+        _x: 0
+        _y: 1000
+        _z: 4000
+      needForce: 1
+      isResetForce: 0
+      interval:
+        _val: 0
+      otherCount: 0
+      damage: 10
+      counter: 0
+    - _DebugShow: 0
+      startTimer:
+        _val: 518
+      collider:
+        pos:
+          _x: 0
+          _y: 1000
+        size:
+          _x: 0
+          _y: 0
+        radius:
+          _val: 2000
+        deg:
+          _val: 0
+        maxY:
+          _val: 0
+      impulseForce:
+        _x: 0
+        _y: 1000
+        _z: 4000
+      needForce: 1
+      isResetForce: 0
+      interval:
+        _val: 0
+      otherCount: 0
+      damage: 10
+      counter: 0
+    - _DebugShow: 0
+      startTimer:
+        _val: 790
+      collider:
+        pos:
+          _x: 0
+          _y: 1000
+        size:
+          _x: 0
+          _y: 0
+        radius:
+          _val: 2000
+        deg:
+          _val: 0
+        maxY:
+          _val: 0
+      impulseForce:
+        _x: 0
+        _y: 1000
+        _z: 5000
+      needForce: 1
+      isResetForce: 0
+      interval:
+        _val: 0
+      otherCount: 0
+      damage: 10
+      counter: 0
+    - _DebugShow: 0
+      startTimer:
+        _val: 1070
+      collider:
+        pos:
+          _x: 0
+          _y: 1000
+        size:
+          _x: 0
+          _y: 0
+        radius:
+          _val: 3000
+        deg:
+          _val: 0
+        maxY:
+          _val: 0
+      impulseForce:
+        _x: 0
+        _y: 1000
+        _z: 6000
+      needForce: 1
+      isResetForce: 0
+      interval:
+        _val: 0
+      otherCount: 0
+      damage: 40
+      counter: 0
