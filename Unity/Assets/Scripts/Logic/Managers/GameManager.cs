@@ -150,7 +150,6 @@ namespace LockstepTutorial {
             //create Players 
             for (int i = 0; i < playerCount; i++) {
                 var playerInfo = playerInfos[i];
-                var prefab = ResourceManager.LoadPrefab(playerInfo.PrefabId);
                 var go = HeroManager.InstantiateEntity(allPlayers[i], playerInfo.PrefabId, playerInfo.initPos);
                 //init mover
                 if (allPlayers[i].localId == localPlayerId) {
