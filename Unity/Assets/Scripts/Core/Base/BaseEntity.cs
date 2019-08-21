@@ -15,11 +15,9 @@ namespace Lockstep.Logic {
         public CTransform2D transform = new CTransform2D();
         
         public int EntityId;
-        public int PrefabId;
         public object engineTransform;
         protected List<BaseComponent> allComponents = new List<BaseComponent>();
-        public LFloat speed = new LFloat(5);
-        public int currentHealth;
+        public int PrefabId;
 
         public BaseEntity(){
             Debug.Trace("BaseEntity  " + IdCounter.ToString(), true);

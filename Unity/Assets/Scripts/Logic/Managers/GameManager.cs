@@ -68,7 +68,8 @@ namespace LockstepTutorial {
             Screen.SetResolution(1024, 768, false);
             gameObject.AddComponent<PingMono>();
             gameObject.AddComponent<InputMono>();
-
+           
+            Lockstep.Logging.Logger.OnMessage += UnityLogHandler.OnLog;
             _Awake();
         }
 
@@ -315,12 +316,12 @@ namespace LockstepTutorial {
             int hash = 1;
             int idx = 0;
             foreach (var entity in allPlayers) {
-                hash += entity.currentHealth.GetHash() * PrimerLUT.GetPrimer(idx++);
+                hash += entity.curHealth.GetHash() * PrimerLUT.GetPrimer(idx++);
                 hash += entity.transform.GetHash() * PrimerLUT.GetPrimer(idx++);
             }
 
             foreach (var entity in EnemyManager.Instance.allEnemy) {
-                hash += entity.currentHealth.GetHash() * PrimerLUT.GetPrimer(idx++);
+                hash += entity.curHealth.GetHash() * PrimerLUT.GetPrimer(idx++);
                 hash += entity.transform.GetHash() * PrimerLUT.GetPrimer(idx++);
             }
 

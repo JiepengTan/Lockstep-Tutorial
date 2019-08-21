@@ -4,7 +4,7 @@ using Lockstep.Math;
 namespace LockstepTutorial {
     public partial class CMover : BasePlayerComponent {
         static LFloat _sqrStopDist = new LFloat(true, 40);
-        public LFloat speed => entity.speed;
+        public LFloat speed => player.moveSpd;
         public bool hasReachTarget = false;
         public bool needMove = true;
 
@@ -18,7 +18,7 @@ namespace LockstepTutorial {
                 var dir = input.inputUV.normalized;
                 transform.pos = transform.pos + dir * speed * deltaTime;
                 var targetDeg = dir.ToDeg();
-                transform.deg = CTransform2D.TurnToward(targetDeg, transform.deg, 360 * deltaTime, out var hasReachDeg);
+                transform.deg = CTransform2D.TurnToward(targetDeg, transform.deg, player.turnSpd * deltaTime, out var hasReachDeg);
             }
 
             hasReachTarget = !needChase;

@@ -15,6 +15,7 @@ namespace LockstepTutorial {
             foreach (var view in views) {
                 view.BindEntity(entity);
             }
+
             entity.PrefabId = prefabId;
             entity.DoAwake();
             entity.DoStart();
