@@ -13,6 +13,7 @@
 1 | v0.0.1
 2 | v0.1.1
 3 | v0.1.1
+4 | v0.1.1
 
 
 ### 教程大纲
@@ -21,9 +22,10 @@
 1. [环境搭建][11]
 2. [简单服务器][13]
 3. [基本位置同步][13]
-4. 碰撞检测库的使用
+4. 不同步的检测与定位
 5. 逻辑的基本同步技能
-6. 添加技能
+6. 碰撞检测库的使用
+7. 添加技能
 
 #### 阶段二：预测&回滚式 
 0. 预测回滚式框架概要讲解
@@ -61,3 +63,5 @@
  [11]: https://www.bilibili.com/video/av64643363
  [12]: https://www.bilibili.com/video/av64681509
  [13]: https://www.bilibili.com/video/av64688312
+ [14]: https://www.bilibili.com/video/av64688312
+ [15]: https://www.bilibili.com/video/av64688312
