@@ -3,7 +3,7 @@
 ### 前言
 	本教程的目标是普及帧同步技术,含基本帧同步，以及预测回滚式帧同步，不含ECS
 配套的Blog 
-配套的视频教程
+[配套的视频教程][10]
 
 ### 视频项目版本对应 关系
 #### 阶段一
@@ -17,10 +17,10 @@
 
 ### 教程大纲
 #### 阶段一: 基础帧同步
-0. 最终目标预览,以及注意点
-1. 环境搭建
-2. 简单服务器 
-3. 基本位置同步
+0. [最终目标预览,以及注意点][12]
+1. [环境搭建][11]
+2. [简单服务器][13]
+3. [基本位置同步][13]
 4. 碰撞检测库的使用
 5. 逻辑的基本同步技能
 6. 添加技能
@@ -57,9 +57,7 @@
  [7]: https://github.com/sschmid/Entitas-CSharp/releases
  [8]: https://github.com/JiepengTan/LockstepPathFinding
  [9]: https://github.com/JiepengTan/LockstepBehaviorTree
- [10]: https://github.com/JiepengTan/ME
- [12]: https://www.bilibili.com/video/av55450233
- [13]: https://github.com/JiepengTan/LockstepEngine_ARPGDemo/releases/tag/v0.1.0
- [14]: https://github.com/JiepengTan/Lockstep_Demo2D_Tank
- [15]: https://www.bilibili.com/video/av64460304/
- [16]: https://github.com/egametang/ET
+ [10]: https://space.bilibili.com/308864667/channel/detail?cid=86562
+ [11]: https://www.bilibili.com/video/av64643363
+ [12]: https://www.bilibili.com/video/av64681509
+ [13]: https://www.bilibili.com/video/av64688312
