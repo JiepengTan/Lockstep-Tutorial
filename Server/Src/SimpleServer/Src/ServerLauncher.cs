@@ -8,7 +8,7 @@ namespace Lockstep.FakeServer{
         private static Server server;
 
         public static void Main(){
-            // 异步方法全部会回掉到主线程
+            //let async functions call in this thread  
             OneThreadSynchronizationContext contex = new OneThreadSynchronizationContext();
             SynchronizationContext.SetSynchronizationContext(contex);
             Debug.Log("Mian start");
