@@ -1,4 +1,4 @@
-//#define OPEN_DEBUG_SKILL
+#define OPEN_DEBUG_SKILL
 #if OPEN_DEBUG_SKILL && UNITY_EDITOR
 #define DEBUG_SKILL
 #endif
@@ -106,7 +106,6 @@ namespace LockstepTutorial {
                     Done();
                 }
             }
-
         }
 
         void CheckSkillPart(SkillPart part){
@@ -187,6 +186,7 @@ namespace LockstepTutorial {
                 if (_showTimer < Time.realtimeSinceStartup) {
                     return;
                 }
+
                 ShowPartGizmons(_curPart);
             }
             else {
