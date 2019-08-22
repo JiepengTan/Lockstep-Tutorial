@@ -42,7 +42,6 @@ namespace LockstepTutorial {
                 for (int i = 0; i < 6; i++) {
                     if (Input.GetKey(KeyCode.Keypad1 + i)) {
                         skillId = i;
-                        Debug.Log("ReqFireSkill " + i);
                     }
                 }
 

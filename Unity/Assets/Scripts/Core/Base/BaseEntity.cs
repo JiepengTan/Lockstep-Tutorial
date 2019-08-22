@@ -21,7 +21,6 @@ namespace Lockstep.Logic {
 
         public BaseEntity(){
             Debug.Trace("BaseEntity  " + IdCounter.ToString(), true);
-            rigidbody.transform = transform;
         }
 
         protected void RegisterComponent(BaseComponent comp){
@@ -30,6 +29,7 @@ namespace Lockstep.Logic {
         }
 
         public override void DoAwake(){
+            rigidbody.Init(transform);
             EntityId = IdCounter++;
             foreach (var comp in allComponents) {
                 comp.DoAwake();

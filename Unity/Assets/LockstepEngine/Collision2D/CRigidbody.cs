@@ -1,5 +1,6 @@
 using System;
 using Lockstep.Collision2D;
+using Lockstep.Logging;
 using Lockstep.Math;
 
 namespace Lockstep.Logic {
@@ -7,7 +8,7 @@ namespace Lockstep.Logic {
 
     [Serializable]
     public class CRigidbody {
-        public CTransform2D transform { get; set; }
+        public CTransform2D transform { get; private set; }
         public static LFloat G = new LFloat(10);
         public static LFloat MinSleepSpeed = new LFloat(true, 100);
         public static LFloat FloorFriction = new LFloat(20);
@@ -21,9 +22,18 @@ namespace Lockstep.Logic {
         public bool isEnable = true;
         public bool isSleep = false;
         public bool isOnFloor;
+
+        public void Init(CTransform2D transform2D){
+            this.transform = transform2D;
+        }
+
+        //private int __id;
+        //private static int __idCount;
         public void DoStart(){
+            //__id = __idCount++;
             LFloat y = LFloat.zero;
             isOnFloor = TestOnFloor(transform.Pos3, ref y);
+            Speed = LVector3.zero;
             isSleep = isOnFloor;
         }
 
@@ -74,6 +84,7 @@ namespace Lockstep.Logic {
         public void AddImpulse(LVector3 force){
             isSleep = false;
             Speed += force / Mass;
+            //Debug.Log(__id+ " AddImpulse " + force  +" after " + Speed);
         }
         public void ResetSpeed(LFloat ySpeed){
             Speed = LVector3.zero;

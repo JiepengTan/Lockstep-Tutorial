@@ -22,9 +22,9 @@ namespace LockstepTutorial {
         }
         
         public override void DoUpdate(LFloat deltaTime){
-            //if (!entity.rigidbody.isOnFloor) {
-            //    return;
-            //}
+            if (!entity.rigidbody.isOnFloor) {
+                return;
+            }
 
             var needChase = input.inputUV.sqrMagnitude > new LFloat(true, 10);
             if (needChase) {

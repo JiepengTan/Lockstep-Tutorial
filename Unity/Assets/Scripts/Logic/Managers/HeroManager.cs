@@ -7,6 +7,7 @@ namespace LockstepTutorial{
         Static,
         Enemy,
         Hero,
+        EnumCount
     }
     public class HeroManager : UnityBaseManager {
         public static HeroManager Instance;

@@ -41,7 +41,7 @@ namespace LockstepTutorial {
                 return false;
             }
 
-            Debug.Log("TryFire " + idx);
+            //Debug.Log("TryFire " + idx);
 
             if (isFiring) return false; //
             var skill = skills[idx];

@@ -39,7 +39,7 @@ namespace LockstepTutorial {
         }
 
         public virtual void TakeDamage(int amount, LVector3 hitPoint){
-            if (isDead) return;
+            if (isInvincible || isDead) return;
             curHealth -= amount;
             EntityView?.OnTakeDamage(amount, hitPoint);
             OnTakeDamage(amount, hitPoint);

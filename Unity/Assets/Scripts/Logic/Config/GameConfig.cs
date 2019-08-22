@@ -20,14 +20,16 @@ namespace LockstepTutorial {
             FieldInfo[] fields = dst.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
             foreach (var field in fields) {
                 var type = field.FieldType;
-                if (typeof(BaseComponent).IsAssignableFrom(type)) {
+                if (typeof(BaseComponent).IsAssignableFrom(type)
+                    || typeof(CRigidbody).IsAssignableFrom(type)
+                    || typeof(Transform).IsAssignableFrom(type)
+                ) {
                     CopyTo(field.GetValue(dst), field.GetValue(Entity));
                 }
                 else {
                     field.SetValue(dst, field.GetValue(Entity));
                 }
             }
-            
         }
 
         void CopyTo(object dst, object src){
