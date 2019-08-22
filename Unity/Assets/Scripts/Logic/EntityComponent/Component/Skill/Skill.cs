@@ -1,4 +1,4 @@
-#define OPEN_DEBUG_SKILL
+//#define OPEN_DEBUG_SKILL
 #if OPEN_DEBUG_SKILL && UNITY_EDITOR
 #define DEBUG_SKILL
 #endif
@@ -107,11 +107,6 @@ namespace LockstepTutorial {
                 }
             }
 
-#if DEBUG_SKILL
-            if (_showTimer < Time.realtimeSinceStartup) {
-                _curPart = null;
-            }
-#endif
         }
 
         void CheckSkillPart(SkillPart part){
@@ -189,6 +184,9 @@ namespace LockstepTutorial {
             if (Application.isPlaying) {
                 if (entity == null) return;
                 if (_curPart == null) return;
+                if (_showTimer < Time.realtimeSinceStartup) {
+                    return;
+                }
                 ShowPartGizmons(_curPart);
             }
             else {
