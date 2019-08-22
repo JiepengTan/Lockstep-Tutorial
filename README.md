@@ -25,10 +25,10 @@
 1. [环境搭建][11]
 2. [简单服务器][13]
 3. [基本位置同步][13]
-4. 不同步的检测与定位
-5. 逻辑的基本同步
-6. 碰撞检测库的使用
-7. 添加技能
+4. [不同步的检测与定位][14]
+5. [逻辑的基本同步][15]
+6. [碰撞检测库的使用][16]
+7. [添加技能][16]
 
 #### 阶段二：预测&回滚式 
 0. 预测回滚式框架概要讲解
@@ -66,5 +66,6 @@
  [11]: https://www.bilibili.com/video/av64643363
  [12]: https://www.bilibili.com/video/av64681509
  [13]: https://www.bilibili.com/video/av64688312
- [14]: https://www.bilibili.com/video/av64688312
- [15]: https://www.bilibili.com/video/av64688312
+ [14]: https://www.bilibili.com/video/av64716600
+ [15]: https://www.bilibili.com/video/av64739012
+ [16]: https://www.bilibili.com/video/av64739012
