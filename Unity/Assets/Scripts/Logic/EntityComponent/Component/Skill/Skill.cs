@@ -1,4 +1,7 @@
+#define OPEN_DEBUG_SKILL
+#if OPEN_DEBUG_SKILL && UNITY_EDITOR
 #define DEBUG_SKILL
+#endif
 using System;
 using System.Collections.Generic;
 using Lockstep.Collision2D;
@@ -35,7 +38,7 @@ namespace LockstepTutorial {
         public int TargetLayer => SkillInfo.targetLayer;
         public LFloat MaxPartTime => SkillInfo.maxPartTime;
         public string AnimName => SkillInfo.animName;
-        
+
         public LFloat CdTimer;
         public ESkillState _state;
         private LFloat _skillTimer;
@@ -47,7 +50,7 @@ namespace LockstepTutorial {
 
         public void ForceStop(){ }
 
-        public void DoStart(Entity entity, SkillInfo info,ISkillEventHandler eventHandler){
+        public void DoStart(Entity entity, SkillInfo info, ISkillEventHandler eventHandler){
             this.entity = entity;
             this.SkillInfo = info;
             this.eventHandler = eventHandler;
