@@ -16,6 +16,7 @@ namespace Lockstep.Logic {
         public object engineTransform;
         public CTransform2D transform { get; } = new CTransform2D();
         public CRigidbody rigidbody = new CRigidbody();
+        public ColliderData colliderData = new ColliderData();
         protected List<BaseComponent> allComponents = new List<BaseComponent>();
 
         public BaseEntity(){

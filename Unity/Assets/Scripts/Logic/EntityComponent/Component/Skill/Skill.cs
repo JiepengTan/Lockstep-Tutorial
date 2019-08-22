@@ -35,9 +35,9 @@ namespace LockstepTutorial {
         public int TargetLayer => SkillInfo.targetLayer;
         public LFloat MaxPartTime => SkillInfo.maxPartTime;
         public string AnimName => SkillInfo.animName;
-        public LFloat CdTimer { get; private set; }
-
-        private ESkillState _state;
+        
+        public LFloat CdTimer;
+        public ESkillState _state;
         private LFloat _skillTimer;
         private SkillPart _curPart;
 

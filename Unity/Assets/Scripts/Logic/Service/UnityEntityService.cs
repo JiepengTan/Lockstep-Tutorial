@@ -1,3 +1,4 @@
+using Lockstep.Collision2D;
 using Lockstep.Logic;
 using Lockstep.Math;
 using Lockstep.Util;
@@ -11,14 +12,14 @@ namespace LockstepTutorial {
             entity.engineTransform = obj.transform;
             entity.transform.Pos3 = position;
             config.CopyTo(entity);
+            entity.PrefabId = prefabId;
+            CollisionManager.Instance.RegisterEntity(prefab, obj, entity);
+            entity.DoAwake();
+            entity.DoStart();
             var views = obj.GetComponents<IView>();
             foreach (var view in views) {
                 view.BindEntity(entity);
             }
-
-            entity.PrefabId = prefabId;
-            entity.DoAwake();
-            entity.DoStart();
             return obj;
         }
     }

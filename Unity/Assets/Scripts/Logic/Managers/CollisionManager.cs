@@ -142,7 +142,7 @@ public class CollisionManager : UnityBaseManager {
     public void RegisterEntity(GameObject fab, GameObject obj, BaseEntity entity){
         ColliderPrefab prefab = null;
         if (!_go2ColPrefab.TryGetValue(fab, out prefab)) {
-            prefab = CollisionSystem.CreateColliderPrefab(fab);
+            prefab = CollisionSystem.CreateColliderPrefab(fab,entity.colliderData);
         }
 
         AttachToColSystem(_go2Layer[fab], prefab, obj, entity);

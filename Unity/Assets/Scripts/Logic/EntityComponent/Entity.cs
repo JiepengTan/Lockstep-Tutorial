@@ -21,8 +21,13 @@ namespace LockstepTutorial {
         public bool isDead => curHealth <= 0;
 
         public Entity(){
-            curHealth = maxHealth;
             RegisterComponent(animator);
+            RegisterComponent(skillBox);
+        }
+
+        public override void DoStart(){
+            base.DoStart();
+            curHealth = maxHealth;
         }
 
         public bool Fire(int idx = 0){
@@ -41,6 +46,7 @@ namespace LockstepTutorial {
             if (isDead) {
                 EntityView?.OnDead();
                 OnDead();
+                CollisionManager.Instance.RemoveCollider(this);
             }
         }
         protected virtual void OnTakeDamage(int amount, LVector3 hitPoint){ }

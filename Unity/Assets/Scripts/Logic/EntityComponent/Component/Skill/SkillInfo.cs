@@ -46,7 +46,7 @@ namespace Lockstep.Logic {
         public LFloat maxPartTime;
         public List<SkillPart> parts = new List<SkillPart>();
         
-        void ResortSkill(){
+        public void DoInit(){
             parts.Sort((a, b) => LMath.Sign(a.startTimer - b.startTimer));
             var time = LFloat.MinValue;
             foreach (var part in parts) {

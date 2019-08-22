@@ -12,20 +12,33 @@ namespace LockstepTutorial {
         public virtual object Entity { get; }
         public string prefabPath;
 
-        public void CopyTo(object obj){
-            if (Entity.GetType() != obj.GetType()) {
+        public void CopyTo(object dst){
+            if (Entity.GetType() != dst.GetType()) {
                 return;
             }
 
-            FieldInfo[] fields = obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
+            FieldInfo[] fields = dst.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
             foreach (var field in fields) {
                 var type = field.FieldType;
                 if (typeof(BaseComponent).IsAssignableFrom(type)) {
-                    PublicMemberInfoExtension.CopyPublicMemberValues(field.GetValue(obj), field.GetValue(Entity));
+                    CopyTo(field.GetValue(dst), field.GetValue(Entity));
                 }
                 else {
-                    field.SetValue(obj,field.GetValue(Entity));
+                    field.SetValue(dst, field.GetValue(Entity));
                 }
+            }
+            
+        }
+
+        void CopyTo(object dst, object src){
+            if (src.GetType() != dst.GetType()) {
+                return;
+            }
+
+            FieldInfo[] fields = dst.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
+            foreach (var field in fields) {
+                var type = field.FieldType;
+                field.SetValue(dst, field.GetValue(src));
             }
         }
     }
