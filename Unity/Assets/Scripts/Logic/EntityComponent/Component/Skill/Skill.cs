@@ -95,6 +95,10 @@ namespace LockstepTutorial {
                 foreach (var part in Parts) {
                     CheckSkillPart(part);
                 }
+
+                if (_curPart != null && _curPart.moveSpd != 0) {
+                    entity.transform.pos += _curPart.moveSpd * deltaTime * entity.transform.forward;
+                }
             }
             else {
                 _curPart = null;

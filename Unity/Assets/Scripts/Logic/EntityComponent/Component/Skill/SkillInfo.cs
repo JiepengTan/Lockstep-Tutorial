@@ -18,6 +18,7 @@ namespace Lockstep.Logic {
     [Serializable]
     public class SkillPart {
         public bool _DebugShow;
+        public LFloat moveSpd;
         public LFloat startTimer;
         public SkillColliderInfo collider;
         public LVector3 impulseForce;
