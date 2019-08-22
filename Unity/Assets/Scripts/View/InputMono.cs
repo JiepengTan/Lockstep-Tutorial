@@ -40,7 +40,7 @@ namespace LockstepTutorial {
 
                 skillId = -1;
                 for (int i = 0; i < 6; i++) {
-                    if (Input.GetKeyDown(KeyCode.Alpha1 + i)) {
+                    if (Input.GetKeyDown(KeyCode.Keypad0 + i)) {
                         skillId = i;
                     }
                 }

@@ -1,9 +1,12 @@
+using System;
 using Lockstep.Collision2D;
 using Lockstep.Math;
 
 namespace LockstepTutorial {
-    public class CBrain : ActorComponent {
-        public BaseActor target;
+    
+    [Serializable]
+    public class CBrain : Component {
+        public Entity target { get; private set; }
         public LFloat stopDistSqr = 1 * 1;
         public LFloat atkInterval = 1;
         private LFloat atkTimer;
@@ -12,7 +15,7 @@ namespace LockstepTutorial {
             //find target
             var allPlayer = GameManager.allPlayers;
             var minDist = LFloat.MaxValue;
-            BaseActor minTarget = null;
+            Entity minTarget = null;
             foreach (var player in allPlayer) {
                 if (player.isDead) continue;
                 var dist = (player.transform.pos - transform.pos).sqrMagnitude;
@@ -29,13 +32,13 @@ namespace LockstepTutorial {
                 // turn to target
                 var targetPos = minTarget.transform.pos;
                 var currentPos = transform.pos;
-                var turnVal = baseActor.turnSpd * deltaTime;
+                var turnVal = entity.turnSpd * deltaTime;
                 var targetDeg = CTransform2D.TurnToward(targetPos, currentPos, transform.deg, turnVal,
                     out var isFinishedTurn);
                 transform.deg = targetDeg;
                 //move to target
                 var distToTarget = (targetPos - currentPos).magnitude;
-                var movingStep = baseActor.moveSpd * deltaTime;
+                var movingStep = entity.moveSpd * deltaTime;
                 if (movingStep > distToTarget) {
                     movingStep = distToTarget;
                 }
@@ -49,7 +52,7 @@ namespace LockstepTutorial {
                 if (atkTimer <= 0) {
                     atkTimer = atkInterval;
                     //Atk
-                    target.TakeDamage(baseActor.damage, target.transform.Pos3);
+                    target.TakeDamage(entity.damage, target.transform.Pos3);
                 }
             }
         }

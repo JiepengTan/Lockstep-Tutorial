@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Lockstep.Logic;
 using Lockstep.Collision2D;
 using Lockstep.Math;
+using LockstepTutorial;
 using Debug = Lockstep.Logging.Debug;
 
 public interface IAnimatorView {
@@ -10,31 +11,34 @@ public interface IAnimatorView {
     void Sample(LFloat time);
 }
 
+[Serializable]
 public class CAnimator : BaseComponent {
-    public IAnimatorView view;
     public AnimatorConfig config;
-
-    private List<AnimInfo> _animInfos => config.anims;
-    private LFloat _animLen;
-    private LFloat _timer;
+    public IAnimatorView view;
     public AnimInfo curAnimInfo;
     public AnimBindInfo curAnimBindInfo;
-    private string curAnimName;
-    private int curAnimIdx = -1;
+    
+    private LFloat _animLen;
+    private LFloat _timer;
+    private string _curAnimName;
+    private int _curAnimIdx = -1;
 
-    private List<string> animNames = new List<string>();
-    private LVector3 intiPos;
+    private List<string> _animNames = new List<string>();
+    private LVector3 _intiPos;
 
+    private List<AnimInfo> _animInfos => config.anims;
     public override void DoStart(){
-        animNames.Clear();
+        if(config == null) return;
+        _animNames.Clear();
         foreach (var info in _animInfos) {
-            animNames.Add(info.name);
+            _animNames.Add(info.name);
         }
 
         Play(AnimDefine.Idle);
     }
 
     public override void DoUpdate(LFloat deltaTime){
+        if(config == null) return;
         _animLen = curAnimInfo.length;
         _timer += deltaTime;
         if (_timer > _animLen) {
@@ -46,7 +50,7 @@ public class CAnimator : BaseComponent {
         if (curAnimBindInfo.isMoveByAnim) {
             var animOffset = curAnimInfo[idx].pos;
             var pos = transform.TransformDirection(animOffset.ToLVector2XZ());
-            transform.Pos3 = (intiPos + pos.ToLVector3XZ(animOffset.y));
+            transform.Pos3 = (_intiPos + pos.ToLVector3XZ(animOffset.y));
         }
     }
 
@@ -55,17 +59,18 @@ public class CAnimator : BaseComponent {
     }
 
     public void Play(string name, bool isCrossfade = false){
-        if (curAnimName == name)
+        if(config == null) return;
+        if (_curAnimName == name)
             return;
-        var idx = animNames.IndexOf(name);
+        var idx = _animNames.IndexOf(name);
         if (idx == -1) {
             UnityEngine.Debug.LogError("miss animation " + name);
             return;
         }
 
-        Debug.Trace($"{entity.EntityId} PlayAnim {name} rawName {curAnimName}");
-        var hasChangedAnim = curAnimName != name;
-        curAnimName = name;
+        Debug.Trace($"{baseEntity.EntityId} PlayAnim {name} rawName {_curAnimName}");
+        var hasChangedAnim = _curAnimName != name;
+        _curAnimName = name;
         curAnimInfo = _animInfos[idx];
         curAnimBindInfo = config.events.Find((a) => a.name == name);
         if (curAnimBindInfo == null) curAnimBindInfo = AnimBindInfo.Empty;
@@ -74,22 +79,24 @@ public class CAnimator : BaseComponent {
             ResetAnim();
         }
 
-        view?.Play(curAnimName, isCrossfade);
+        view?.Play(_curAnimName, isCrossfade);
     }
 
+    public void SetTime(LFloat timer){
+        if(config == null) return;
+        var idx = GetTimeIdx(timer);
+        _intiPos = transform.Pos3 - curAnimInfo[idx].pos;
+        Debug.Trace(
+            $"{baseEntity.EntityId} SetTime  idx:{idx} intiPos {baseEntity.transform.Pos3}",
+            true);
+        this._timer = timer;
+    }
+    
     private void ResetAnim(){
         _timer = LFloat.zero;
         SetTime(LFloat.zero);
     }
 
-    public void SetTime(LFloat timer){
-        var idx = GetTimeIdx(timer);
-        intiPos = transform.Pos3 - curAnimInfo[idx].pos;
-        Debug.Trace(
-            $"{entity.EntityId} SetTime  idx:{idx} intiPos {entity.transform.Pos3}",
-            true);
-        this._timer = timer;
-    }
 
     private int GetTimeIdx(LFloat timer){
         var idx = (int) (timer / AnimatorConfig.FrameInterval);

@@ -49,7 +49,7 @@ namespace LockstepTutorial {
         [HideInInspector] public float remainTime; // remain time to update
         private NetClient netClient;
         private List<UnityBaseManager> _mgrs = new List<UnityBaseManager>();
-
+        
         private static string _traceLogPath {
             get {
 #if UNITY_STANDALONE_OSX
@@ -307,7 +307,7 @@ namespace LockstepTutorial {
             curFrameInput = GetFrame(curFrameIdx);
             var frame = curFrameInput;
             for (int i = 0; i < playerCount; i++) {
-                allPlayers[i].InputAgent = frame.inputs[i];
+                allPlayers[i].input = frame.inputs[i];
             }
         }
 

@@ -57,7 +57,7 @@ namespace LockstepTutorial {
         
         public static BaseEntity InstantiateEntity(int prefabId, LVector3 position){
             var prefab = ResourceManager.LoadPrefab(prefabId);
-            object config = ResourceManager.GetEnemyConfig(prefabId);
+            var config = ResourceManager.GetEnemyConfig(prefabId);
             Debug.Trace("CreateEnemy");
             var entity = new Enemy();
             var obj = UnityEntityService.CreateEntity(entity, prefabId, position, prefab, config);

@@ -18,7 +18,9 @@ namespace LockstepTutorial {
             config = Resources.Load<GameConfig>(configPath);
         }
 
-
+        public static AnimatorConfig LoadAnimConfig(int id){
+            return null;
+        }
         public static GameObject LoadPrefab(int id){
             return Instance._LoadPrefab(id);
         }
@@ -40,6 +42,7 @@ namespace LockstepTutorial {
                 var config = this.config.GetPlayerConfig(id);
                 var prefab = (GameObject) Resources.Load(pathPrefix + config.prefabPath);
                 _id2Prefab[id] = prefab;
+                CollisionManager.Instance.RigisterPrefab(prefab, (int) EColliderLayer.Hero);
                 return prefab;
             }
 
@@ -47,6 +50,7 @@ namespace LockstepTutorial {
                 var config = this.config.GetEnemyConfig(id - 10);
                 var prefab = (GameObject) Resources.Load(pathPrefix + config.prefabPath);
                 _id2Prefab[id] = prefab;
+                CollisionManager.Instance.RigisterPrefab(prefab, (int) EColliderLayer.Enemy);
                 return prefab;
             }
 

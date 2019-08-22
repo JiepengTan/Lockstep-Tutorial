@@ -1,13 +1,26 @@
+using System;
 using Lockstep.Collision2D;
+using Lockstep.Logic;
 using Lockstep.Math;
 
 namespace LockstepTutorial {
-    public partial class CMover : BasePlayerComponent {
+    
+    [Serializable]
+    public partial class CMover : Component {
+        public Player player { get; private set; }
+        public PlayerInput input => player.input;
+
+        
         static LFloat _sqrStopDist = new LFloat(true, 40);
         public LFloat speed => player.moveSpd;
         public bool hasReachTarget = false;
         public bool needMove = true;
 
+        public override void BindEntity(BaseEntity entity){
+            base.BindEntity(entity);
+            player = (Player) entity;
+        }
+        
         public override void DoUpdate(LFloat deltaTime){
             //if (!entity.rigidbody.isOnFloor) {
             //    return;

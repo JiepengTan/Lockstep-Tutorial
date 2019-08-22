@@ -11,7 +11,7 @@ using Object = UnityEngine.Object;
 using Ray2D = Lockstep.Collision2D.Ray2D;
 using Debug = Lockstep.Logging.Debug;
 
-public class CollisionManager : MonoBehaviour {
+public class CollisionManager : UnityBaseManager {
     private static CollisionManager _instance;
 
     public static CollisionManager Instance => _instance;
@@ -48,12 +48,12 @@ public class CollisionManager : MonoBehaviour {
 
     public int showTreeId = 0;
 
-    public void DoAwake(){
+    public override  void DoAwake(){
         _instance = this;
         DoStart();
     }
 
-    public void DoStart(){
+    public override void DoStart(){
         if (_instance != this) {
             Debug.LogError("Duplicate CollisionSystemAdapt!");
             return;
@@ -71,6 +71,11 @@ public class CollisionManager : MonoBehaviour {
         collisionSystem.funcGlobalOnTriggerEvent += GlobalOnTriggerEvent;
     }
 
+    public override void DoUpdate(LFloat deltaTime){
+        collisionSystem.ShowTreeId = showTreeId;
+        collisionSystem.DoUpdate(deltaTime);
+    }
+    
     public static void GlobalOnTriggerEvent(ColliderProxy a, ColliderProxy b, ECollisionEvent type){
         if (_colProxy2Mono.TryGetValue(a, out var handlera)) {
             CollisionSystem.TriggerEvent(handlera, b, type);
@@ -128,10 +133,6 @@ public class CollisionManager : MonoBehaviour {
         return ret;
     }
 
-    public void DoUpdate(LFloat deltaTime){
-        collisionSystem.ShowTreeId = showTreeId;
-        collisionSystem.DoUpdate(deltaTime);
-    }
 
 
     public void RigisterPrefab(GameObject go, int val){

@@ -1,10 +1,11 @@
+using System;
 using UnityEngine;
 using Debug = Lockstep.Logging.Debug;
 
 namespace LockstepTutorial {
-    public class Enemy : BaseActor {
+    [Serializable]
+    public class Enemy : Entity {
         public CBrain brain = new CBrain();
-        public int localId;
 
         public Enemy(){
             moveSpd = 2;

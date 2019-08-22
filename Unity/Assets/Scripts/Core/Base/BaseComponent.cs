@@ -1,13 +1,16 @@
+using System;
 using Lockstep.Collision2D;
 using Lockstep.Logic;
 using Lockstep.Math;
 
 namespace Lockstep.Logic {
+    [Serializable]
     public partial class BaseComponent : IComponent {
-        public BaseEntity entity;
-        public CTransform2D transform;
+        public BaseEntity baseEntity { get; private set; }
+        public CTransform2D transform { get; private set; }
+
         public virtual void BindEntity(BaseEntity entity){
-            this.entity = entity;
+            this.baseEntity = entity;
             transform = entity.transform;
         }
 

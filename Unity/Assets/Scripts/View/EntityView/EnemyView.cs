@@ -4,6 +4,6 @@ using Lockstep.Math;
 using UnityEngine;
 
 namespace LockstepTutorial {
-    public class EnemyView : BaseActorView, IEnemyView {
+    public class EnemyView : EntityView, IEnemyView {
     }
 }

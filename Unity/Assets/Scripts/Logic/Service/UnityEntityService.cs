@@ -6,11 +6,11 @@ using UnityEngine;
 namespace LockstepTutorial {
     public class UnityEntityService {
         public static GameObject CreateEntity(BaseEntity entity, int prefabId, LVector3 position, GameObject prefab,
-            object config){
+            EntityConfig config){
             var obj = (GameObject) GameObject.Instantiate(prefab, position.ToVector3(), Quaternion.identity);
             entity.engineTransform = obj.transform;
             entity.transform.Pos3 = position;
-            config.CopyFiledsTo(entity);
+            config.CopyTo(entity);
             var views = obj.GetComponents<IView>();
             foreach (var view in views) {
                 view.BindEntity(entity);

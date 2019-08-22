@@ -11,7 +11,6 @@ namespace LockstepTutorial {
 
         private LFloat timer;
         public virtual void DoStart(){
-            var prefab = ResourceManager.LoadPrefab(prefabId);
             timer = spawnTime;
         }
 

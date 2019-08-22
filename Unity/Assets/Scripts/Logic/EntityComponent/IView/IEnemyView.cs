@@ -2,6 +2,6 @@ using Lockstep.Logic;
 using Lockstep.Math;
 
 namespace LockstepTutorial {
-    public interface IPlayerView : IActorView  {
+    public interface IEnemyView : IEntityView {
     }
 }

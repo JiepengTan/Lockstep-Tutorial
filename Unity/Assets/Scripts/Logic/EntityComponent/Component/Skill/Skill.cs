@@ -1,6 +1,8 @@
 #define DEBUG_SKILL
+using System;
 using System.Collections.Generic;
 using Lockstep.Collision2D;
+using Lockstep.Logic;
 using Lockstep.Math;
 using LockstepTutorial;
 #if UNITY_EDITOR
@@ -8,45 +10,15 @@ using UnityEngine;
 #endif
 using Debug = Lockstep.Logging.Debug;
 
-namespace Lockstep.Logic {
-
-    public class CSkillContainer {
-        public List<CSkill> skills = new List<CSkill>();
-        public bool isFiring;
-        public CSkill curSkill;
-
-        public void Fire(int idx){
-            if (idx < 0 || idx > skills.Count) {
-                return;
-            }
-
-            var skill = skills[idx];
-            if (skill.Fire()) {
-                curSkill = skill;
-            }
-        }
-
-        public void Stop(int idx){
-            if (idx < 0 || idx > skills.Count) {
-                return;
-            }
-
-            if (curSkill != null) {
-                if (curSkill == skills[idx]) {
-                    curSkill.Stop();
-                }
-            }
-        }
-        public void OnDrawGizmos(){
-#if UNITY_EDITOR
-            foreach (var skill in skills) {
-                skill.OnDrawGizmos();
-            }
-#endif
-        }
+namespace LockstepTutorial {
+    public interface ISkillEventHandler {
+        void OnSkillStart(Skill skill);
+        void OnSkillDone(Skill skill);
+        void OnSkillPartStart(Skill skill);
     }
 
-    public class CSkill {
+    [Serializable]
+    public class Skill {
         public enum ESkillState {
             Idle,
             Firing,
@@ -54,7 +26,8 @@ namespace Lockstep.Logic {
 
         private static readonly HashSet<ColliderProxy> _tempTargets = new HashSet<ColliderProxy>();
 
-        public BaseActor owner; //=> view?.owner;
+        public ISkillEventHandler eventHandler;
+        public Entity entity { get; private set; }
         public SkillInfo SkillInfo;
         public LFloat CD => SkillInfo.CD;
         public LFloat DoneDelay => SkillInfo.doneDelay;
@@ -72,13 +45,15 @@ namespace Lockstep.Logic {
         private float _showTimer;
 #endif
 
-        public void Stop(){ }
+        public void ForceStop(){ }
 
-        //  private PlayerView view;
-
-        void Start(){
-            // view = GetComponent<PlayerView>();
+        public void DoStart(Entity entity, SkillInfo info,ISkillEventHandler eventHandler){
+            this.entity = entity;
+            this.SkillInfo = info;
+            this.eventHandler = eventHandler;
             _skillTimer = MaxPartTime;
+            _state = ESkillState.Idle;
+            _curPart = null;
         }
 
 
@@ -91,8 +66,8 @@ namespace Lockstep.Logic {
                 }
 
                 _state = ESkillState.Firing;
-                owner.animator?.Play(AnimName);
-                ((Player) owner).CMover.needMove = false;
+                entity.animator?.Play(AnimName);
+                ((Player) entity).mover.needMove = false;
                 OnFire();
                 return true;
             }
@@ -101,15 +76,13 @@ namespace Lockstep.Logic {
         }
 
         public void OnFire(){
-            owner.isInvincible = true;
-            owner.isFire = true;
+            eventHandler.OnSkillStart(this);
         }
 
         public void Done(){
-            owner.isFire = false;
-            owner.isInvincible = false;
+            eventHandler.OnSkillDone(this);
             _state = ESkillState.Idle;
-            owner.animator?.Play(AnimDefine.Idle);
+            entity.animator?.Play(AnimDefine.Idle);
         }
 
         public void DoUpdate(LFloat deltaTime){
@@ -143,6 +116,7 @@ namespace Lockstep.Logic {
         }
 
         void TriggerPart(SkillPart part){
+            eventHandler.OnSkillPartStart(this);
             _curPart = part;
 #if DEBUG_SKILL
             _showTimer = Time.realtimeSinceStartup + 0.1f;
@@ -151,13 +125,13 @@ namespace Lockstep.Logic {
             var col = part.collider;
             if (col.radius > 0) {
                 //circle
-                CollisionManager.QueryRegion(TargetLayer, owner.transform.TransformPoint(col.pos), col.radius,
+                CollisionManager.QueryRegion(TargetLayer, entity.transform.TransformPoint(col.pos), col.radius,
                     _OnTriggerEnter);
             }
             else {
                 //aabb
-                CollisionManager.QueryRegion(TargetLayer, owner.transform.TransformPoint(col.pos), col.size,
-                    owner.transform.forward,
+                CollisionManager.QueryRegion(TargetLayer, entity.transform.TransformPoint(col.pos), col.size,
+                    entity.transform.forward,
                     _OnTriggerEnter);
             }
 
@@ -168,7 +142,7 @@ namespace Lockstep.Logic {
             //add force
             if (part.needForce) {
                 var force = part.impulseForce;
-                var forward = owner.transform.forward;
+                var forward = entity.transform.forward;
                 var right = forward.RightVec();
                 var z = forward * force.z + right * force.x;
                 force.x = z.x;
@@ -190,8 +164,8 @@ namespace Lockstep.Logic {
 
         private void _OnTriggerEnter(ColliderProxy other){
             if (_curPart.collider.IsCircle && _curPart.collider.deg > 0) {
-                var deg = (other.Transform2D.pos - owner.transform.pos).ToDeg();
-                var degDiff = owner.transform.deg.Abs() - deg;
+                var deg = (other.Transform2D.pos - entity.transform.pos).ToDeg();
+                var degDiff = entity.transform.deg.Abs() - deg;
                 if (LMath.Abs(degDiff) <= _curPart.collider.deg) {
                     _tempTargets.Add(other);
                 }
@@ -201,13 +175,12 @@ namespace Lockstep.Logic {
             }
         }
 
-#if UNITY_EDITOR
         public void OnDrawGizmos(){
-#if DEBUG_SKILL
+#if UNITY_EDITOR && DEBUG_SKILL
             float tintVal = 0.3f;
             Gizmos.color = new Color(0, 1.0f - tintVal, tintVal, 0.25f);
             if (Application.isPlaying) {
-                if (owner == null) return;
+                if (entity == null) return;
                 if (_curPart == null) return;
                 ShowPartGizmons(_curPart);
             }
@@ -224,23 +197,24 @@ namespace Lockstep.Logic {
         }
 
         private void ShowPartGizmons(SkillPart part){
+#if UNITY_EDITOR
             var col = part.collider;
             if (col.radius > 0) {
                 //circle
-                var pos = owner?.transform.TransformPoint(col.pos) ?? col.pos;
+                var pos = entity?.transform.TransformPoint(col.pos) ?? col.pos;
                 Gizmos.DrawSphere(pos.ToVector3XZ(LFloat.one), col.radius.ToFloat());
             }
             else {
                 //aabb
-                var pos = owner?.transform.TransformPoint(col.pos) ?? col.pos;
+                var pos = entity?.transform.TransformPoint(col.pos) ?? col.pos;
                 Gizmos.DrawCube(pos.ToVector3XZ(LFloat.one), col.size.ToVector3XZ(LFloat.one));
                 DebugExtension.DebugLocalCube(Matrix4x4.TRS(
                         pos.ToVector3XZ(LFloat.one),
-                        Quaternion.Euler(0, owner.transform.deg.ToFloat(), 0),
+                        Quaternion.Euler(0, entity.transform.deg.ToFloat(), 0),
                         Vector3.one),
                     col.size.ToVector3XZ(LFloat.one), Gizmos.color);
             }
-        }
 #endif
+        }
     }
 }
