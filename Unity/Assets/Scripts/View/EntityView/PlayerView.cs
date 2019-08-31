@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace LockstepTutorial {
-    public partial class PlayerView : EntityView, IPlayerView {
+    public class PlayerView : EntityView, IPlayerView {
     
     }
 }

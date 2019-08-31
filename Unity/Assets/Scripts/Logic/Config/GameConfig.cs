@@ -120,5 +120,7 @@ namespace LockstepTutorial {
 
         public CollisionConfig CollisionConfig;
         public SpawnerConfig SpawnerConfig;
+        public string RecorderFilePath;
+        
     }
 }

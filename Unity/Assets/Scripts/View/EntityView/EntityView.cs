@@ -3,7 +3,7 @@ using Lockstep.Math;
 using UnityEngine;
 
 namespace LockstepTutorial {
-    public abstract class EntityView : MonoBehaviour, IEntityView {
+    public class EntityView : MonoBehaviour, IEntityView {
         public UIFloatBar uiFloatBar;
         public Entity entity;
         protected bool isDead => entity?.isDead ?? true;

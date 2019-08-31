@@ -11,5 +11,7 @@ namespace Lockstep.Game {
 
         CollisionConfig CollisionConfig { get; }
         SpawnerConfig SpawnerConfig { get; }
+
+        string RecorderFilePath { get; }
     }
 }

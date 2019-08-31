@@ -36,13 +36,12 @@ namespace LockstepTutorial {
         }
 
         private void OnSpawn(int prefabId, LVector3 position){
-#if UNITY_EDITOR
+
             if (curCount >= maxCount) {
                 return;
             }
-
+        
             curCount++;
-#endif
 
             var entity = _gameEntityService.CreateEnemy(prefabId, position) as Enemy;
             entity.OnDied += (e) => { RemoveEnemy(e as Enemy); };

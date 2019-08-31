@@ -53,7 +53,7 @@ namespace LockstepTutorial {
 
         public bool IsClientMode => _constStateService.IsClientMode;
         public bool IsReplay => _constStateService.IsReplay;
-        public string recordFilePath;
+        public string recordFilePath => _gameConfigService.RecorderFilePath;
 
         public PlayerServerInfo ClientModeInfo = new PlayerServerInfo();
 
@@ -111,9 +111,6 @@ namespace LockstepTutorial {
 
 
         public override void DoAwake(IServiceContainer serviceContainer){
-#if !UNITY_EDITOR
-            IsReplay = false;
-#endif
             _constStateService = serviceContainer.GetService<IConstStateService>();
             Instance = this;
             RegisterSystems();

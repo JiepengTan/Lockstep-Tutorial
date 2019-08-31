@@ -69,10 +69,10 @@ namespace Lockstep.Game {
                     EventHelper.AddListener, mgr);
             }
 
-            _mainManager.DoAwake(_serviceContainer);
             foreach (var mgr in _mgrContainer.AllMgrs) {
                 mgr.DoAwake(_serviceContainer);
             }
+            _mainManager.DoAwake(_serviceContainer);
 
             foreach (var mgr in _mgrContainer.AllMgrs) {
                 mgr.DoStart();

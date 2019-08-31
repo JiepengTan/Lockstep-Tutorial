@@ -1,7 +1,6 @@
 namespace Lockstep.Game {
     [System.Serializable]
     public class PureGameAudioService : PureBaseService, IGameAudioService {
-        public void PlayClipDestroyGrass(){ }
         public void PlayClipBorn(){ }
         public void PlayClipDied(){ }
         public void PlayMusicBG(){ }

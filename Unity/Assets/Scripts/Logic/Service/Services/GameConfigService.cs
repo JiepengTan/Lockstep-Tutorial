@@ -21,5 +21,9 @@ namespace LockstepTutorial {
 
         public CollisionConfig CollisionConfig => _config.CollisionConfig;
         public SpawnerConfig SpawnerConfig=> _config.SpawnerConfig;
+        public string RecorderFilePath=> _config.RecorderFilePath;
+
+        
+        
     }
 }

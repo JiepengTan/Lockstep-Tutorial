@@ -40,12 +40,9 @@ namespace LockstepTutorial {
 
         public int showTreeId = 0;
 
-        public string configPath = "GameConfig";
-
         public override void DoAwake(IServiceContainer services){
             _instance = this;
-            var cfg = Resources.Load<GameConfig>(configPath);
-            config = cfg.CollisionConfig;
+            config = _gameConfigService.CollisionConfig;
             DoStart();
         }
 
