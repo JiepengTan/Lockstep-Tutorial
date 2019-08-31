@@ -1,9 +1,9 @@
 using System;
 using Lockstep.Collision2D;
-using Lockstep.Logic;
+using Lockstep.Game;
 using Lockstep.Math;
 
-namespace Lockstep.Logic {
+namespace Lockstep.Game {
     [Serializable]
     public partial class BaseComponent : IComponent {
         public BaseEntity baseEntity { get; private set; }

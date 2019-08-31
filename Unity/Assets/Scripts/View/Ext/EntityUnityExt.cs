@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Lockstep.Logic {
+namespace Lockstep.Game {
     public static class EntityUnityExt {
         public static Transform GetUnityTransform(this BaseEntity value){
             return value.engineTransform as Transform;

@@ -3,7 +3,7 @@ using Lockstep.Collision2D;
 using Lockstep.Logging;
 using Lockstep.Math;
 
-namespace Lockstep.Logic {
+namespace Lockstep.Game {
     public delegate void OnFloorResultCallback(bool isOnFloor);
 
     [Serializable]

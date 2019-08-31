@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Lockstep.Math;
 using UnityEngine;
 
-namespace Lockstep.Logic {
+namespace Lockstep.Game {
     [Serializable]
     public class SkillColliderInfo {
         public LVector2 pos;

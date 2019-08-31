@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using Lockstep.Logic;
+using Lockstep.Game;
 
 namespace Lockstep.Logging {
     public class Debug {

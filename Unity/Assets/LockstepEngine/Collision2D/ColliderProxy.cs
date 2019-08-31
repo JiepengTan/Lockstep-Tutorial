@@ -1,4 +1,4 @@
-using Lockstep.Logic;
+using Lockstep.Game;
 using Lockstep.UnsafeCollision2D;
 using Lockstep.Math;
 #if UNITY_EDITOR

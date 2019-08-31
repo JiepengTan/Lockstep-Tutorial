@@ -1,4 +1,4 @@
-using Lockstep.Logic;
+using Lockstep.Game;
 using Lockstep.Math;
 using UnityEngine;
 
@@ -9,19 +9,19 @@ namespace LockstepTutorial{
         Hero,
         EnumCount
     }
-    public class HeroManager : UnityBaseManager {
+    public class HeroManager : BaseLogicManager {
         public static HeroManager Instance;
         public override void DoStart(){ }
         public static GameObject InstantiateEntity(Player entity, int prefabId, LVector3 position){
-            var prefab = ResourceManager.LoadPrefab(prefabId);
-            var config = ResourceManager.GetPlayerConfig(prefabId);
+            var prefab = ResourceGameService.LoadPrefab(prefabId);
+            var config = ResourceGameService.GetPlayerConfig(prefabId);
             var obj = UnityEntityService.CreateEntity(entity, prefabId, position, prefab, config);
             return obj;
         }
 
 
         public override void DoUpdate(LFloat deltaTime){
-            foreach (var player in GameManager.allPlayers) {
+            foreach (var player in Simulator.allPlayers) {
                 player.DoUpdate(deltaTime);
             }
         }

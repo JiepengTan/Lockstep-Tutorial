@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 using Lockstep.Collision2D;
-using Lockstep.Logic;
+using Lockstep.Game;
 using Lockstep.Math;
 using LockstepTutorial;
 #if UNITY_EDITOR

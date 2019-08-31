@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Lockstep;
-using Lockstep.Logic;
+using Lockstep.Game;
 using Lockstep.Math;
 using UnityEngine;
 using UnityEngine.SceneManagement;

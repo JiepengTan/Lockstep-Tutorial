@@ -2,7 +2,7 @@ using System.Net;
 using Lockstep.Network;
 using LockstepTutorial;
 
-namespace Lockstep.Logic{
+namespace Lockstep.Game{
     public class NetClient : IMessageDispatcher {
         public static IPEndPoint serverIpPoint = NetworkUtil.ToIPEndPoint("127.0.0.1", 10083);
         private NetOuterProxy net = new NetOuterProxy();
@@ -37,12 +37,12 @@ namespace Lockstep.Logic{
 
         public void OnFrameInput(Session session, IMessage message){
             var msg = message as Msg_FrameInput;
-            GameManager.PushFrameInput(msg.input);
+            Simulator.PushFrameInput(msg.input);
         }
 
         public void OnStartGame(Session session, IMessage message){
             var msg = message as Msg_StartGame;
-            GameManager.StartGame(msg);
+            Simulator.StartGame(msg);
         }
 
         public void Send(IMessage msg){

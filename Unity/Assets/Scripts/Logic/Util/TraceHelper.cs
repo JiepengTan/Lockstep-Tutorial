@@ -1,5 +1,5 @@
 using System.Text;
-using Lockstep.Logic;
+using Lockstep.Game;
 using Lockstep.Logging;
 
 namespace LockstepTutorial {
@@ -12,13 +12,13 @@ namespace LockstepTutorial {
         }
 
         private void _TraceFrameState(){
-            dumpSb.AppendLine("Tick: " + GameManager.Instance.curFrameIdx);
+            dumpSb.AppendLine("Tick: " + Simulator.Instance.curFrameIdx);
             //trace input
-            foreach (var input in GameManager.Instance.curFrameInput.inputs) {
+            foreach (var input in Simulator.Instance.curFrameInput.inputs) {
                 DumpInput(input);
             }
 
-            foreach (var entity in GameManager.allPlayers) {
+            foreach (var entity in Simulator.allPlayers) {
                 DumpEntity(entity);
             }
 

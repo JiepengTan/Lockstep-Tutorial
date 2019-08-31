@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
-using Lockstep.Logic;
+using Lockstep.Game;
 using Lockstep.Serialization;
 using Lockstep.Util;
 
@@ -8,7 +8,7 @@ namespace LockstepTutorial {
     public class RecordHelper {
         private const int RECODER_FILE_VERSION = 0;
 
-        public static void Serialize(string recordFilePath, GameManager mgr){
+        public static void Serialize(string recordFilePath, Simulator mgr){
             var writer = new Serializer();
             writer.Write(RECODER_FILE_VERSION);
             writer.Write(mgr.playerCount);
@@ -32,7 +32,7 @@ namespace LockstepTutorial {
             File.WriteAllBytes(relPath, bytes);
         }
 
-        public static void Deserialize(string recordFilePath, GameManager mgr){
+        public static void Deserialize(string recordFilePath, Simulator mgr){
 #if !UNITY_EDITOR
         return;
 #endif

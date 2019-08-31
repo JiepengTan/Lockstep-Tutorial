@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Lockstep.Logic;
+using Lockstep.Game;
 using Lockstep.Collision2D;
 using Lockstep.Math;
 using LockstepTutorial;

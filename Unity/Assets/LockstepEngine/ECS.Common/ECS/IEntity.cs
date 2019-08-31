@@ -3,6 +3,4 @@ namespace Lockstep.Game {
     public interface IContexts { }
 
     public interface IComponent { }
-
-    public class Entity : IEntity { }
 }

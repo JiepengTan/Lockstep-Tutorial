@@ -1,9 +1,9 @@
 using System;
 using Lockstep.Math;
 
-namespace Lockstep.Logic {
+namespace Lockstep.Game {
     [Serializable]
-    public class BaseLifeCycle : ILifeCycle {
+    public class BaseLifeCycle {
         public virtual void DoAwake(){ }
         public virtual void DoStart(){ }
         public virtual void DoUpdate(LFloat deltaTime){ }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Lockstep.Logic;
+using Lockstep.Game;
 using Lockstep.Collision2D;
 using Lockstep.Math;
 using Lockstep.UnsafeCollision2D;
@@ -13,39 +13,11 @@ using Ray2D = Lockstep.Collision2D.Ray2D;
 using Debug = Lockstep.Logging.Debug;
 
 namespace LockstepTutorial {
-    public class CollisionManager : UnityBaseManager {
-        public Vector2 scrollPos;
-        public bool isShow = true;
-        public bool[] collisionMatrix = new bool[(int) EColliderLayer.EnumCount * (int) EColliderLayer.EnumCount];
+    public class CollisionManager : BaseLogicManager {
         private static CollisionManager _instance;
-
-        private string[] _colliderLayerNames;
-
-        public string[] ColliderLayerNames {
-            get {
-                if (_colliderLayerNames == null || _colliderLayerNames.Length == 0) {
-                    var lst = new List<string>();
-                    for (int i = 0; i < (int) EColliderLayer.EnumCount; i++) {
-                        lst.Add(((EColliderLayer) i).ToString());
-                    }
-
-                    _colliderLayerNames = lst.ToArray();
-                }
-
-                return _colliderLayerNames;
-            }
-        }
-
-        public void SetColliderPair(int a, int b, bool val){
-            collisionMatrix[a * (int) EColliderLayer.EnumCount + b] = val;
-            collisionMatrix[b * (int) EColliderLayer.EnumCount + a] = val;
-        }
-
-        public bool GetColliderPair(int a, int b){
-            return collisionMatrix[a * (int) EColliderLayer.EnumCount + b];
-        }
-
         public static CollisionManager Instance => _instance;
+        ICollisionSystem collisionSystem;
+        public CollisionConfig config;
 
         static Dictionary<GameObject, ColliderPrefab> _go2ColPrefab = new Dictionary<GameObject, ColliderPrefab>();
         static Dictionary<GameObject, int> _go2Layer = new Dictionary<GameObject, int>();
@@ -56,16 +28,12 @@ namespace LockstepTutorial {
         static Dictionary<ColliderProxy, ILPTriggerEventHandler> _colProxy2Mono =
             new Dictionary<ColliderProxy, ILPTriggerEventHandler>();
 
-        ICollisionSystem collisionSystem;
 
-        public LVector3 pos;
-        public LFloat worldSize = new LFloat(60);
-        public LFloat minNodeSize = new LFloat(1);
-        public LFloat loosenessval = new LFloat(true, 1250);
-
-        public LFloat percent = new LFloat(true, 100);
-        public int count = 100;
-
+        public bool[] collisionMatrix => config.collisionMatrix;
+        public LVector3 pos => config.pos;
+        public LFloat worldSize => config.worldSize;
+        public LFloat minNodeSize => config.minNodeSize;
+        public LFloat loosenessval => config.loosenessval;
 
         private LFloat halfworldSize => worldSize / 2 - 5;
 
@@ -73,8 +41,12 @@ namespace LockstepTutorial {
 
         public int showTreeId = 0;
 
-        public override void DoAwake(){
+        public string configPath = "GameConfig";
+
+        public override void DoAwake(IServiceContainer services){
             _instance = this;
+            var cfg = Resources.Load<GameConfig>(configPath);
+            config = cfg.CollisionConfig;
             DoStart();
         }
 

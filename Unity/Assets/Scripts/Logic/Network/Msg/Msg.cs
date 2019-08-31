@@ -5,7 +5,7 @@ using Lockstep.Math;
 using Lockstep.Serialization;
 using IMessage = Lockstep.Network.IMessage;
 
-namespace Lockstep.Logic {
+namespace Lockstep.Game {
     public class FrameInput : BaseFormater {
         public int tick;
         public PlayerInput[] inputs;
@@ -97,7 +97,7 @@ namespace Lockstep.Logic {
 }
 
 
-namespace Lockstep.Logic {
+namespace Lockstep.Game {
     public enum EMsgType {
         JoinRoom,
         QuitRoom,

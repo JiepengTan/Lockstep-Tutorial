@@ -1,5 +1,5 @@
 using System;
-using Lockstep.Logic;
+using Lockstep.Game;
 
 namespace LockstepTutorial {
     

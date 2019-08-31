@@ -1,7 +1,7 @@
 using Lockstep.Network;
 using Lockstep.Serialization;
 
-namespace Lockstep.Logic{
+namespace Lockstep.Game{
     public class MessagePacker : IMessagePacker {
         public static MessagePacker Instance { get; } = new MessagePacker();
 

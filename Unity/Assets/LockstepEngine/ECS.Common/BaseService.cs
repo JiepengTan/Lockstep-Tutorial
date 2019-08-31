@@ -1,12 +1,11 @@
 using System;
+using Lockstep.Math;
 
 namespace Lockstep.Game {
     public abstract partial class BaseService : ServiceReferenceHolder, IService, ILifeCycle, ITimeMachine {
         public virtual void DoInit(object objParent){}
         public virtual void DoAwake(IServiceContainer services){ }
         public virtual void DoStart(){ }
-        public virtual void DoUpdate(int deltaTimeMs){ }
-        public virtual void DoFixedUpdate(){ }
         public virtual void DoDestroy(){ }
         public virtual void OnApplicationQuit(){ }
 

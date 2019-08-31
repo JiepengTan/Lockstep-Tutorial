@@ -1,6 +1,6 @@
 using System;
 using Lockstep.Logging;
-using Lockstep.Logic;
+using Lockstep.Game;
 using Lockstep.Math;
 
 namespace LockstepTutorial {

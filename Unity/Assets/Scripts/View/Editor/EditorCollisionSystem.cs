@@ -7,15 +7,15 @@ using UnityEditorInternal;
 
 internal class LayerMatrixGUI { }
 
-[CustomEditor(typeof(CollisionManager))]
+[CustomEditor(typeof(CollisionConfig))]
 public class EditorCollisionSystem : Editor {
-    private CollisionManager owner;
+    private CollisionConfig owner;
 
     public override void OnInspectorGUI(){
         base.OnInspectorGUI();
-        owner = target as CollisionManager;
-        DoGUI("LayerCollisionMatrix", ref owner.isShow, ref owner.scrollPos, owner.GetColliderPair,
-            owner.SetColliderPair);
+        //owner = target as CollisionConfig;
+        //DoGUI("LayerCollisionMatrix", ref owner.isShow, ref owner.scrollPos, owner.GetColliderPair,
+        //    owner.SetColliderPair);
     }
 
 

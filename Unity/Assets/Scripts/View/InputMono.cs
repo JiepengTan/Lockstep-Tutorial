@@ -1,5 +1,5 @@
 using Lockstep.Collision2D;
-using Lockstep.Logic;
+using Lockstep.Game;
 using Lockstep.Math;
 using UnityEngine;
 using Debug = Lockstep.Logging.Debug;
@@ -7,7 +7,7 @@ using Debug = Lockstep.Logging.Debug;
 namespace LockstepTutorial {
 
     public class InputMono : UnityEngine.MonoBehaviour {
-        private static bool IsReplay => GameManager.Instance.IsReplay;
+        private static bool IsReplay => Simulator.Instance.IsReplay;
         [HideInInspector] public int floorMask;
         public float camRayLength = 100;
 
@@ -46,7 +46,7 @@ namespace LockstepTutorial {
                 }
 
                 isSpeedUp = Input.GetKeyDown(KeyCode.Space);
-                GameManager.CurGameInput =  new PlayerInput() {
+                Simulator.CurGameInput =  new PlayerInput() {
                     mousePos = mousePos,
                     inputUV = inputUV,
                     isInputFire = isInputFire,

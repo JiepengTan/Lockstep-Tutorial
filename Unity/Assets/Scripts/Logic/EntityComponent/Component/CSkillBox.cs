@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Lockstep.Logging;
-using Lockstep.Logic;
+using Lockstep.Game;
 using Lockstep.Math;
 
 namespace LockstepTutorial {

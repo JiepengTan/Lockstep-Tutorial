@@ -1,4 +1,4 @@
-using Lockstep.Logic;
+using Lockstep.Game;
 using LockstepTutorial;
 
 namespace Lockstep.Collision2D {

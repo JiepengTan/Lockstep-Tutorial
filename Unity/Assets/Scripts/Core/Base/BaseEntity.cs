@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Lockstep;
 using Lockstep.Collision2D;
-using Lockstep.Logic;
+using Lockstep.Game;
 using Lockstep.Math;
 using Debug = Lockstep.Logging.Debug;
 
-namespace Lockstep.Logic {
+namespace Lockstep.Game {
     [Serializable]
     public class BaseEntity : BaseLifeCycle, IEntity, ILPTriggerEventHandler {
         public static int IdCounter { get; private set; }

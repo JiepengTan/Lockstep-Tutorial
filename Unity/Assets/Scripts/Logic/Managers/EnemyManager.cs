@@ -1,12 +1,12 @@
 using System.Collections.Generic;
-using Lockstep.Logic;
+using Lockstep.Game;
 using Lockstep.Math;
 using UnityEngine;
 using Debug = Lockstep.Logging.Debug;
 
 namespace LockstepTutorial {
-    public class EnemyManager : UnityBaseManager {
-        public List<Spawner> spawners = new List<Spawner>();
+    public class EnemyManager : BaseLogicManager {
+        public List<Spawner> spawners;
         public static EnemyManager Instance { get; private set; }
         public List<Enemy> allEnemy = new List<Enemy>();
 
@@ -14,8 +14,10 @@ namespace LockstepTutorial {
         private static int curCount = 0;
         private static int enmeyID = 0;
 
-        public override void DoAwake(){
+        public override void DoAwake(IServiceContainer services){
             Instance = this;
+            var config = Resources.Load<GameConfig>("GameConfig");
+            spawners = config.SpawnerConfig.spawners;
         }
 
         public override void DoStart(){
@@ -56,8 +58,8 @@ namespace LockstepTutorial {
         
         
         public static BaseEntity InstantiateEntity(int prefabId, LVector3 position){
-            var prefab = ResourceManager.LoadPrefab(prefabId);
-            var config = ResourceManager.GetEnemyConfig(prefabId);
+            var prefab = ResourceGameService.LoadPrefab(prefabId);
+            var config = ResourceGameService.GetEnemyConfig(prefabId);
             Debug.Trace("CreateEnemy");
             var entity = new Enemy();
             var obj = UnityEntityService.CreateEntity(entity, prefabId, position, prefab, config);

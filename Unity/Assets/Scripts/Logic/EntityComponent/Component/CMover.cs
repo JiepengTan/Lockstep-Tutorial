@@ -1,6 +1,6 @@
 using System;
 using Lockstep.Collision2D;
-using Lockstep.Logic;
+using Lockstep.Game;
 using Lockstep.Math;
 
 namespace LockstepTutorial {

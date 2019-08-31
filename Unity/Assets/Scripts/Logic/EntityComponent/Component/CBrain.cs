@@ -16,7 +16,7 @@ namespace LockstepTutorial {
                 return;
             }
             //find target
-            var allPlayer = GameManager.allPlayers;
+            var allPlayer = Simulator.allPlayers;
             var minDist = LFloat.MaxValue;
             Entity minTarget = null;
             foreach (var player in allPlayer) {

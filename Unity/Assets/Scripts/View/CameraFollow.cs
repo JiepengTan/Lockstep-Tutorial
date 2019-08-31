@@ -22,7 +22,7 @@ namespace LockstepTutorial {
 
         void FixedUpdate(){
             if (_target == null) {
-                target = GameManager.MyPlayerTrans;
+                target = Simulator.MyPlayerTrans;
             }
 
             if (_target == null) return;
