@@ -10,8 +10,7 @@ namespace Lockstep.Game {
         public void RegisterManager(BaseService service){
             var name = service.GetType().Name;
             if (_name2Mgr.ContainsKey(name)) {
-                Debug.LogError(
-                    $"Duplicate Register manager {name} type:{service?.GetType().ToString() ?? ""}");
+                //Debug.LogError($"Duplicate Register manager {name} type:{service?.GetType().ToString() ?? ""}");
                 return;
             }
 

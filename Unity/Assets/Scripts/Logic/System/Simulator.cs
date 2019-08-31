@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -18,6 +17,11 @@ namespace LockstepTutorial {
     public class MainManager : BaseService {
         public Simulator Simulator = new Simulator();
         public override void DoInit(object objParent){ }
+
+        public override void InitReference(IServiceContainer serviceContainer, IManagerContainer mgrContainer){
+            base.InitReference(serviceContainer, mgrContainer);
+            Simulator.mgrContainer = mgrContainer;
+        }
 
         public override void DoAwake(IServiceContainer services){
             Simulator.DoAwake(services);
@@ -42,18 +46,19 @@ namespace LockstepTutorial {
 
     public interface ISimulatorService : IService { }
 
-    public class Simulator : BaseService,ISimulatorService {
+    public class Simulator : BaseSystem, ISimulatorService {
         public string GameName;
         public static Simulator Instance { get; private set; }
         public static PlayerInput CurGameInput = new PlayerInput();
 
         public bool IsClientMode => _constStateService.IsClientMode;
-        public bool IsReplay  => _constStateService.IsReplay;
+        public bool IsReplay => _constStateService.IsReplay;
         public string recordFilePath;
-        
+
         public PlayerServerInfo ClientModeInfo = new PlayerServerInfo();
 
 
+        public IManagerContainer mgrContainer;
         private static int _maxServerFrameIdx;
         public int mapId;
         private bool _hasStart = false;
@@ -71,12 +76,15 @@ namespace LockstepTutorial {
         public static List<float> Delays = new List<float>();
         public Dictionary<int, float> tick2SendTimer = new Dictionary<int, float>();
 
-        [Header("GameData")] public static List<Player> allPlayers = new List<Player>();
+        public List<Enemy> AllEnemies => _gameStateService.GetEnemies();
+        public List<Player> AllPlayers => _gameStateService.GetPlayers();
+
         public static Player MyPlayer;
-        public static Transform MyPlayerTrans;
+
+        public static Transform MyPlayerTrans => MyPlayer?.engineTransform as Transform;
         [HideInInspector] public float remainTime; // remain time to update
         private NetClient netClient;
-        private List<BaseLogicManager> _mgrs = new List<BaseLogicManager>();
+        private List<BaseSystem> _systems = new List<BaseSystem>();
 
         private static string _traceLogPath {
             get {
@@ -88,9 +96,19 @@ namespace LockstepTutorial {
             }
         }
 
-        public void RegisterManagers(BaseLogicManager mgr){
-            _mgrs.Add(mgr);
+        public void RegisterSystem(BaseSystem mgr){
+            _systems.Add(mgr);
         }
+
+        public void RegisterSystems(){
+            RegisterSystem(new HeroSystem());
+            RegisterSystem(new EnemySystem());
+            RegisterSystem(new PhysicSystem());
+            if (!IsReplay) {
+                RegisterSystem(new TraceLogSystem());
+            }
+        }
+
 
         public override void DoAwake(IServiceContainer serviceContainer){
 #if !UNITY_EDITOR
@@ -98,11 +116,14 @@ namespace LockstepTutorial {
 #endif
             _constStateService = serviceContainer.GetService<IConstStateService>();
             Instance = this;
-            RegisterManagers(new HeroManager());
-            RegisterManagers(new EnemyManager());
-            RegisterManagers(new CollisionManager());
+            RegisterSystems();
+            InitReference(serviceContainer, mgrContainer);
+            foreach (var mgr in _systems) {
+                mgr.InitReference(serviceContainer, mgrContainer);
+            }
+
             _DoAwake(serviceContainer);
-            foreach (var mgr in _mgrs) {
+            foreach (var mgr in _systems) {
                 mgr.DoAwake(serviceContainer);
             }
         }
@@ -110,7 +131,7 @@ namespace LockstepTutorial {
 
         public override void DoStart(){
             _DoStart();
-            foreach (var mgr in _mgrs) {
+            foreach (var mgr in _systems) {
                 mgr.DoStart();
             }
 
@@ -146,7 +167,7 @@ namespace LockstepTutorial {
 
         public override void DoDestroy(){
             netClient?.Send(new Msg_QuitRoom());
-            foreach (var mgr in _mgrs) {
+            foreach (var mgr in _systems) {
                 mgr.DoDestroy();
             }
 
@@ -175,23 +196,19 @@ namespace LockstepTutorial {
             this.playerServerInfos = playerInfos;
             this.localPlayerId = localPlayerId;
             Debug.TraceSavePath = _traceLogPath;
-            allPlayers.Clear();
+            AllPlayers.Clear();
             for (int i = 0; i < playerCount; i++) {
                 Debug.Trace("CreatePlayer");
-                allPlayers.Add(new Player() {localId = i});
+                AllPlayers.Add(new Player() {localId = i});
             }
 
             //create Players 
             for (int i = 0; i < playerCount; i++) {
                 var playerInfo = playerInfos[i];
-                var go = HeroManager.InstantiateEntity(allPlayers[i], playerInfo.PrefabId, playerInfo.initPos);
-                //init mover
-                if (allPlayers[i].localId == localPlayerId) {
-                    MyPlayerTrans = go.transform;
-                }
+                _gameEntityService.CreatePlayer(AllPlayers[i], playerInfo.PrefabId, playerInfo.initPos);
             }
 
-            MyPlayer = allPlayers[localPlayerId];
+            MyPlayer = AllPlayers[localPlayerId];
         }
 
 
@@ -236,7 +253,6 @@ namespace LockstepTutorial {
                     tick = curFrameIdx,
                     hash = GetHash()
                 });
-                TraceHelper.TraceFrameState();
                 curFrameIdx++;
             }
         }
@@ -253,13 +269,14 @@ namespace LockstepTutorial {
         private void UpdateFrame(){
             var deltaTime = new LFloat(true, 30);
             _DoUpdate(deltaTime);
-            foreach (var mgr in _mgrs) {
-                mgr.DoUpdate(deltaTime);
+            foreach (var system in _systems) {
+                if (system.enable) {
+                    system.DoUpdate(deltaTime);
+                }
             }
         }
 
-        public void _DoAwake(IServiceContainer services){
-        }
+        public void _DoAwake(IServiceContainer services){ }
 
 
         public void _DoStart(){
@@ -317,7 +334,7 @@ namespace LockstepTutorial {
             curFrameInput = GetFrame(curFrameIdx);
             var frame = curFrameInput;
             for (int i = 0; i < playerCount; i++) {
-                allPlayers[i].input = frame.inputs[i];
+                AllPlayers[i].input = frame.inputs[i];
             }
         }
 
@@ -326,12 +343,12 @@ namespace LockstepTutorial {
         public int GetHash(){
             int hash = 1;
             int idx = 0;
-            foreach (var entity in allPlayers) {
+            foreach (var entity in AllPlayers) {
                 hash += entity.curHealth.GetHash() * PrimerLUT.GetPrimer(idx++);
                 hash += entity.transform.GetHash() * PrimerLUT.GetPrimer(idx++);
             }
 
-            foreach (var entity in EnemyManager.Instance.allEnemy) {
+            foreach (var entity in AllEnemies) {
                 hash += entity.curHealth.GetHash() * PrimerLUT.GetPrimer(idx++);
                 hash += entity.transform.GetHash() * PrimerLUT.GetPrimer(idx++);
             }

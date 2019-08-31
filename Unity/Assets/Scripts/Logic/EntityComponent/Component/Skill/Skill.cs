@@ -126,12 +126,12 @@ namespace LockstepTutorial {
             var col = part.collider;
             if (col.radius > 0) {
                 //circle
-                CollisionManager.QueryRegion(TargetLayer, entity.transform.TransformPoint(col.pos), col.radius,
+                PhysicSystem.QueryRegion(TargetLayer, entity.transform.TransformPoint(col.pos), col.radius,
                     _OnTriggerEnter);
             }
             else {
                 //aabb
-                CollisionManager.QueryRegion(TargetLayer, entity.transform.TransformPoint(col.pos), col.size,
+                PhysicSystem.QueryRegion(TargetLayer, entity.transform.TransformPoint(col.pos), col.size,
                     entity.transform.forward,
                     _OnTriggerEnter);
             }

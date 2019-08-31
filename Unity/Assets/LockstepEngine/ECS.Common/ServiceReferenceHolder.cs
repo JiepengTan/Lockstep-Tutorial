@@ -20,7 +20,7 @@ namespace Lockstep.Game {
             return _serviceContainer.GetService<T>();
         }
 
-        public virtual void InitReference(IServiceContainer serviceContainer){
+        public virtual void InitReference(IServiceContainer serviceContainer,IManagerContainer mgrContainer){
             _serviceContainer = serviceContainer;
             //通用Service
             _ecsFacadeService = serviceContainer.GetService<IECSFacadeService>();

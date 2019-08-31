@@ -8,6 +8,8 @@ namespace LockstepTutorial {
     public partial class Entity : BaseEntity {
         public CAnimator animator = new CAnimator();
         public CSkillBox skillBox = new CSkillBox();
+        public IGameStateService GameStateService { get;  set; }
+        
         public IEntityView EntityView;
         public LFloat moveSpd = 5;
         public LFloat turnSpd = 360;
@@ -20,6 +22,7 @@ namespace LockstepTutorial {
 
         public bool isDead => curHealth <= 0;
 
+        public Action<Entity> OnDied;
         public Entity(){
             RegisterComponent(animator);
             RegisterComponent(skillBox);
@@ -44,9 +47,10 @@ namespace LockstepTutorial {
             EntityView?.OnTakeDamage(amount, hitPoint);
             OnTakeDamage(amount, hitPoint);
             if (isDead) {
+                OnDied?.Invoke(this);
                 EntityView?.OnDead();
                 OnDead();
-                CollisionManager.Instance.RemoveCollider(this);
+                PhysicSystem.Instance.RemoveCollider(this);
             }
         }
         protected virtual void OnTakeDamage(int amount, LVector3 hitPoint){ }

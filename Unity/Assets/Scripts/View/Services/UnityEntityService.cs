@@ -13,7 +13,7 @@ namespace LockstepTutorial {
             entity.transform.Pos3 = position;
             config.CopyTo(entity);
             entity.PrefabId = prefabId;
-            CollisionManager.Instance.RegisterEntity(prefab, obj, entity);
+            PhysicSystem.Instance.RegisterEntity(prefab, obj, entity);
             entity.DoAwake();
             entity.DoStart();
             var views = obj.GetComponents<IView>();

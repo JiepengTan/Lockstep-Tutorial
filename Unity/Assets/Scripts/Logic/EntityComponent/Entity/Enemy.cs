@@ -13,8 +13,5 @@ namespace LockstepTutorial {
             RegisterComponent(brain);
         }
 
-        protected override void OnDead(){
-            EnemyManager.Instance.RemoveEnemy(this);
-        }
     }
 }

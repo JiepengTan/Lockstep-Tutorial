@@ -13,9 +13,9 @@ using Ray2D = Lockstep.Collision2D.Ray2D;
 using Debug = Lockstep.Logging.Debug;
 
 namespace LockstepTutorial {
-    public class CollisionManager : BaseLogicManager {
-        private static CollisionManager _instance;
-        public static CollisionManager Instance => _instance;
+    public class PhysicSystem : BaseSystem {
+        private static PhysicSystem _instance;
+        public static PhysicSystem Instance => _instance;
         ICollisionSystem collisionSystem;
         public CollisionConfig config;
 
@@ -27,7 +27,6 @@ namespace LockstepTutorial {
 
         static Dictionary<ColliderProxy, ILPTriggerEventHandler> _colProxy2Mono =
             new Dictionary<ColliderProxy, ILPTriggerEventHandler>();
-
 
         public bool[] collisionMatrix => config.collisionMatrix;
         public LVector3 pos => config.pos;

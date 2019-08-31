@@ -1,12 +1,15 @@
+using System.Collections.Generic;
 using Lockstep.Math;
+using LockstepTutorial;
 
 namespace Lockstep.Game {
-    public interface IGameStateService : IService {
+    public interface IGameStateService : IService ,IEntityService{
         //changed in the game
-        int curEnemyCountInScene { get; set; }
-        int remainCountToBorn { get; set; }
-        LFloat bornTimer { get; set; }
-        LFloat bornInterval { get; set; }
+        LFloat RemainTime { get; set; }
         LFloat DeltaTime { get; set; }
+        
+        List<Enemy> GetEnemies();
+        List<Player> GetPlayers();
+        List<Spawner> GetSpawners();
     }
 }

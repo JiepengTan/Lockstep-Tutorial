@@ -4,8 +4,9 @@ using LockstepTutorial;
 public class BaseGameServicesContainer : ServiceContainer {
     public BaseGameServicesContainer(){
         RegisterService(new ConstStateService());
-        RegisterService(new GameConstStateService());
+        RegisterService(new GameResourceService());
+        RegisterService(new GameEntityService());
         RegisterService(new GameStateService());
-        RegisterService(new ResourceGameService());
+        RegisterService(new GameConfigService());
     }
 }

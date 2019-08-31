@@ -2,28 +2,26 @@ using System;
 using Lockstep.Math;
 
 namespace LockstepTutorial {
-    [Serializable]
     public class Spawner {
-        public LFloat spawnTime;
-        public LVector3 spawnPoint;
-        public int prefabId;
+        public SpawnerInfo info;
         public Action<int, LVector3> OnSpawnEvent;
 
         private LFloat timer;
+
         public virtual void DoStart(){
-            timer = spawnTime;
+            timer = info.spawnTime;
         }
 
         public virtual void DoUpdate(LFloat deltaTime){
             timer += deltaTime;
-            if (timer > spawnTime) {
+            if (timer > info.spawnTime) {
                 timer = LFloat.zero;
                 Spawn();
             }
         }
 
         public void Spawn(){
-            OnSpawnEvent(prefabId, spawnPoint);
+            OnSpawnEvent(info.prefabId, info.spawnPoint);
         }
     }
 }

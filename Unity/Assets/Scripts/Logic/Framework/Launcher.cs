@@ -19,6 +19,7 @@ namespace Lockstep.Game {
                 _timeMachineContainer.CurTick = value;
             }
         }
+
         public static Launcher Instance { get; private set; }
 
         private ServiceContainer _serviceContainer;
@@ -35,6 +36,7 @@ namespace Lockstep.Game {
                 Debug.LogError("LifeCycle Error: Awake more than once!!");
                 return;
             }
+
             Instance = this;
             _serviceContainer = services as ServiceContainer;
             _registerService = new EventRegisterService();
@@ -49,19 +51,16 @@ namespace Lockstep.Game {
                     _mgrContainer.RegisterManager(baseService);
                 }
             }
+
             _serviceContainer.RegisterService(_timeMachineContainer);
             _serviceContainer.RegisterService(_registerService);
         }
 
 
         public void DoStart(){
+            _mainManager.InitReference(_serviceContainer, _mgrContainer);
             foreach (var mgr in _mgrContainer.AllMgrs) {
-                if (mgr is IBaseGameManager gameMgr) {
-                    gameMgr.AssignReference(_serviceContainer, _mgrContainer);
-                }
-                else {
-                    mgr.InitReference(_serviceContainer);
-                }
+                mgr.InitReference(_serviceContainer, _mgrContainer);
             }
 
             //bind events

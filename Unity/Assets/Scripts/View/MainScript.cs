@@ -17,7 +17,7 @@ public class MainScript : MonoBehaviour {
         launcher = new Launcher();
         gameObject.AddComponent<PingMono>();
         gameObject.AddComponent<InputMono>();
-        EnemyManager.maxCount = MaxEnemyCount;
+        EnemySystem.maxCount = MaxEnemyCount;
         _serviceContainer = new UnityServiceContainer();
         _serviceContainer.GetService<IConstStateService>().GameName = "ARPGDemo";
         _serviceContainer.GetService<IConstStateService>().IsClientMode = IsClientMode;

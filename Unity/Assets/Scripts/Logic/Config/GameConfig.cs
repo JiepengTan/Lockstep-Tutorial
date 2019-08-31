@@ -102,7 +102,7 @@ namespace LockstepTutorial {
 
     [Serializable]
     public class SpawnerConfig {
-        public List<Spawner> spawners = new List<Spawner>();
+        public List<SpawnerInfo> spawners = new List<SpawnerInfo>();
     }
 
     [CreateAssetMenu(menuName = "GameConfig")]

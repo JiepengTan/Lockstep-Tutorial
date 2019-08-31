@@ -5,35 +5,23 @@ using Lockstep.Game;
 using UnityEngine;
 
 namespace LockstepTutorial {
-    public interface IGameResourceService : IService{ }
-
-    public class ResourceGameService : BaseGameService,IGameResourceService {
-        public static ResourceGameService Instance { get; private set; }
-        [HideInInspector] public GameConfig config;
-        public string configPath = "GameConfig";
+    public class GameResourceService : BaseGameService, IGameResourceService {
+        public static GameResourceService Instance { get; private set; }
         public string pathPrefix = "Prefabs/";
         
         private Dictionary<int, GameObject> _id2Prefab = new Dictionary<int, GameObject>();
 
         public override void DoAwake(IServiceContainer container){
             Instance = this;
-            config = Resources.Load<GameConfig>(configPath);
         }
 
         public static AnimatorConfig LoadAnimConfig(int id){
             return null;
         }
-        public static GameObject LoadPrefab(int id){
-            return Instance._LoadPrefab(id);
+        public object LoadPrefab(int id){
+            return _LoadPrefab(id);
         }
 
-        public static PlayerConfig GetPlayerConfig(int id){
-            return Instance.config.GetPlayerConfig(id);
-        }
-
-        public static EnemyConfig GetEnemyConfig(int id){
-            return Instance.config.GetEnemyConfig(id - 10);
-        }
 
         GameObject _LoadPrefab(int id){
             if (_id2Prefab.TryGetValue(id, out var val)) {
@@ -41,18 +29,18 @@ namespace LockstepTutorial {
             }
 
             if (id < 10) {
-                var config = this.config.GetPlayerConfig(id);
+                var config = _gameConfigService.GetPlayerConfig(id);
                 var prefab = (GameObject) Resources.Load(pathPrefix + config.prefabPath);
                 _id2Prefab[id] = prefab;
-                CollisionManager.Instance.RigisterPrefab(prefab, (int) EColliderLayer.Hero);
+                PhysicSystem.Instance.RigisterPrefab(prefab, (int) EColliderLayer.Hero);
                 return prefab;
             }
 
             if (id >= 10) {
-                var config = this.config.GetEnemyConfig(id - 10);
+                var config = _gameConfigService.GetEnemyConfig(id );
                 var prefab = (GameObject) Resources.Load(pathPrefix + config.prefabPath);
                 _id2Prefab[id] = prefab;
-                CollisionManager.Instance.RigisterPrefab(prefab, (int) EColliderLayer.Enemy);
+                PhysicSystem.Instance.RigisterPrefab(prefab, (int) EColliderLayer.Enemy);
                 return prefab;
             }
 

@@ -3,7 +3,6 @@ using Lockstep.Collision2D;
 using Lockstep.Math;
 
 namespace LockstepTutorial {
-    
     [Serializable]
     public class CBrain : Component {
         public Entity target { get; private set; }
@@ -11,12 +10,12 @@ namespace LockstepTutorial {
         public LFloat atkInterval = 1;
         private LFloat atkTimer;
 
-        public override void DoUpdate(LFloat deltaTime){     
+        public override void DoUpdate(LFloat deltaTime){
             if (!entity.rigidbody.isOnFloor) {
                 return;
             }
             //find target
-            var allPlayer = Simulator.allPlayers;
+            var allPlayer = GameStateService.GetPlayers();
             var minDist = LFloat.MaxValue;
             Entity minTarget = null;
             foreach (var player in allPlayer) {
