@@ -87,9 +87,6 @@ namespace Lockstep.Game {
             }
 
             _DoAwake(_serviceContainer);
-            if (IsClientMode) {
-                GameStartInfo = _serviceContainer.GetService<IGameConfigService>().ClientModeInfo;
-            }
 
             foreach (var mgr in _mgrContainer.AllMgrs) {
                 mgr.DoStart();
@@ -124,6 +121,12 @@ namespace Lockstep.Game {
             if (IsVideoMode) {
                 EventHelper.Trigger(EEvent.BorderVideoFrame, FramesInfo);
                 EventHelper.Trigger(EEvent.OnGameCreate, GameStartInfo);
+            }
+            else if (IsClientMode) {
+                GameStartInfo = _serviceContainer.GetService<IGameConfigService>().ClientModeInfo;
+                EventHelper.Trigger(EEvent.OnGameCreate, GameStartInfo);
+                EventHelper.Trigger(EEvent.LevelLoadDone, GameStartInfo);
+                
             }
         }
 

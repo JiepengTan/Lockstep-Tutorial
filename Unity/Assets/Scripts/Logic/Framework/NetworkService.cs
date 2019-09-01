@@ -20,40 +20,40 @@ namespace Lockstep.Game {
         public int Ping => 50; //=> _netProxyRoom.IsInit ? _netProxyRoom.Ping : _netProxyLobby.Ping;
         public bool IsConnected = true; // => _netProxyLobby != null && _netProxyLobby.Connected;
 
-        private bool _isReplay;
+        private bool _noNetwork;
         private bool _isReconnected = false; //是否是重连
 
         private RoomMsgManager _roomMsgMgr;
         public NetworkMsgHandler _msgHandler = new NetworkMsgHandler();
         public override void DoAwake(IServiceContainer services){
-            _isReplay = _constStateService.IsVideoMode;
-            if (_isReplay) return;
+            _noNetwork = _constStateService.IsVideoMode || _constStateService.IsClientMode;
+            if (_noNetwork) return;
             _roomMsgMgr = new RoomMsgManager();
             _msgHandler = new NetworkMsgHandler();
             _roomMsgMgr.Init(_msgHandler);
         }
 
         public override void DoStart(){
-            if (_isReplay) return;
+            if (_noNetwork) return;
             //Utils.StartServices();
         }
 
         public void DoUpdate(LFloat deltaTime){
-            if (_isReplay) return;
+            if (_noNetwork) return;
             //Utils.UpdateServices();
             _roomMsgMgr?.DoUpdate(deltaTime);
         }
 
 
         public override void DoDestroy(){
-            if (_isReplay) return;
+            if (_noNetwork) return;
             _roomMsgMgr = null;
             _roomMsgMgr?.DoDestroy();
         }
 
 
         public void OnEvent_TryLogin(object param){
-            if (_isReplay) return;
+            if (_noNetwork) return;
             Debug.Log("OnEvent_TryLogin" + param.ToJson());
             //var loginInfo = param as LoginParam;
             //var _account = loginInfo.account;
@@ -62,25 +62,25 @@ namespace Lockstep.Game {
         }
 
         private void OnEvent_OnConnectToGameServer(object param){
-            if (_isReplay) return;
+            if (_noNetwork) return;
             var isReconnect = (bool) param;
             _constStateService.IsReconnecting = isReconnect;
         }
 
         private void OnEvent_LevelLoadProgress(object param){
-            if (_isReplay) return;
+            if (_noNetwork) return;
             _roomMsgMgr.OnLevelLoadProgress((float) param);
             CheckLoadingProgress();
         }
 
         private void OnEvent_PursueFrameProcess(object param){
-            if (_isReplay) return;
+            if (_noNetwork) return;
             _roomMsgMgr.FramePursueRate = (float) param;
             CheckLoadingProgress();
         }
 
         private void OnEvent_PursueFrameDone(object param){
-            if (_isReplay) return;
+            if (_noNetwork) return;
             _roomMsgMgr.FramePursueRate = 1;
             CheckLoadingProgress();
         }
@@ -133,27 +133,27 @@ namespace Lockstep.Game {
         #region Room Msg Handler
 
         public void SendGameEvent(byte[] data){
-            if (_isReplay) return;
+            if (_noNetwork) return;
             _roomMsgMgr.SendGameEvent(data);
         }
 
         public void SendInput(Msg_PlayerInput msg){
-            if (_isReplay) return;
+            if (_noNetwork) return;
             _roomMsgMgr.SendInput(msg);
         }
 
         public void SendMissFrameReq(int missFrameTick){
-            if (_isReplay) return;
+            if (_noNetwork) return;
             _roomMsgMgr.SendMissFrameReq(missFrameTick);
         }
 
         public void SendMissFrameRepAck(int missFrameTick){
-            if (_isReplay) return;
+            if (_noNetwork) return;
             _roomMsgMgr.SendMissFrameRepAck(missFrameTick);
         }
 
         public void SendHashCodes(int firstHashTick, List<long> allHashCodes, int startIdx, int count){
-            if (_isReplay) return;
+            if (_noNetwork) return;
             _roomMsgMgr.SendHashCodes(firstHashTick, allHashCodes, startIdx, count);
         }
 

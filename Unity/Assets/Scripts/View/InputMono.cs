@@ -5,9 +5,8 @@ using UnityEngine;
 using Debug = Lockstep.Logging.Debug;
 
 namespace LockstepTutorial {
-
     public class InputMono : UnityEngine.MonoBehaviour {
-        private static bool IsReplay => Launcher.Instance?.IsVideoMode?? false;
+        private static bool IsReplay => Launcher.Instance?.IsVideoMode ?? false;
         [HideInInspector] public int floorMask;
         public float camRayLength = 100;
 
@@ -23,7 +22,7 @@ namespace LockstepTutorial {
         }
 
         public void Update(){
-            if (World.Instance!= null && !IsReplay) {
+            if (World.Instance != null && !IsReplay) {
                 float h = Input.GetAxisRaw("Horizontal");
                 float v = Input.GetAxisRaw("Vertical");
                 inputUV = new LVector2(h.ToLFloat(), v.ToLFloat());
@@ -46,14 +45,13 @@ namespace LockstepTutorial {
                 }
 
                 isSpeedUp = Input.GetKeyDown(KeyCode.Space);
-                //World.CurGameInput =  new PlayerInput() {
-                //    mousePos = mousePos,
-                //    inputUV = inputUV,
-                //    isInputFire = isInputFire,
-                //    skillId = skillId,
-                //    isSpeedUp = isSpeedUp,
-                //};
-                //
+                GameInputService.CurGameInput = new PlayerInput() {
+                    mousePos = mousePos,
+                    inputUV = inputUV,
+                    isInputFire = isInputFire,
+                    skillId = skillId,
+                    isSpeedUp = isSpeedUp,
+                };
             }
         }
     }

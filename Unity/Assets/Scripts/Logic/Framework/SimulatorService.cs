@@ -53,8 +53,8 @@ namespace Lockstep.Game {
         private IServiceContainer _serviceContainer;
         private Msg_G2C_GameStartInfo _gameStartInfo;
 
-        public static int PingVal  ;
-        public static List<float> Delays  = new List<float>();
+        public static int PingVal;
+        public static List<float> Delays = new List<float>();
 
         public override void InitReference(IServiceContainer serviceContainer, IManagerContainer mgrContainer){
             base.InitReference(serviceContainer, mgrContainer);
@@ -111,7 +111,8 @@ namespace Lockstep.Game {
 
         void OnEvent_LevelLoadDone(object param){
             Debug.Log($"OnEvent_LevelLoadDone " + _constStateService.IsReconnecting);
-            if (_constStateService.IsReconnecting || _constStateService.IsVideoMode) {
+            if (_constStateService.IsReconnecting || _constStateService.IsVideoMode ||
+                _constStateService.IsClientMode) {
                 StartSimulate();
             }
         }
@@ -167,6 +168,16 @@ namespace Lockstep.Game {
             }
 
             if (_constStateService.IsVideoMode) {
+                return;
+            }
+
+            if (_constStateService.IsClientMode) {
+                var input = new Msg_PlayerInput(_world.Tick, _localActorId, _inputService.GetInputCmds());
+                var frame = new ServerFrame() {
+                    tick = _world.Tick,
+                    _inputs = new Msg_PlayerInput[] {input}
+                };
+                Simulate(frame);
                 return;
             }
 
@@ -262,7 +273,9 @@ namespace Lockstep.Game {
 
         private void SendInput(Msg_PlayerInput input){
             //TODO 合批次 一起发送 且连同历史未确认包一起发送
-            _networkService.SendInput(input);
+            if (!_constStateService.IsClientMode) {
+                _networkService.SendInput(input);
+            }
         }
 
 

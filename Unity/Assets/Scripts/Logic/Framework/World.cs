@@ -57,7 +57,6 @@ namespace Lockstep.Game {
             for (int i = 0; i < playerCount; i++) {
                 Debug.Trace("CreatePlayer");
                 var player = new Player() {localId = i};
-                player.input = PlayerInputs[i];
                 allPlayers.Add(player);
             }
 
@@ -68,7 +67,9 @@ namespace Lockstep.Game {
                 var initPos = LVector2.zero;//TODO
                 entitySvc.CreatePlayer(allPlayers[i], PrefabId, initPos);
             }
-
+            for (int i = 0; i < playerCount; i++) {
+                allPlayers[i].input = PlayerInputs[i];
+            }
             MyPlayer = allPlayers[localPlayerId];
         }
 
@@ -106,6 +107,8 @@ namespace Lockstep.Game {
                     system.DoUpdate(deltaTime);
                 }
             }
+
+            Tick++;
         }
  
         public void RegisterSystems(){
