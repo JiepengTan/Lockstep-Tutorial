@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using Lockstep.Game;
-using Lockstep.Logging;
 using Lockstep.Math;
 using Lockstep.Serialization;
 using Lockstep.Util;
 using NetMsg.Common;
+using UnityEngine;
+using Debug = Lockstep.Logging.Debug;
 using Msg_HashCode = NetMsg.Common.Msg_HashCode;
 using Msg_PlayerInput = NetMsg.Common.Msg_PlayerInput;
 
@@ -96,12 +97,14 @@ namespace Lockstep.Game {
 
         public void DoUpdate(LFloat deltaTime){
             if (CurGameState == EGameState.Loading) {
-                if (_nextSendLoadProgressTimer < LTime.timeSinceLevelLoad) {
+                if (_nextSendLoadProgressTimer < Time.realtimeSinceStartup) {
                     SendLoadingProgress(CurProgress);
                 }
             }
         }
         public void DoDestroy(){
+            Debug.Log("DoDestroy");
+            _netTcp.SendMessage(EMsgSC.C2L_LeaveRoom,new Msg_C2L_LeaveRoom().ToBytes() );
             _netUdp?.DoDestroy();
             _netTcp?.DoDestroy();
             _netTcp = null;
@@ -138,12 +141,12 @@ namespace Lockstep.Game {
             }
         }
 
-
+        public const float ProgressSendInterval = 0.3f;
         public void OnLevelLoadProgress(float progress){
             _curLoadProgress = progress;
             if (CurProgress >= 100) {
                 CurGameState = EGameState.PartLoaded;
-                _nextSendLoadProgressTimer += LTime.timeSinceLevelLoad + 0.5f;
+                _nextSendLoadProgressTimer = Time.realtimeSinceStartup + ProgressSendInterval;
                 SendLoadingProgress(CurProgress);
             }
         }
@@ -155,7 +158,8 @@ namespace Lockstep.Game {
             ResetStatus();
             this.helloBody = helloBody.Hello;
             ConnectUdp();
-            SendTcp(EMsgSC.L2C_JoinRoom,new Msg_C2L_JoinRoom() {
+            //TODO temp code
+            SendTcp(EMsgSC.C2L_JoinRoom,new Msg_C2L_JoinRoom() {
                 RoomId = 0
             });
         }
@@ -180,6 +184,13 @@ namespace Lockstep.Game {
             HasRecvGameDta = true;
             GameStartInfo = msg;
             _handler.OnGameStartInfo(msg);
+            //TODO temp code 
+            HasConnGameTcp = true;
+            HasConnGameUdp = true;
+            CurGameState = EGameState.Loading;
+            _curLoadProgress = 1;
+            EventHelper.Trigger(EEvent.OnGameCreate, msg);
+            Debug.Log("G2C_GameStartInfo");
         }
 
         private short curLevel;
@@ -200,6 +211,7 @@ namespace Lockstep.Game {
         }
 
         public void SendLoadingProgress(byte progress){
+            _nextSendLoadProgressTimer = Time.realtimeSinceStartup + ProgressSendInterval;
             if (!IsReconnecting) {
                 SendTcp(EMsgSC.C2G_LoadingProgress, new Msg_C2G_LoadingProgress() {
                     Progress = progress

@@ -16,7 +16,10 @@ namespace Lockstep.Game {
         private List<BaseSystem> _systems = new List<BaseSystem>();
         private bool _hasStart = false;
         public int HashCode;
-        public void RollbackTo(int tick, int missFrameTick, bool isNeedClear = true){ }
+
+        public void RollbackTo(int tick, int missFrameTick, bool isNeedClear = true){
+            Debug.Log($" curTick {Tick} RevertTo {tick} {missFrameTick} {isNeedClear}");
+        }
 
         public void StartSimulate(IServiceContainer serviceContainer, IManagerContainer mgrContainer){
             Instance = this;

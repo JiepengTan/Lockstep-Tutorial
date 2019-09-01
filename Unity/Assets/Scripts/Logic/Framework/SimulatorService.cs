@@ -90,6 +90,7 @@ namespace Lockstep.Game {
             _networkService.SendMissFrameRepAck(cmdBuffer.GetMissServerFrameTick());
         }
 
+
         void OnEvent_OnGameCreate(object param){
             if (param is Msg_G2C_Hello msg) {
                 OnGameCreate(60, msg.LocalId, msg.UserCount);
@@ -379,6 +380,7 @@ namespace Lockstep.Game {
             }
 
             _world.StartSimulate(_serviceContainer, _mgrContainer);
+            EventHelper.Trigger(EEvent.LevelLoadProgress,1f);
         }
 
         private void FillInputWithLastFrame(ServerFrame frame){

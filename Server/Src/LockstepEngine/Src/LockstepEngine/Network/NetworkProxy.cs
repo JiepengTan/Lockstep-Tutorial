@@ -219,7 +219,7 @@ namespace Lockstep.Network {
             }
 
             long id = this.Id;
-
+            IsDisposed = true;
             base.Dispose();
 
             foreach (Action<IResponse> action in this.requestCallback.Values.ToArray()) {

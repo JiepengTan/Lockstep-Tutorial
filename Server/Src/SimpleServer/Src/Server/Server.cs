@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using Lockstep.Game;
 using Lockstep.Logging;
 using Lockstep.Network;
 using Lockstep.Util;
+using NetMsg.Common;
 
-namespace Lockstep.FakeServer{
+namespace Lockstep.FakeServer {
     public class Server : IMessageDispatcher {
         //network
         public static IPEndPoint serverIpPoint = NetworkUtil.ToIPEndPoint("127.0.0.1", 10083);
@@ -19,16 +22,13 @@ namespace Lockstep.FakeServer{
         private double _timeSinceStartUp;
 
         //user mgr 
-        private Room _room;
-        private Dictionary<int, PlayerServerInfo> _id2Player = new Dictionary<int, PlayerServerInfo>();
-        private Dictionary<int, Session> _id2Session = new Dictionary<int, Session>();
-        private Dictionary<string, PlayerServerInfo> _name2Player = new Dictionary<string, PlayerServerInfo>();
+        private Game _game;
+        private Dictionary<long, Player> _id2Player = new Dictionary<long, Player>();
 
         //id
         private static int _idCounter = 0;
         private int _curCount = 0;
-        
-        
+
 
         public void Start(){
             _netProxy.MessageDispatcher = this;
@@ -39,25 +39,30 @@ namespace Lockstep.FakeServer{
 
         public void Dispatch(Session session, Packet packet){
             ushort opcode = packet.Opcode();
-            var message = session.Network.MessagePacker.DeserializeFrom(opcode, packet.Bytes, Packet.Index,
-                packet.Length - Packet.Index) as IMessage;
-            //var msg = JsonUtil.ToJson(message);
-            //Log.sLog("Server " + msg);
-            var type = (EMsgType) opcode;
-            switch (type) {
-                case EMsgType.JoinRoom:
-                    OnPlayerConnect(session, message);
-                    break;
-                case EMsgType.QuitRoom:
-                    OnPlayerQuit(session, message);
-                    break;
-                case EMsgType.PlayerInput:
-                    OnPlayerInput(session, message);
-                    break;
-                case EMsgType.HashCode:
-                    OnPlayerHashCode(session, message);
-                    break;
+            if (opcode == 39) { 
+                int i = 0;
             }
+
+            var message = session.Network.MessagePacker.DeserializeFrom(opcode, packet.Bytes, Packet.Index,
+                packet.Length - Packet.Index);
+            OnNetMsg(session, opcode, message as BaseMsg);
+        }
+
+        void OnNetMsg(Session session, ushort opcode, BaseMsg msg){
+            var type = (EMsgSC) opcode;
+            switch (type) {
+                //login
+                // case EMsgSC.L2C_JoinRoomResult: 
+                case EMsgSC.C2L_JoinRoom:
+                    OnPlayerConnect(session, msg);
+                    return;
+                case EMsgSC.C2L_LeaveRoom:
+                    OnPlayerQuit(session, msg);
+                    return;
+                //room
+            }
+            var player = session.GetBindInfo<Player>();
+            _game?.OnNetMsg(player, opcode, msg);
         }
 
         public void Update(){
@@ -74,71 +79,46 @@ namespace Lockstep.FakeServer{
             //check frame inputs
             var fDeltaTime = (float) _deltaTime;
             var fTimeSinceStartUp = (float) _timeSinceStartUp;
-            _room?.DoUpdate(fTimeSinceStartUp, fDeltaTime);
+            _game?.DoUpdate(fDeltaTime);
         }
 
 
-        void OnPlayerConnect(Session session, IMessage message){
+        void OnPlayerConnect(Session session, BaseMsg message){
             //TODO load from db
-            
-            var msg = message as Msg_JoinRoom;
-            msg.name = msg.name + _idCounter;
-            var name = msg.name;
-            if (_name2Player.TryGetValue(name, out var val)) {
-                return;
-            }
-
-            var info = new PlayerServerInfo();
-            info.Id = _idCounter++;
-            info.name = name;
-            _name2Player[name] = info;
-            _id2Player[info.Id] = info;
-            _id2Session[info.Id] = session;
+            var info = new Player();
+            info.UserId = _idCounter++;
+            info.PeerTcp = session;
+            info.PeerUdp = session;
+            _id2Player[info.UserId] = info;
             session.BindInfo = info;
             _curCount++;
-            if (_curCount >= Room.MaxPlayerCount) {
-                _room = new Room();
-                _room.Init(0);
+            if (_curCount >= Game.MaxPlayerCount) {
+                //TODO temp code
+                _game = new Game();
+                var players = new Player[_curCount];
+                int i = 0;
                 foreach (var player in _id2Player.Values) {
-                    _room.OnPlayerJoin(_id2Session[player.Id], player);
+                    player.LocalId = (byte) i;
+                    player.Game = _game;
+                    players[i] = player;
+                    i++;
                 }
-
-                OnGameStart(_room);
+                _game.DoStart(0, 0, 0, players, "123");
             }
-            Debug.Log("OnPlayerConnect count:" + _curCount + " " + JsonUtil.ToJson(msg));
+
+            Debug.Log("OnPlayerConnect count:" + _curCount + " ");
         }
 
-        void OnPlayerQuit(Session session, IMessage message){
-            Debug.Log("OnPlayerQuit count:" + _curCount);
-            var player = session.GetBindInfo<PlayerServerInfo>();
+        void OnPlayerQuit(Session session, BaseMsg message){
+            var player = session.GetBindInfo<Player>();
             if (player == null)
                 return;
-            _id2Player.Remove(player.Id);
-            _name2Player.Remove(player.name);
-            _id2Session.Remove(player.Id);
             _curCount--;
-            if (_curCount == 0) { 
-                _room = null;
+            Debug.Log("OnPlayerQuit count:" + _curCount);
+            _id2Player.Remove(player.UserId);
+            if (_curCount == 0) {
+                _game = null;
             }
-        }
-
-        void OnPlayerInput(Session session, IMessage message){
-            var msg = message as Msg_PlayerInput;
-            var player = session.GetBindInfo<PlayerServerInfo>();
-            _room?.OnPlayerInput(player.Id, msg);
-        }
-        void OnPlayerHashCode(Session session, IMessage message){
-            var msg = message as Msg_HashCode;
-            var player = session.GetBindInfo<PlayerServerInfo>();
-            _room?.OnPlayerHashCode(player.Id, msg);
-        }
-
-        void OnGameStart(Room room){
-            if (room.IsRunning) {
-                return;
-            }
-
-            room.OnGameStart();
         }
     }
 }

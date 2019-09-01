@@ -35,6 +35,7 @@ namespace Lockstep.Game {
 
         public override void DoStart(){
             if (_noNetwork) return;
+            _roomMsgMgr.ConnectToGameServer(new Msg_C2G_Hello(), null,false);
             //Utils.StartServices();
         }
 
@@ -47,8 +48,8 @@ namespace Lockstep.Game {
 
         public override void DoDestroy(){
             if (_noNetwork) return;
-            _roomMsgMgr = null;
             _roomMsgMgr?.DoDestroy();
+            _roomMsgMgr = null;
         }
 
 

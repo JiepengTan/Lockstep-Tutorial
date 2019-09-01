@@ -46,6 +46,7 @@ namespace Lockstep.Game {
         public object transform;
 
         public void DoAwake(IServiceContainer services){
+            Utils.StartServices();
             if (Instance != null) {
                 Debug.LogError("LifeCycle Error: Awake more than once!!");
                 return;
@@ -126,11 +127,11 @@ namespace Lockstep.Game {
                 GameStartInfo = _serviceContainer.GetService<IGameConfigService>().ClientModeInfo;
                 EventHelper.Trigger(EEvent.OnGameCreate, GameStartInfo);
                 EventHelper.Trigger(EEvent.LevelLoadDone, GameStartInfo);
-                
             }
         }
 
         public void DoUpdate(float fDeltaTime){
+            Utils.UpdateServices();
             var deltaTime = fDeltaTime.ToLFloat();
             _networkService.DoUpdate(deltaTime);
             if (IsVideoMode && IsRunVideo && CurTick < MaxRunTick) {

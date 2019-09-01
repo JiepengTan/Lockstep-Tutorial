@@ -33,7 +33,7 @@ namespace Lockstep.Game{
         public void Dispatch(Session session, Packet packet){
             ushort opcode = packet.Opcode();
             var message = session.Network.MessagePacker.DeserializeFrom(opcode, packet.Bytes, Packet.Index,
-                packet.Length - Packet.Index) as IMessage;
+                packet.Length - Packet.Index);
             NetMsgHandler?.Invoke(opcode,message);
         }
 
