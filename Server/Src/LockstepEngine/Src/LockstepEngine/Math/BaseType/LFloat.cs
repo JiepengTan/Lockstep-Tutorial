@@ -217,12 +217,19 @@ namespace Lockstep.Math {
         #endregion
 
         #region override type convert 
-
-        public static explicit operator LFloat(int value){
+        public static implicit operator LFloat(short value){
             return new LFloat(true,value * Precision);
         }
 
-        public static explicit operator int(LFloat value){
+        public static explicit operator short(LFloat value){
+            return (short)(value._val / Precision);
+        }
+        
+        public static implicit operator LFloat(int value){
+            return new LFloat(true,value * Precision);
+        }
+
+        public static implicit operator int(LFloat value){
             return value._val / Precision;
         }
 
@@ -230,7 +237,7 @@ namespace Lockstep.Math {
             return new LFloat(true,value * Precision);
         }
 
-        public static explicit operator long(LFloat value){
+        public static implicit operator long(LFloat value){
             return value._val / Precision;
         }
 

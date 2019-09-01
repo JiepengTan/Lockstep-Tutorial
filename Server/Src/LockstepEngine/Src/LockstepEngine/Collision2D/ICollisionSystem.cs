@@ -6,7 +6,7 @@ namespace Lockstep.Collision2D {
     public delegate void FuncCollision(ColliderProxy obj);
 
     public interface ICollisionSystem {
-        void DoStart(int[][] interestingMasks, int[] allTypes);
+        void DoStart(bool[] interestingMasks, int[] allTypes);
         void DoUpdate(LFloat deltaTime);
         ColliderProxy GetCollider(int id);
         void AddCollider(ColliderProxy collider);

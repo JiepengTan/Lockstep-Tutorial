@@ -32,7 +32,7 @@ namespace NetMsg.Common {
     }
     
     //msg between client RoomServer
-    public enum EMsgSC : short {
+    public enum EMsgSC : ushort {
         //GC 
         //!! please ensure udp msg's id < 255
         //Room msg

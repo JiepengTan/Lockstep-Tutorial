@@ -1,13 +1,14 @@
 using System;
 using Lockstep.Collision2D;
+using Lockstep.Logging;
 using Lockstep.Math;
 
-namespace Lockstep.Logic {
+namespace Lockstep.Game {
     public delegate void OnFloorResultCallback(bool isOnFloor);
 
     [Serializable]
     public class CRigidbody {
-        public CTransform2D transform2D;
+        public CTransform2D transform { get; private set; }
         public static LFloat G = new LFloat(10);
         public static LFloat MinSleepSpeed = new LFloat(true, 100);
         public static LFloat FloorFriction = new LFloat(20);
@@ -21,15 +22,24 @@ namespace Lockstep.Logic {
         public bool isEnable = true;
         public bool isSleep = false;
         public bool isOnFloor;
+
+        public void Init(CTransform2D transform2D){
+            this.transform = transform2D;
+        }
+
+        //private int __id;
+        //private static int __idCount;
         public void DoStart(){
+            //__id = __idCount++;
             LFloat y = LFloat.zero;
-            isOnFloor = TestOnFloor(transform2D.Pos3, ref y);
+            isOnFloor = TestOnFloor(transform.Pos3, ref y);
+            Speed = LVector3.zero;
             isSleep = isOnFloor;
         }
 
         public void DoUpdate(LFloat deltaTime){
             if (!isEnable) return;
-            if (!TestOnFloor(transform2D.Pos3)) {
+            if (!TestOnFloor(transform.Pos3)) {
                 isSleep = false;
             }
 
@@ -39,11 +49,11 @@ namespace Lockstep.Logic {
                     Speed.y = LMath.Max(MinYSpd, Speed.y);
                 }
 
-                var pos = transform2D.Pos3;
+                var pos = transform.Pos3;
                 pos += Speed * deltaTime;
                 LFloat y = pos.y;
                 //Test floor
-                isOnFloor = TestOnFloor(transform2D.Pos3, ref y);
+                isOnFloor = TestOnFloor(transform.Pos3, ref y);
                 if (isOnFloor && Speed.y <=0) {
                     Speed.y = LFloat.zero;
                 }
@@ -66,7 +76,7 @@ namespace Lockstep.Logic {
                     }
                 }
 
-                transform2D.Pos3 = pos;
+                transform.Pos3 = pos;
             }
         }
 
@@ -74,6 +84,7 @@ namespace Lockstep.Logic {
         public void AddImpulse(LVector3 force){
             isSleep = false;
             Speed += force / Mass;
+            //Debug.Log(__id+ " AddImpulse " + force  +" after " + Speed);
         }
         public void ResetSpeed(LFloat ySpeed){
             Speed = LVector3.zero;

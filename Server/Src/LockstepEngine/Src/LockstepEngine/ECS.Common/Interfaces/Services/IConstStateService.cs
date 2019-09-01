@@ -6,7 +6,7 @@ namespace Lockstep.Game {
         bool IsVideoLoading { get; set; }
         bool IsVideoMode { get; set; }
         bool IsRunVideo { get; set; }
-        bool IsDebugMode { get; set; }
+        bool IsClientMode { get; set; }
         
         /// 是否正在重连
         bool IsReconnecting { get; set; }
@@ -17,7 +17,6 @@ namespace Lockstep.Game {
         
         int CurLevel { get; set; }
         IContexts Contexts { get; set; }
-
         int SnapshotFrameInterval { get; set; }
         EPureModeType RunMode { get; set; }
         string ClientConfigPath { get; }

@@ -20,7 +20,7 @@ namespace Lockstep.ECS {
             _name2Idx = name2Idx;
         }
 
-        public virtual void SetComponentsTo(Entity targetEntity){
+        public virtual void SetComponentsTo(object targetEntity){
 #if false
             var allMemberInfos = this.GetType().GetPublicMemberInfos();
             foreach (var memberInfo in allMemberInfos) {

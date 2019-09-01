@@ -1,6 +1,8 @@
 using System;
 using Lockstep.Math;
+#if UNITY_5_3_OR_NEWER
 using UnityEngine;
+#endif
 
 namespace Lockstep.Collision2D {
 #if UNITY_5_3_OR_NEWER

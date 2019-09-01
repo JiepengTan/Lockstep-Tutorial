@@ -1,5 +1,5 @@
 namespace Lockstep.Game {
-    public interface ISimulation : IService {
+    public interface ISimulatorService : IService {
         void RunVideo();
         void JumpTo(int tick);
     }

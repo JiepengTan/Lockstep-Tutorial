@@ -21,7 +21,7 @@ namespace Lockstep.Collision2D {
         private Dictionary<int, ColliderProxy> id2Proxy = new Dictionary<int, ColliderProxy>();
         private HashSet<long> _curPairs = new HashSet<long>();
         private HashSet<long> _prePairs = new HashSet<long>();
-        public const int LayerCount = 32;
+        public const int MaxLayerCount = 32;
         private List<ColliderProxy> tempLst = new List<ColliderProxy>();
 
         public FuncGlobalOnTriggerEvent funcGlobalOnTriggerEvent;
@@ -32,9 +32,11 @@ namespace Lockstep.Collision2D {
 
 
         public int[] AllTypes;
-        public int[][] InterestingMasks;
+        public bool[] InterestingMasks;
+        public int LayerCount;
 
-        public void DoStart(int[][] interestingMasks, int[] allTypes){
+        public void DoStart(bool[] interestingMasks, int[] allTypes){
+            LayerCount = allTypes.Length;
             this.InterestingMasks = interestingMasks;
             this.AllTypes = allTypes;
             //init _collisionMask//TODO read from file
@@ -151,10 +153,11 @@ namespace Lockstep.Collision2D {
             foreach (var val in tempLst) {
                 val.IsMoved = false;
                 var bound = val.GetBounds();
-                var targetLayers = InterestingMasks[val.LayerType];
-                foreach (var layerType in targetLayers) {
-                    var boundsTree = GetBoundTree(layerType);
-                    boundsTree.CheckCollision(val, bound);
+                for (int i = 0; i < LayerCount; i++) {
+                    if (InterestingMasks[val.LayerType * LayerCount + i]) {
+                        var boundsTree = GetBoundTree(i);
+                        boundsTree.CheckCollision(val, bound);
+                    }
                 }
             }
 

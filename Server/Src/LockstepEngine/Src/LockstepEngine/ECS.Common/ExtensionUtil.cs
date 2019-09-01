@@ -6,7 +6,7 @@ using Lockstep.Math;
 
 namespace Lockstep.ECS {
     public static class ExtensionUtil {
-        public static void CopyTo(this Entity srcEntity, Entity destEntity, int componentIndex){
+        public static void CopyTo(this object srcEntity, object destEntity, int componentIndex){
 #if false
             var component1 = srcEntity.GetComponent(componentIndex);
             Stack<IComponent> componentPool = destEntity.GetComponentPool(componentIndex);
