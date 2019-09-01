@@ -2,6 +2,7 @@ using System;
 using Lockstep.Collision2D;
 using Lockstep.Game;
 using Lockstep.Math;
+using Lockstep.Serialization;
 
 namespace Lockstep.Game {
     [Serializable]

@@ -1,8 +1,9 @@
 using System;
+using Lockstep.Game;
 using Lockstep.Math;
 
 namespace LockstepTutorial {
-    public class Spawner {
+    public partial class Spawner : IEntity {
         public SpawnerInfo info;
         public Action<int, LVector3> OnSpawnEvent;
 

@@ -4,7 +4,7 @@ using Lockstep.Math;
 
 namespace LockstepTutorial {
     [Serializable]
-    public class CBrain : Component {
+    public partial class CBrain : Component {
         public Entity target { get; private set; }
         public LFloat stopDistSqr = 1 * 1;
         public LFloat atkInterval = 1;

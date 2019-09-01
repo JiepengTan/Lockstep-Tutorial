@@ -4,7 +4,7 @@ using Debug = Lockstep.Logging.Debug;
 
 namespace LockstepTutorial {
     [Serializable]
-    public class Enemy : Entity {
+    public partial class Enemy : Entity {
         public CBrain brain = new CBrain();
 
         public Enemy(){

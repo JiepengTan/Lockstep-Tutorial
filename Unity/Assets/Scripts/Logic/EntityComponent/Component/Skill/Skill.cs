@@ -13,6 +13,9 @@ using UnityEngine;
 #endif
 using Debug = Lockstep.Logging.Debug;
 
+namespace Lockstep.Game {}
+
+
 namespace LockstepTutorial {
     public interface ISkillEventHandler {
         void OnSkillStart(Skill skill);
@@ -21,7 +24,7 @@ namespace LockstepTutorial {
     }
 
     [Serializable]
-    public class Skill {
+    public partial class Skill {
         public enum ESkillState {
             Idle,
             Firing,
@@ -29,9 +32,20 @@ namespace LockstepTutorial {
 
         private static readonly HashSet<ColliderProxy> _tempTargets = new HashSet<ColliderProxy>();
 
-        public ISkillEventHandler eventHandler;
-        public Entity entity { get; private set; }
-        public SkillInfo SkillInfo;
+        [ReRefBackup] public ISkillEventHandler eventHandler;
+        [ReRefBackup] public Entity entity { get; private set; }
+        [ReRefBackup] public SkillInfo SkillInfo;
+
+        public LFloat CdTimer;
+        public ESkillState State;
+        public LFloat skillTimer;
+        [Backup] private int _curPartIdx;
+
+        public SkillPart CurPart => _curPartIdx == -1 ? null : Parts[_curPartIdx];
+#if DEBUG_SKILL
+        private float _showTimer;
+#endif
+
         public LFloat CD => SkillInfo.CD;
         public LFloat DoneDelay => SkillInfo.doneDelay;
         public List<SkillPart> Parts => SkillInfo.parts;
@@ -39,36 +53,27 @@ namespace LockstepTutorial {
         public LFloat MaxPartTime => SkillInfo.maxPartTime;
         public string AnimName => SkillInfo.animName;
 
-        public LFloat CdTimer;
-        public ESkillState _state;
-        private LFloat _skillTimer;
-        private SkillPart _curPart;
-
-#if DEBUG_SKILL
-        private float _showTimer;
-#endif
-
         public void ForceStop(){ }
 
         public void DoStart(Entity entity, SkillInfo info, ISkillEventHandler eventHandler){
             this.entity = entity;
             this.SkillInfo = info;
             this.eventHandler = eventHandler;
-            _skillTimer = MaxPartTime;
-            _state = ESkillState.Idle;
-            _curPart = null;
+            skillTimer = MaxPartTime;
+            State = ESkillState.Idle;
+            _curPartIdx = -1;
         }
 
 
         public bool Fire(){
-            if (CdTimer <= 0 && _state == ESkillState.Idle) {
+            if (CdTimer <= 0 && State == ESkillState.Idle) {
                 CdTimer = CD;
-                _skillTimer = LFloat.zero;
+                skillTimer = LFloat.zero;
                 foreach (var part in Parts) {
                     part.counter = 0;
                 }
 
-                _state = ESkillState.Firing;
+                State = ESkillState.Firing;
                 entity.animator?.Play(AnimName);
                 ((Player) entity).mover.needMove = false;
                 OnFire();
@@ -84,41 +89,44 @@ namespace LockstepTutorial {
 
         public void Done(){
             eventHandler.OnSkillDone(this);
-            _state = ESkillState.Idle;
+            State = ESkillState.Idle;
             entity.animator?.Play(AnimDefine.Idle);
         }
 
         public void DoUpdate(LFloat deltaTime){
             CdTimer -= deltaTime;
-            _skillTimer += deltaTime;
-            if (_skillTimer < MaxPartTime) {
-                foreach (var part in Parts) {
-                    CheckSkillPart(part);
+            skillTimer += deltaTime;
+            if (skillTimer < MaxPartTime) {
+                for (int i = 0; i < Parts.Count; i++) {
+                    var part = Parts[i];
+                    CheckSkillPart(part, i);
                 }
 
-                if (_curPart != null && _curPart.moveSpd != 0) {
-                    entity.transform.pos += _curPart.moveSpd * deltaTime * entity.transform.forward;
+                foreach (var part in Parts) { }
+
+                if (CurPart != null && CurPart.moveSpd != 0) {
+                    entity.transform.pos += CurPart.moveSpd * deltaTime * entity.transform.forward;
                 }
             }
             else {
-                _curPart = null;
-                if (_state == ESkillState.Firing) {
+                _curPartIdx = -1;
+                if (State == ESkillState.Firing) {
                     Done();
                 }
             }
         }
 
-        void CheckSkillPart(SkillPart part){
+        void CheckSkillPart(SkillPart part, int idx){
             if (part.counter > part.otherCount) return;
-            if (_skillTimer > part.NextTriggerTimer()) {
-                TriggerPart(part);
+            if (skillTimer > part.NextTriggerTimer()) {
+                TriggerPart(part, idx);
                 part.counter++;
             }
         }
 
-        void TriggerPart(SkillPart part){
+        void TriggerPart(SkillPart part, int idx){
             eventHandler.OnSkillPartStart(this);
-            _curPart = part;
+            _curPartIdx = idx;
 #if DEBUG_SKILL
             _showTimer = Time.realtimeSinceStartup + 0.1f;
 #endif
@@ -137,7 +145,7 @@ namespace LockstepTutorial {
             }
 
             foreach (var other in _tempTargets) {
-                other.Entity.TakeDamage(_curPart.damage, other.Entity.transform.pos.ToLVector3());
+                other.Entity.TakeDamage(CurPart.damage, other.Entity.transform.pos.ToLVector3());
             }
 
             //add force
@@ -164,10 +172,10 @@ namespace LockstepTutorial {
 
 
         private void _OnTriggerEnter(ColliderProxy other){
-            if (_curPart.collider.IsCircle && _curPart.collider.deg > 0) {
+            if (CurPart.collider.IsCircle && CurPart.collider.deg > 0) {
                 var deg = (other.Transform2D.pos - entity.transform.pos).ToDeg();
                 var degDiff = entity.transform.deg.Abs() - deg;
-                if (LMath.Abs(degDiff) <= _curPart.collider.deg) {
+                if (LMath.Abs(degDiff) <= CurPart.collider.deg) {
                     _tempTargets.Add(other);
                 }
             }
@@ -182,12 +190,12 @@ namespace LockstepTutorial {
             Gizmos.color = new Color(0, 1.0f - tintVal, tintVal, 0.25f);
             if (Application.isPlaying) {
                 if (entity == null) return;
-                if (_curPart == null) return;
+                if (CurPart == null) return;
                 if (_showTimer < Time.realtimeSinceStartup) {
                     return;
                 }
 
-                ShowPartGizmons(_curPart);
+                ShowPartGizmons(CurPart);
             }
             else {
                 foreach (var part in Parts) {

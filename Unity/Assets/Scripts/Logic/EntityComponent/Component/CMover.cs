@@ -7,7 +7,7 @@ namespace LockstepTutorial {
     
     [Serializable]
     public partial class CMover : Component {
-        public Player player { get; private set; }
+        public Player player => (Player) entity;
         public PlayerInput input => player.input;
 
         
@@ -16,11 +16,6 @@ namespace LockstepTutorial {
         public bool hasReachTarget = false;
         public bool needMove = true;
 
-        public override void BindEntity(BaseEntity entity){
-            base.BindEntity(entity);
-            player = (Player) entity;
-        }
-        
         public override void DoUpdate(LFloat deltaTime){
             if (!entity.rigidbody.isOnFloor) {
                 return;

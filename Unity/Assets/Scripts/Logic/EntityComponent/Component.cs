@@ -4,7 +4,7 @@ using Lockstep.Game;
 namespace LockstepTutorial {
     
     [Serializable]
-    public class Component : BaseComponent {
+    public partial class Component : BaseComponent {
         public Entity entity { get; private set; }
         public IGameStateService GameStateService => entity.GameStateService;
 

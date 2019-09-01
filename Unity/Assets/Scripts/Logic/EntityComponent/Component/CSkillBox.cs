@@ -6,20 +6,19 @@ using Lockstep.Math;
 
 namespace LockstepTutorial {
     [Serializable]
-    public class CSkillBox : Component, ISkillEventHandler {
+    public partial class CSkillBox : Component, ISkillEventHandler {
         public SkillBoxConfig config;
         public bool isFiring;
-        public Skill curSkill;
-        private int curSkillIdx = 0;
+        public Skill curSkill => (_curSkillIdx >= 0) ? skills[_curSkillIdx] : null;
+        [Backup] private int _curSkillIdx = 0;
 
 #if UNITY_EDITOR
         [UnityEngine.SerializeField]
 #endif
-        private List<Skill> skills;
+        [Backup] private List<Skill> skills = new List<Skill>();
 
         public override void DoStart(){
             base.DoStart();
-            skills = new List<Skill>();
             if (config != null) {
                 config.CheckInit();
                 foreach (var info in config.skillInfos) {
@@ -46,17 +45,17 @@ namespace LockstepTutorial {
             if (isFiring) return false; //
             var skill = skills[idx];
             if (skill.Fire()) {
-                curSkillIdx = idx;
+                _curSkillIdx = idx;
                 return true;
             }
 
-            Debug.Log($"TryFire failure {idx} {skill.CdTimer}  {skill._state}");
+            Debug.Log($"TryFire failure {idx} {skill.CdTimer}  {skill.State}");
             return false;
         }
 
         public void ForceStop(int idx = -1){
             if (idx == -1) {
-                idx = curSkillIdx;
+                idx = _curSkillIdx;
             }
 
             if (idx < 0 || idx > skills.Count) {
@@ -64,22 +63,18 @@ namespace LockstepTutorial {
             }
 
             if (curSkill != null) {
-                if (curSkill == skills[idx]) {
-                    curSkill.ForceStop();
-                }
+                curSkill.ForceStop();
             }
         }
 
         public void OnSkillStart(Skill skill){
             Debug.Log("OnSkillStart " + skill.SkillInfo.animName);
-            curSkill = skill;
             isFiring = true;
             entity.isInvincible = true;
         }
 
         public void OnSkillDone(Skill skill){
             Debug.Log("OnSkillDone " + skill.SkillInfo.animName);
-            curSkill = null;
             isFiring = false;
             entity.isInvincible = false;
         }

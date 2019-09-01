@@ -9,15 +9,16 @@ using Debug = Lockstep.Logging.Debug;
 
 namespace Lockstep.Game {
     [Serializable]
-    public class BaseEntity : BaseLifeCycle, IEntity, ILPTriggerEventHandler {
+    public partial class BaseEntity : BaseLifeCycle, IEntity, ILPTriggerEventHandler {
         public static int IdCounter { get; private set; }
         public int EntityId { get; private set; }
         public int PrefabId;
-        public object engineTransform;
         public CTransform2D transform { get; } = new CTransform2D();
         public CRigidbody rigidbody = new CRigidbody();
         public ColliderData colliderData = new ColliderData();
         protected List<BaseComponent> allComponents = new List<BaseComponent>();
+
+        [NoBackup] public object engineTransform;
 
         public BaseEntity(){
             Debug.Trace("BaseEntity  " + IdCounter.ToString(), true);
