@@ -1,17 +1,21 @@
+using System;
 using System.Net;
 using Lockstep.Network;
+using Lockstep.Serialization;
 using LockstepTutorial;
+using NetMsg.Common;
 
 namespace Lockstep.Game{
     public class NetClient : IMessageDispatcher {
         public static IPEndPoint serverIpPoint = NetworkUtil.ToIPEndPoint("127.0.0.1", 10083);
         private NetOuterProxy net = new NetOuterProxy();
         public Session Session;
+        public Action<ushort, object> NetMsgHandler;
 
         private int count = 0;
         public int id;
 
-        public void Start(){
+        public void DoStart(){
             net.Awake(NetworkProtocol.TCP);
             net.MessageDispatcher = this;
             net.MessagePacker = MessagePacker.Instance;
@@ -19,34 +23,27 @@ namespace Lockstep.Game{
             Session.Start();
         }
 
+        public void DoDestroy(){
+            if (Session != null) {
+                net.Dispose();
+                Session = null;
+            }
+        }
 
         public void Dispatch(Session session, Packet packet){
             ushort opcode = packet.Opcode();
             var message = session.Network.MessagePacker.DeserializeFrom(opcode, packet.Bytes, Packet.Index,
                 packet.Length - Packet.Index) as IMessage;
-            var type = (EMsgType) opcode;
-            switch (type) {
-                case EMsgType.FrameInput:
-                    OnFrameInput(session, message);
-                    break;
-                case EMsgType.StartGame:
-                    OnStartGame(session, message);
-                    break;
-            }
+            NetMsgHandler?.Invoke(opcode,message);
         }
 
-        public void OnFrameInput(Session session, IMessage message){
-            var msg = message as Msg_FrameInput;
-            Simulator.PushFrameInput(msg.input);
-        }
-
-        public void OnStartGame(Session session, IMessage message){
-            var msg = message as Msg_StartGame;
-            Simulator.StartGame(msg);
-        }
 
         public void Send(IMessage msg){
             Session.Send(msg);
         }
+        public void SendMessage(EMsgSC type, byte[] bytes){
+            Session?.Send(0x00, (ushort) type, bytes);
+        }
+        
     }
 }

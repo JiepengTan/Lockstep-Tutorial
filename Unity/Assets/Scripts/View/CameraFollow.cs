@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Lockstep.Game;
 
 namespace LockstepTutorial {
     public class CameraFollow : MonoBehaviour {
@@ -22,7 +23,7 @@ namespace LockstepTutorial {
 
         void FixedUpdate(){
             if (_target == null) {
-                target = Simulator.MyPlayerTrans;
+                target = World.MyPlayerTrans as Transform;
             }
 
             if (_target == null) return;

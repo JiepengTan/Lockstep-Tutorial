@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Lockstep.ECS;
 using Lockstep.Math;
 using LockstepTutorial;
+using NetMsg.Common;
 
 namespace Lockstep.Game {
     public interface IGameConfigService : IService {
@@ -13,5 +14,6 @@ namespace Lockstep.Game {
         SpawnerConfig SpawnerConfig { get; }
 
         string RecorderFilePath { get; }
+        Msg_G2C_GameStartInfo ClientModeInfo{ get; }
     }
 }

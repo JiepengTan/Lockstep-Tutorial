@@ -24,6 +24,7 @@ namespace Lockstep {
         OnLoadingProgress,//Server notify load progress
         OnAllPlayerFinishedLoad,//Server notify all user finished load
         SimulationStart,//client start game lifecycle
+        OnGameStartInfo,
         
         PursueFrameProcess,//追帧进度
         PursueFrameDone,//追帧进度

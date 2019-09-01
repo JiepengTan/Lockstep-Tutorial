@@ -9,7 +9,7 @@ namespace Lockstep.Game {
         }
 
         public bool IsVideoLoading { get; set; }
-        public bool IsReplay { get; set; }
+        public bool IsVideoMode { get; set; }
         public bool IsRunVideo { get; set; }
         public bool IsClientMode { get; set; }
         public bool IsReconnecting { get; set; }

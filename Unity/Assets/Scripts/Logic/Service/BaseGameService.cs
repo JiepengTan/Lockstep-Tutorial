@@ -11,7 +11,7 @@ namespace Lockstep.Game {
     public abstract class BaseGameService : BaseService,IBaseGameManager {
         
         protected INetworkService _networkService;
-        protected ISimulation _simulationService;
+        protected ISimulatorService SimulatorServiceService;
         protected IUIService _uiService;
         
         protected IGameStateService _gameStateService;
@@ -25,7 +25,7 @@ namespace Lockstep.Game {
             base.InitReference(serviceContainer,mgrContainer);
             
             _networkService = serviceContainer.GetService<INetworkService>();
-            _simulationService = serviceContainer.GetService<ISimulation>();
+            SimulatorServiceService = serviceContainer.GetService<ISimulatorService>();
             _uiService = serviceContainer.GetService<IUIService>();
             
             _gameEffectService = serviceContainer.GetService<IGameEffectService>();

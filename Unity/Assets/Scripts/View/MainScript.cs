@@ -5,23 +5,23 @@ using UnityEngine;
 
 
 public class MainScript : MonoBehaviour {
-    private Launcher launcher;
-    public bool IsClientMode = false;
+    public Launcher launcher = new Launcher();
     public int MaxEnemyCount = 10;
-    [Header("Recorder")] public bool IsReplay = false;
-    public string recordFilePath;
+    public bool IsClientMode = false;
+    public bool IsRunVideo;
+    public bool IsVideoMode = false;
+    public string RecordFilePath;
 
     private ServiceContainer _serviceContainer;
 
     private void Awake(){
-        launcher = new Launcher();
         gameObject.AddComponent<PingMono>();
         gameObject.AddComponent<InputMono>();
         EnemySystem.maxCount = MaxEnemyCount;
         _serviceContainer = new UnityServiceContainer();
         _serviceContainer.GetService<IConstStateService>().GameName = "ARPGDemo";
         _serviceContainer.GetService<IConstStateService>().IsClientMode = IsClientMode;
-        _serviceContainer.GetService<IConstStateService>().IsReplay = IsReplay;
+        _serviceContainer.GetService<IConstStateService>().IsVideoMode = IsVideoMode;
         Lockstep.Logging.Logger.OnMessage += UnityLogHandler.OnLog;
         Screen.SetResolution(1024, 768, false);
 
@@ -45,6 +45,7 @@ public class MainScript : MonoBehaviour {
     }
 
     private void Update(){
+        _serviceContainer.GetService<IConstStateService>().IsRunVideo = IsVideoMode;
         launcher.DoUpdate(Time.deltaTime);
     }
 

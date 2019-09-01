@@ -90,7 +90,7 @@ namespace LockstepTutorial {
 
         public static bool Raycast(int layerMask, Ray2D ray, out LRaycastHit2D ret, LFloat maxDistance){
             ret = new LRaycastHit2D();
-            LFloat t = LFloat.one;
+            LFloat t = LFloat.one; 
             int id;
             if (_instance.DoRaycast(layerMask, ray, out t, out id, maxDistance)) {
                 ret.point = ray.origin + ray.direction * t;

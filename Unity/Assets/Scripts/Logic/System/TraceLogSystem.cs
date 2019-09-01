@@ -8,9 +8,9 @@ namespace LockstepTutorial {
         StringBuilder _dumpSb = new StringBuilder();
 
         public override void DoUpdate(LFloat deltaTime){
-            _dumpSb.AppendLine("Tick: " + Simulator.Instance.curFrameIdx);
+            _dumpSb.AppendLine("Tick: " + World.Instance.Tick);
             //trace input
-            foreach (var input in Simulator.Instance.curFrameInput.inputs) {
+            foreach (var input in World.Instance.PlayerInputs) {
                 DumpInput(input);
             }
 

@@ -4,7 +4,7 @@ using Lockstep.Math;
 namespace Lockstep.Game {
     public interface IConstStateService : IService {
         bool IsVideoLoading { get; set; }
-        bool IsReplay { get; set; }
+        bool IsVideoMode { get; set; }
         bool IsRunVideo { get; set; }
         bool IsClientMode { get; set; }
         

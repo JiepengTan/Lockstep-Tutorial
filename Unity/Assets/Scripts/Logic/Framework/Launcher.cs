@@ -4,6 +4,7 @@ using System.Reflection;
 using Lockstep.Math;
 using Lockstep.Util;
 using LockstepTutorial;
+using NetMsg.Common;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -26,9 +27,22 @@ namespace Lockstep.Game {
         private ManagerContainer _mgrContainer;
         private TimeMachineContainer _timeMachineContainer;
         private IEventRegisterService _registerService;
-        public MainManager _mainManager = new MainManager();
 
-        public EPureModeType RunMode = EPureModeType.Unity; //纯净模式  不含Unity 相关的代码
+        public string RecordPath;
+        public int MaxRunTick = int.MaxValue;
+        public Msg_G2C_GameStartInfo GameStartInfo;
+        public Msg_RepMissFrame FramesInfo;
+
+        public int JumpToTick = 10;
+
+        private SimulatorService _simulatorService = new SimulatorService();
+        private NetworkService _networkService = new NetworkService();
+
+        private IConstStateService _constStateService;
+        public bool IsRunVideo => _constStateService.IsRunVideo;
+        public bool IsVideoMode => _constStateService.IsVideoMode;
+        public bool IsClientMode => _constStateService.IsClientMode;
+
         public object transform;
 
         public void DoAwake(IServiceContainer services){
@@ -58,7 +72,6 @@ namespace Lockstep.Game {
 
 
         public void DoStart(){
-            _mainManager.InitReference(_serviceContainer, _mgrContainer);
             foreach (var mgr in _mgrContainer.AllMgrs) {
                 mgr.InitReference(_serviceContainer, _mgrContainer);
             }
@@ -72,17 +85,61 @@ namespace Lockstep.Game {
             foreach (var mgr in _mgrContainer.AllMgrs) {
                 mgr.DoAwake(_serviceContainer);
             }
-            _mainManager.DoAwake(_serviceContainer);
+
+            _DoAwake(_serviceContainer);
+            if (IsClientMode) {
+                GameStartInfo = _serviceContainer.GetService<IGameConfigService>().ClientModeInfo;
+            }
 
             foreach (var mgr in _mgrContainer.AllMgrs) {
                 mgr.DoStart();
             }
 
-            _mainManager.DoStart();
+            _DoStart();
         }
 
-        public void DoUpdate(float deltaTime){
-            _mainManager.DoUpdate(deltaTime);
+        public void _DoAwake(IServiceContainer serviceContainer){
+            _simulatorService = serviceContainer.GetService<ISimulatorService>() as SimulatorService;
+            _networkService = serviceContainer.GetService<INetworkService>() as NetworkService;
+            _constStateService = serviceContainer.GetService<IConstStateService>();
+
+            if (IsVideoMode) {
+                _constStateService.SnapshotFrameInterval = 20;
+                //OpenRecordFile(RecordPath);
+            }
+        }
+
+        public void _DoStart(){
+            //Debug.Trace("Before StartGame _IdCounter" + BaseEntity.IdCounter);
+            //if (!IsReplay && !IsClientMode) {
+            //    netClient = new NetClient();
+            //    netClient.Start();
+            //    netClient.Send(new Msg_JoinRoom() {name = Application.dataPath});
+            //}
+            //else {
+            //    StartGame(0, playerServerInfos, localPlayerId);
+            //}
+
+
+            if (IsVideoMode) {
+                EventHelper.Trigger(EEvent.BorderVideoFrame, FramesInfo);
+                EventHelper.Trigger(EEvent.OnGameCreate, GameStartInfo);
+            }
+        }
+
+        public void DoUpdate(float fDeltaTime){
+            var deltaTime = fDeltaTime.ToLFloat();
+            _networkService.DoUpdate(deltaTime);
+            if (IsVideoMode && IsRunVideo && CurTick < MaxRunTick) {
+                _simulatorService.RunVideo();
+                return;
+            }
+
+            if (IsVideoMode && !IsRunVideo) {
+                _simulatorService.JumpTo(JumpToTick);
+            }
+
+            _simulatorService.DoUpdate(deltaTime);
         }
 
         public void DoDestroy(){
@@ -91,7 +148,6 @@ namespace Lockstep.Game {
                 mgr.DoDestroy();
             }
 
-            _mainManager.DoDestroy();
             Instance = null;
         }
 

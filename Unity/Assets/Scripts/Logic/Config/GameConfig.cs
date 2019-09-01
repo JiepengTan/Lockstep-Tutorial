@@ -4,6 +4,7 @@ using System.Reflection;
 using Lockstep.Game;
 using Lockstep.Math;
 using Lockstep.Util;
+using NetMsg.Common;
 using UnityEngine;
 
 namespace LockstepTutorial {
@@ -121,6 +122,6 @@ namespace LockstepTutorial {
         public CollisionConfig CollisionConfig;
         public SpawnerConfig SpawnerConfig;
         public string RecorderFilePath;
-        
+        public Msg_G2C_GameStartInfo ClientModeInfo = new Msg_G2C_GameStartInfo();
     }
 }
