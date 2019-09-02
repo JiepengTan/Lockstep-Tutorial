@@ -4,8 +4,8 @@
       "__Comment": "NetMsg.Commons",
       "DllRelPath": "",
       "ProjectFilePath": "",
-      "NameSpace": "NetMsg.Commons",
-      "GeneratePath": "../../../../LockstepEngine/NetMsg.Commons/Src/",
+      "NameSpace": "NetMsg.Common",
+      "GeneratePath": "../../../../LockstepEngine/NetMsg.Common/Src/",
       "GenerateFileName": "ExtensionMsg.cs",
       "InterfaceName": "IBaseMsg",
       "TypeHandlerConfigPath": "../CodeGenerator/TypeHandler/Msg.json"
