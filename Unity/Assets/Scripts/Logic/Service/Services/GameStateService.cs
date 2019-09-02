@@ -1,14 +1,16 @@
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using Lockstep.Logging;
 using Lockstep.Math;
 using Lockstep.Game;
+using Lockstep.Serialization;
 
 namespace Lockstep.Game {
+    public partial class GameStateService : BaseGameService, IGameStateService {
+        private GameState _curGameState;
+        private Dictionary<Type, IList> _type2Entities = new Dictionary<Type, IList>();
 
-    public partial class GameStateService: BaseGameService, IGameStateService {
         public class CopyStateCmd : BaseCommand {
             private GameState state;
 
@@ -21,11 +23,6 @@ namespace Lockstep.Game {
             }
         }
 
-        
-        
-        private GameState _curGameState;
-        
-        private Dictionary<Type, IList> _type2Entities = new Dictionary<Type, IList>();
 
         public void AddEntity<T>(T e) where T : class{
             var t = e.GetType();
@@ -63,13 +60,63 @@ namespace Lockstep.Game {
             }
         }
 
-        public List<Enemy> GetEnemies(){return GetEntities<Enemy>();}
-        public List<Player> GetPlayers(){return GetEntities<Player>();}
-        public List<Spawner> GetSpawners(){return GetEntities<Spawner>();}
-        
-        
+        public List<Enemy> GetEnemies(){
+            return GetEntities<Enemy>();
+        }
+
+        public List<Player> GetPlayers(){
+            return GetEntities<Player>();
+        }
+
+        public List<Spawner> GetSpawners(){
+            return GetEntities<Spawner>();
+        }
+
+        Dictionary<int, Serializer> _tick2Backup = new Dictionary<int, Serializer>();
+
         public override void Backup(int tick){
+            //
+            Serializer writer = new Serializer();
+            BackUpEntities(GetEnemies(), writer);
+            BackUpEntities(GetPlayers(), writer);
+            BackUpEntities(GetSpawners(), writer);
+            _tick2Backup[tick] = writer;
+
             cmdBuffer.Execute(tick, new CopyStateCmd());
+        }
+
+        public override void RollbackTo(int tick){
+            base.RollbackTo(tick);
+            if (_tick2Backup.TryGetValue(tick, out var backupData)) {
+                var reader = new Deserializer(backupData.Data);
+                var enemies = RecoverEntities(new List<Enemy>(), reader);
+                var players = RecoverEntities(new List<Player>(), reader);
+                var spawners = RecoverEntities(new List<Spawner>(), reader);
+                //TODO
+                //0. Recover Entities
+                //1. Rebind Ref
+                //2. Rebind Views 
+                //    1. Find diff
+                //    2. Pool Views
+                //3. Recover Services
+                
+                
+            }
+            else {
+                Debug.LogError($"Miss backup data  cannot rollback! {tick}");
+            }
+        }
+
+        public override void Clean(int maxVerifiedTick){
+            base.Clean(maxVerifiedTick);
+        }
+
+        void BackUpEntities<T>(List<T> lst, Serializer writer) where T : IBackup{
+            //writer.Write();
+        }
+
+        List<T> RecoverEntities<T>(List<T> lst, Deserializer writer) where T : IBackup{
+            return lst;
         }
 
         protected override FuncUndoCommands GetRollbackFunc(){
@@ -85,6 +132,7 @@ namespace Lockstep.Game {
             get => _curGameState.RemainTime;
             set => _curGameState.RemainTime = value;
         }
+
         public LFloat DeltaTime {
             get => _curGameState.DeltaTime;
             set => _curGameState.DeltaTime = value;

@@ -3,20 +3,20 @@ using Lockstep.Game;
 using Lockstep.Math;
 
 namespace Lockstep.Game {
-    public partial class Spawner : IEntity {
-        public SpawnerInfo info;
-        public Action<int, LVector3> OnSpawnEvent;
+    public partial class Spawner : BaseEntity {
+        public SpawnerInfo info = new SpawnerInfo();
+        [NoBackup] public Action<int, LVector3> OnSpawnEvent;
 
-        private LFloat timer;
+        [Backup] private LFloat _timer;
 
-        public virtual void DoStart(){
-            timer = info.spawnTime;
+        public override void DoStart(){
+            _timer = info.spawnTime;
         }
 
-        public virtual void DoUpdate(LFloat deltaTime){
-            timer += deltaTime;
-            if (timer > info.spawnTime) {
-                timer = LFloat.zero;
+        public override void DoUpdate(LFloat deltaTime){
+            _timer += deltaTime;
+            if (_timer > info.spawnTime) {
+                _timer = LFloat.zero;
                 Spawn();
             }
         }

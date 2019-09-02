@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Lockstep.Game {
     public class UnityEntityService {
-        public static GameObject CreateEntity(BaseEntity entity, int prefabId, LVector3 position, GameObject prefab,
+        public static GameObject CreateEntity(Entity entity, int prefabId, LVector3 position, GameObject prefab,
             EntityConfig config){
             var obj = (GameObject) GameObject.Instantiate(prefab, position.ToVector3(), Quaternion.identity);
             entity.engineTransform = obj.transform;

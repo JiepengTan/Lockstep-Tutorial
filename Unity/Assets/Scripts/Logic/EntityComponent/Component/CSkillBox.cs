@@ -6,34 +6,30 @@ using Lockstep.Math;
 using Lockstep.Serialization;
 
 namespace Lockstep.Game {
-    public static class BackupExt {
-        public static void WriteBackup(this Serializer writer, CSkillBox data){data.WriteBackup(writer);}
-        public static CSkillBox ReadBackup(this Deserializer reader, ref CSkillBox data){data.ReadBackup(reader);return data;}
-    }
-
-    public partial class CSkillBox  {                                                                                
-        public void WriteBackup(Serializer writer){                                                          
-            writer.Write(skillConfigId);      
-            writer.Write(isFiring);                                               
+    public partial class CSkillBox : IBackup {
+        public void WriteBackup(Serializer writer){
+            writer.Write(skillConfigId);
+            writer.Write(isFiring);
             writer.Write(_curSkillIdx);
             writer.Write(_skills.Count);
             for (int i = 0; i < _skills.Count; i++) {
-                writer.WriteBackup(_skills[i]);
+                _skills[i].WriteBackup(writer);
             }
-        }                                                                                                           
-                                                                                                                    
-        public void ReadBackup(Deserializer reader){                                                     
-            skillConfigId = reader.ReadInt32();   
-            isFiring = reader.ReadBoolean();                                                
+        }
+
+        public void ReadBackup(Deserializer reader){
+            skillConfigId = reader.ReadInt32();
+            isFiring = reader.ReadBoolean();
             _curSkillIdx = reader.ReadInt32();
             _skills = new List<Skill>(reader.ReadInt32());
             for (int i = 0; i < _skills.Count; i++) {
                 var skill = new Skill();
-                _skills[i] = reader.ReadBackup(ref skill);
+                skill.ReadBackup(reader);
+                _skills[i] = skill;
             }
-        }                                         
-    }     
-    
+        }
+    }
+
     [Serializable]
     [SelfImplement]
     public partial class CSkillBox : Component, ISkillEventHandler {
@@ -41,13 +37,12 @@ namespace Lockstep.Game {
         public bool isFiring;
         [Backup] private int _curSkillIdx = 0;
         [ReRefBackup] public SkillBoxConfig config;
-        private List<Skill> _skills = new List<Skill>();
+        [Backup] private List<Skill> _skills = new List<Skill>();
         public Skill curSkill => (_curSkillIdx >= 0) ? _skills[_curSkillIdx] : null;
 
 #if UNITY_EDITOR
         [UnityEngine.SerializeField]
 #endif
-
         public override void DoStart(){
             base.DoStart();
             if (config != null) {

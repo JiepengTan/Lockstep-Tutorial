@@ -13,8 +13,11 @@ using UnityEngine;
 #endif
 using Debug = Lockstep.Logging.Debug;
 
-namespace Lockstep.Game {}
 
+public enum ESkillState {
+    Idle,
+    Firing,
+}
 
 namespace Lockstep.Game {
     public interface ISkillEventHandler {
@@ -24,13 +27,8 @@ namespace Lockstep.Game {
     }
 
     [Serializable]
-    public partial class Skill :IComponent {
-        public enum ESkillState {
-            Idle,
-            Firing,
-        }
-
-        private static readonly HashSet<ColliderProxy> _tempTargets = new HashSet<ColliderProxy>();
+    public partial class Skill : INeedBackup {
+        private static readonly HashSet<Entity> _tempEntities = new HashSet<Entity>();
 
         [ReRefBackup] public ISkillEventHandler eventHandler;
         [ReRefBackup] public Entity entity { get; private set; }
@@ -132,6 +130,7 @@ namespace Lockstep.Game {
 #endif
 
             var col = part.collider;
+#if NO_DEBUG_NO_COLLISION
             if (col.radius > 0) {
                 //circle
                 PhysicSystem.QueryRegion(TargetLayer, entity.transform.TransformPoint(col.pos), col.radius,
@@ -144,8 +143,20 @@ namespace Lockstep.Game {
                     _OnTriggerEnter);
             }
 
-            foreach (var other in _tempTargets) {
-                other.Entity.TakeDamage(CurPart.damage, other.Entity.transform.pos.ToLVector3());
+#else
+            //TODO Ignore CollisionSystem
+            if (col.radius > 0) {
+                var colPos = entity.transform.TransformPoint(col.pos);
+                foreach (var e in entity.GameStateService.GetEnemies()) {
+                    var targetCenter = e.transform.pos;
+                    if ((targetCenter - colPos).sqrMagnitude < col.radius * col.radius) {
+                        _tempEntities.Add(e);
+                    }
+                }
+            }
+#endif
+            foreach (var other in _tempEntities) {
+                other.TakeDamage(CurPart.damage, other.transform.pos.ToLVector3());
             }
 
             //add force
@@ -156,31 +167,32 @@ namespace Lockstep.Game {
                 var z = forward * force.z + right * force.x;
                 force.x = z.x;
                 force.z = z.y;
-                foreach (var other in _tempTargets) {
-                    other.Entity.rigidbody.AddImpulse(force);
+                foreach (var other in _tempEntities) {
+                    other.rigidbody.AddImpulse(force);
                 }
             }
 
             if (part.isResetForce) {
-                foreach (var other in _tempTargets) {
-                    other.Entity.rigidbody.ResetSpeed(new LFloat(3));
+                foreach (var other in _tempEntities) {
+                    other.rigidbody.ResetSpeed(new LFloat(3));
                 }
             }
 
-            _tempTargets.Clear();
+            _tempEntities.Clear();
         }
 
 
+        //private static readonly HashSet<Entity> _tempEntities = new HashSet<Entity>();
         private void _OnTriggerEnter(ColliderProxy other){
             if (CurPart.collider.IsCircle && CurPart.collider.deg > 0) {
                 var deg = (other.Transform2D.pos - entity.transform.pos).ToDeg();
                 var degDiff = entity.transform.deg.Abs() - deg;
                 if (LMath.Abs(degDiff) <= CurPart.collider.deg) {
-                    _tempTargets.Add(other);
+                    _tempEntities.Add(other.Entity);
                 }
             }
             else {
-                _tempTargets.Add(other);
+                _tempEntities.Add(other.Entity);
             }
         }
 

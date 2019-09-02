@@ -57,9 +57,11 @@ namespace Lockstep.CodeGenerator {
 
 
         public bool CanAddType(Type t){
+            if (t.IsInterface) return false;
             if (CodeGenerator.HasAttribute(t, GenInfo.IgnoreTypeAttriName)) {
                 return false;
             }
+
 
             var allInterfaces = t.GetInterfaces();
             var interfaces = allInterfaces.Where((_t) => _t.Name.Equals(GenInfo.InterfaceName)).ToArray();

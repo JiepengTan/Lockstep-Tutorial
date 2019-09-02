@@ -11,48 +11,43 @@ namespace Lockstep.Game {
     [Serializable]
     [NoBackup]
     public partial class BaseEntity : BaseLifeCycle, IEntity, ILPTriggerEventHandler {
-        public static int IdCounter { get; private set; }
-        public int EntityId { get; private set; }
+        public int EntityId { get; set; }
         public int PrefabId;
         public CTransform2D transform = new CTransform2D();
-        public CRigidbody rigidbody = new CRigidbody();
-        public ColliderData colliderData = new ColliderData();
-        protected List<BaseComponent> allComponents = new List<BaseComponent>();
-
         [NoBackup] public object engineTransform;
-
-        public BaseEntity(){
-            Debug.Trace("BaseEntity  " + IdCounter.ToString(), true);
-        }
+        protected List<BaseComponent> allComponents;
 
         protected void RegisterComponent(BaseComponent comp){
+            if (allComponents == null) {
+                allComponents = new List<BaseComponent>();
+            }
             allComponents.Add(comp);
             comp.BindEntity(this);
         }
 
         public override void DoAwake(){
-            rigidbody.Init(transform);
-            EntityId = IdCounter++;
+            if (allComponents == null) return;
             foreach (var comp in allComponents) {
                 comp.DoAwake();
             }
         }
 
         public override void DoStart(){
-            rigidbody.DoStart();
+            if (allComponents == null) return;
             foreach (var comp in allComponents) {
                 comp.DoStart();
             }
         }
 
         public override void DoUpdate(LFloat deltaTime){
-            rigidbody.DoUpdate(deltaTime);
+            if (allComponents == null) return;
             foreach (var comp in allComponents) {
                 comp.DoUpdate(deltaTime);
             }
         }
 
         public override void DoDestroy(){
+            if (allComponents == null) return;
             foreach (var comp in allComponents) {
                 comp.DoDestroy();
             }

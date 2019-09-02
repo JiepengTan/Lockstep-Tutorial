@@ -25,6 +25,5 @@ namespace Lockstep.Game {
         public string RecorderFilePath=> _config.RecorderFilePath;
         public Msg_G2C_GameStartInfo ClientModeInfo=> _config.ClientModeInfo;
         
-        
     }
 }

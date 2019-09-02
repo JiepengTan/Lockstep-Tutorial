@@ -131,7 +131,7 @@ namespace Lockstep.Game {
             _go2Layer[go] = val;
         }
 
-        public void RegisterEntity(GameObject fab, GameObject obj, BaseEntity entity){
+        public void RegisterEntity(GameObject fab, GameObject obj, Entity entity){
             ColliderPrefab prefab = null;
             if (!_go2ColPrefab.TryGetValue(fab, out prefab)) {
                 prefab = CollisionSystem.CreateColliderPrefab(fab, entity.colliderData);

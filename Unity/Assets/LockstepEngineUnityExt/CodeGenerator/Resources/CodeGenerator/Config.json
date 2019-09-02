@@ -13,41 +13,17 @@
       "ForceGenAttriName": "",
       "TypeHandlerConfigPath": "../CodeGenerator/TypeHandler/Msg.json"
     },{
-      "__Comment": "BackupEntity",
+      "__Comment": "Backup",
       "DllRelPath": "",
       "ProjectFilePath": "",
       "NameSpace": "Lockstep.Game",
       "GeneratePath": "../../../../Scripts/Backup/Ext/",
-      "GenerateFileName": "ExtensionBackupEntity.cs",
-      "InterfaceName": "IEntity",
+      "GenerateFileName": "ExtensionBackup.cs",
+      "InterfaceName": "INeedBackup",
       "IgnoreTypeAttriName": "NoBackupAttribute;SelfImplementAttribute",
       "IgnoreFiledAttriName": "ReRefBackupAttribute;NoBackupAttribute",
       "ForceGenAttriName": "BackupAttribute",      
-      "TypeHandlerConfigPath": "../CodeGenerator/TypeHandler/BackupEntity.json"
-    },{
-      "__Comment": "BackupComponent",
-      "DllRelPath": "",
-      "ProjectFilePath": "",
-      "NameSpace": "Lockstep.Game",
-      "GeneratePath": "../../../../Scripts/Backup/Ext/",
-      "GenerateFileName": "ExtensionBackupComponent.cs",
-      "InterfaceName": "IComponent",
-      "IgnoreTypeAttriName": "NoBackupAttribute;SelfImplementAttribute",
-      "IgnoreFiledAttriName": "ReRefBackupAttribute;NoBackupAttribute",
-      "ForceGenAttriName": "BackupAttribute",
-      "TypeHandlerConfigPath": "../CodeGenerator/TypeHandler/BackupComponent.json"
-    },{
-      "__Comment": "BackupComponentExt",
-      "DllRelPath": "",
-      "ProjectFilePath": "",
-      "NameSpace": "Lockstep.Game",
-      "GeneratePath": "../../../../Scripts/Backup/Ext/",
-      "GenerateFileName": "ExtensionBackupComponentExt.cs",
-      "InterfaceName": "IComponent",
-      "IgnoreTypeAttriName": "NoBackupAttribute;SelfImplementAttribute",
-      "IgnoreFiledAttriName": "ReRefBackupAttribute;NoBackupAttribute",
-      "ForceGenAttriName": "BackupAttribute",
-      "TypeHandlerConfigPath": "../CodeGenerator/TypeHandler/BackupComponentExt.json"
+      "TypeHandlerConfigPath": "../CodeGenerator/TypeHandler/Backup.json"
     }
   ]
 }

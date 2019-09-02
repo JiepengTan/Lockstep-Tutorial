@@ -32,8 +32,5 @@ namespace Lockstep.Game {
         public virtual void Clean(int maxVerifiedTick){
             cmdBuffer?.Clean(maxVerifiedTick);
         }
-        
-        
-       
     }
 }

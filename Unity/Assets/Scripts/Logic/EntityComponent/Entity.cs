@@ -1,4 +1,5 @@
 using System;
+using Lockstep.Collision2D;
 using Lockstep.Logging;
 using Lockstep.Game;
 using Lockstep.Math;
@@ -7,11 +8,11 @@ namespace Lockstep.Game {
     [Serializable]
     [NoBackup]
     public partial class Entity : BaseEntity {
+        public CRigidbody rigidbody = new CRigidbody();
         public CAnimator animator = new CAnimator();
-        public CSkillBox skillBox = new CSkillBox();
-        [ReRefBackup] public IGameStateService GameStateService { get;  set; }
+        public ColliderData colliderData = new ColliderData();
         
-        [ReRefBackup] public IEntityView EntityView;
+        public CSkillBox skillBox = new CSkillBox();
         public LFloat moveSpd = 5;
         public LFloat turnSpd = 360;
         public int curHealth;
@@ -23,17 +24,31 @@ namespace Lockstep.Game {
 
         public bool isDead => curHealth <= 0;
 
+        [ReRefBackup] public IGameStateService GameStateService { get;  set; }
+        
+        [ReRefBackup] public IEntityView EntityView;
         [ReRefBackup] public Action<Entity> OnDied;
         public Entity(){
             RegisterComponent(animator);
             RegisterComponent(skillBox);
         }
 
+        public override void DoAwake(){
+            base.DoAwake();
+            rigidbody.Init(transform);
+        }
+
         public override void DoStart(){
             base.DoStart();
+            rigidbody.DoStart();
             curHealth = maxHealth;
         }
 
+        public override void DoUpdate(LFloat deltaTime){
+            rigidbody.DoUpdate(deltaTime);
+            base.DoUpdate(deltaTime);
+        }
+        
         public bool Fire(int idx = 0){
             return skillBox.Fire(idx);
         }
@@ -59,5 +74,8 @@ namespace Lockstep.Game {
         protected virtual void OnDead(){
             Debug.Log($"{EntityId} Dead");
         }
+        
+        
+        
     }
 }
