@@ -5,7 +5,7 @@ using NetMsg.Common;
 using UnityEngine;
 using Debug = Lockstep.Logging.Debug;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     public class GameConfigService : BaseGameService, IGameConfigService {
         private GameConfig _config;
         public string configPath = "GameConfig";

@@ -2,7 +2,7 @@
 using System.Collections;
 using Lockstep.Game;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     public class CameraFollow : MonoBehaviour {
         public Transform _target;
 

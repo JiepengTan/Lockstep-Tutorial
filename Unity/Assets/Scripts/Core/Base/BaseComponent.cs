@@ -6,6 +6,7 @@ using Lockstep.Serialization;
 
 namespace Lockstep.Game {
     [Serializable]
+    [NoBackup]
     public partial class BaseComponent : IComponent {
         public BaseEntity baseEntity { get; private set; }
         public CTransform2D transform { get; private set; }

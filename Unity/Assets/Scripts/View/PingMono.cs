@@ -4,7 +4,7 @@ using Lockstep.Game;
 using Lockstep.Math;
 using UnityEngine;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     public class PingMono : UnityEngine.MonoBehaviour {
         private float _guiTimer;
         public List<float> delays => SimulatorService.Delays;

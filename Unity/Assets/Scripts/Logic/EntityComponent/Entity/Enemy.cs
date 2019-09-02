@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Debug = Lockstep.Logging.Debug;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     [Serializable]
     public partial class Enemy : Entity {
         public CBrain brain = new CBrain();

@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Lockstep.Logging;
 using Lockstep.Math;
-using LockstepTutorial;
+using Lockstep.Game;
 
 namespace Lockstep.Game {
 

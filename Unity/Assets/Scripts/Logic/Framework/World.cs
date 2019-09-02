@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Lockstep.Math;
-using LockstepTutorial;
+using Lockstep.Game;
 using NetMsg.Common;
 using Debug = Lockstep.Logging.Debug;
 using Profiler = Lockstep.Util.Profiler;

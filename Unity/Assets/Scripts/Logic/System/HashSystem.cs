@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Lockstep.Collision2D;
 using Lockstep.Math;
 using Lockstep.Util;
-using LockstepTutorial;
+using Lockstep.Game;
 
 namespace Lockstep.Game {
     public class HashSystem : BaseSystem {

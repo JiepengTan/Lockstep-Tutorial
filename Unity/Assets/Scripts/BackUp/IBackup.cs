@@ -1,7 +1,11 @@
 using Lockstep.Serialization;
 
 namespace Lockstep.Game {
-    public interface IBackup  : ISerializable {
-        void OnAfterDeserialize();//反序列化后重构
+    public interface IBackup {
+        void WriteBackup(Serializer writer);
+        void ReadBackup(Deserializer reader);
+        //void OnAfterDeserialize();//反序列化后重构
     }
+
+
 }

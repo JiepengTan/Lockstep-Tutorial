@@ -2,7 +2,7 @@ using Lockstep.Game;
 using Lockstep.Math;
 using UnityEngine;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     public class EntityView : MonoBehaviour, IEntityView {
         public UIFloatBar uiFloatBar;
         public Entity entity;

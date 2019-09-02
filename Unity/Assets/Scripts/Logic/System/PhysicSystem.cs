@@ -5,14 +5,14 @@ using Lockstep.Game;
 using Lockstep.Collision2D;
 using Lockstep.Math;
 using Lockstep.UnsafeCollision2D;
-using LockstepTutorial;
+using Lockstep.Game;
 using UnityEngine;
 using UnityEngine.Profiling;
 using Object = UnityEngine.Object;
 using Ray2D = Lockstep.Collision2D.Ray2D;
 using Debug = Lockstep.Logging.Debug;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     public class PhysicSystem : BaseSystem {
         private static PhysicSystem _instance;
         public static PhysicSystem Instance => _instance;

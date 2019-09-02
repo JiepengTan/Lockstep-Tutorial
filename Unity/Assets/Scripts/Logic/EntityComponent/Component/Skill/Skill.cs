@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using Lockstep.Collision2D;
 using Lockstep.Game;
 using Lockstep.Math;
-using LockstepTutorial;
+using Lockstep.Game;
 #if UNITY_EDITOR
 using UnityEngine;
 #endif
@@ -16,7 +16,7 @@ using Debug = Lockstep.Logging.Debug;
 namespace Lockstep.Game {}
 
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     public interface ISkillEventHandler {
         void OnSkillStart(Skill skill);
         void OnSkillDone(Skill skill);
@@ -24,7 +24,7 @@ namespace LockstepTutorial {
     }
 
     [Serializable]
-    public partial class Skill {
+    public partial class Skill :IComponent {
         public enum ESkillState {
             Idle,
             Firing,

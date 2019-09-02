@@ -64,11 +64,6 @@ namespace Lockstep.CodeGenerator {
         }
     }
 #else
-    [CreateAssetMenu(fileName = "CodeGenConfig")]
-    public class CodeGenConfig : ScriptableObject {
-        public string relPath ;
-        public string args;
-    }
 
     public static class EditorCodeGen {
         [MenuItem("LPEngine/CodeGen")]

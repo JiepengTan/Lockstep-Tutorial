@@ -1,11 +1,9 @@
 using System;
 using Lockstep.Math;
 
-namespace LockstepTutorial {
-
-
+namespace Lockstep.Game {
     [Serializable]
-    public class SpawnerInfo {
+    public partial class SpawnerInfo : IComponent {
         public LFloat spawnTime;
         public LVector3 spawnPoint;
         public int prefabId;

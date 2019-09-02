@@ -1,5 +1,5 @@
 using Lockstep.Game;
-using LockstepTutorial;
+using Lockstep.Game;
 
 namespace Lockstep.Collision2D {
     public partial class ColliderProxy {

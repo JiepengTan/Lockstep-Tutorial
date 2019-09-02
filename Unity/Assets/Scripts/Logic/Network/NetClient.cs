@@ -2,7 +2,7 @@ using System;
 using System.Net;
 using Lockstep.Network;
 using Lockstep.Serialization;
-using LockstepTutorial;
+using Lockstep.Game;
 using NetMsg.Common;
 
 namespace Lockstep.Game{

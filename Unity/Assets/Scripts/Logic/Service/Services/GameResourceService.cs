@@ -4,7 +4,7 @@ using System.Reflection;
 using Lockstep.Game;
 using UnityEngine;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     public class GameResourceService : BaseGameService, IGameResourceService {
         public static GameResourceService Instance { get; private set; }
         public string pathPrefix = "Prefabs/";

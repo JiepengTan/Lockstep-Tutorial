@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Lockstep.Math;
-using LockstepTutorial;
+using Lockstep.Game;
 
 namespace Lockstep.Game {
     public interface IGameStateService : IService ,IEntityService{

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Lockstep.ECS;
 using Lockstep.Math;
-using LockstepTutorial;
+using Lockstep.Game;
 using NetMsg.Common;
 
 namespace Lockstep.Game {

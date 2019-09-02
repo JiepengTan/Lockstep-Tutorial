@@ -3,7 +3,7 @@ using Lockstep.Game;
 using Lockstep.Logging;
 using Lockstep.Math;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     public class TraceLogSystem : BaseSystem {
         StringBuilder _dumpSb = new StringBuilder();
 

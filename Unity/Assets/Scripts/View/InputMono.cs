@@ -4,7 +4,7 @@ using Lockstep.Math;
 using UnityEngine;
 using Debug = Lockstep.Logging.Debug;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     public class InputMono : UnityEngine.MonoBehaviour {
         private static bool IsReplay => Launcher.Instance?.IsVideoMode ?? false;
         [HideInInspector] public int floorMask;

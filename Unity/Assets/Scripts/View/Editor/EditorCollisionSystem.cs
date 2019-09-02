@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using LockstepTutorial;
+using Lockstep.Game;
 using UnityEditor;
 using UnityEngine;
 using UnityEditorInternal;

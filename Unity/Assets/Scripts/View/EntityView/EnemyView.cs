@@ -3,7 +3,7 @@ using Lockstep.Game;
 using Lockstep.Math;
 using UnityEngine;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     public class EnemyView : EntityView, IEnemyView {
     }
 }

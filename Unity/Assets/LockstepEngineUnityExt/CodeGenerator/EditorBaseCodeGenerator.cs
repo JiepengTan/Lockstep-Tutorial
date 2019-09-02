@@ -55,15 +55,16 @@ namespace Lockstep.CodeGenerator {
             }
         }
 
+
         public bool CanAddType(Type t){
-            if (t.IsSubclassOf(typeof(BaseFormater))
-                && t.GetCustomAttribute(typeof(SelfImplementAttribute)) == null
-            ) {
-                var allInterfaces = t.GetInterfaces();
-                var interfaces = allInterfaces.Where((_t) => _t.FullName.Contains(GenInfo.InterfaceName)).ToArray();
-                if (interfaces.Length > 0) {
-                    return true;
-                }
+            if (CodeGenerator.HasAttribute(t, GenInfo.IgnoreTypeAttriName)) {
+                return false;
+            }
+
+            var allInterfaces = t.GetInterfaces();
+            var interfaces = allInterfaces.Where((_t) => _t.Name.Equals(GenInfo.InterfaceName)).ToArray();
+            if (interfaces.Length > 0) {
+                return true;
             }
 
             return false;
@@ -75,6 +76,7 @@ namespace Lockstep.CodeGenerator {
 #endif
         public virtual void GenerateCodeNodeData(bool isRefresh, params Type[] types){
             var ser = new CodeGenerator();
+            ser.GenInfo = GenInfo;
             foreach (var handler in GenInfo.FileHandlerInfo.TypeHandler) {
                 handler.Init(this);
             }

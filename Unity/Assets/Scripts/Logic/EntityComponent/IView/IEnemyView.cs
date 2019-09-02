@@ -1,7 +1,7 @@
 using Lockstep.Game;
 using Lockstep.Math;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     public interface IEnemyView : IEntityView {
     }
 }

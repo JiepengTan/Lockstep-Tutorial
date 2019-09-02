@@ -4,7 +4,7 @@ using Lockstep.Math;
 using UnityEngine;
 using Debug = Lockstep.Logging.Debug;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     public class EnemySystem : BaseSystem {
         private List<Spawner> Spawners => _gameStateService.GetSpawners();
         private List<Enemy> AllEnemy => _gameStateService.GetEnemies();

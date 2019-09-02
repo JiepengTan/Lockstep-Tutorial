@@ -4,7 +4,7 @@ using Lockstep.Math;
 using UnityEngine;
 using Debug = Lockstep.Logging.Debug;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     public class GameEntityService : BaseGameService, IGameEntityService {
         public int enmeyID;
 

@@ -2,7 +2,7 @@ using Lockstep.Game;
 using Lockstep.Math;
 using UnityEngine;
 
-namespace LockstepTutorial{    
+namespace Lockstep.Game{    
     public enum EColliderLayer {
         Static,
         Enemy,

@@ -2,7 +2,7 @@ using System;
 using Lockstep.Collision2D;
 using Lockstep.Math;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     [Serializable]
     public partial class CBrain : Component {
         public Entity target { get; private set; }

@@ -4,7 +4,7 @@ using Lockstep.Game;
 using Lockstep.Serialization;
 using Lockstep.Util;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     public class RecordHelper {
         private const int RECODER_FILE_VERSION = 0;
 

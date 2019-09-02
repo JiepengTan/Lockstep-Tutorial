@@ -7,7 +7,7 @@ using Lockstep.Util;
 using NetMsg.Common;
 using UnityEngine;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     [Serializable]
     public class EntityConfig {
         public virtual object Entity { get; }

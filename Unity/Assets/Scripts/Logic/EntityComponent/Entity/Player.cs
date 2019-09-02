@@ -6,7 +6,7 @@ using Lockstep.Math;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     [Serializable]
     public partial class Player : Entity {
         public int localId;

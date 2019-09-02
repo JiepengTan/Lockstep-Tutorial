@@ -1,16 +1,13 @@
 using System;
 using Lockstep.Game;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     
     [Serializable]
+    [NoBackup]
     public partial class Component : BaseComponent {
-        public Entity entity { get; private set; }
+        public Entity entity =>(Entity) baseEntity;
         public IGameStateService GameStateService => entity.GameStateService;
 
-        public override void BindEntity(BaseEntity entity){
-            base.BindEntity(entity);
-            this.entity = (Entity) entity;
-        }
     }
 }

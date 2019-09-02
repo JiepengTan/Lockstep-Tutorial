@@ -3,7 +3,7 @@ using Lockstep.Collision2D;
 using Lockstep.Game;
 using Lockstep.Math;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     
     [Serializable]
     public partial class CMover : Component {

@@ -1,6 +1,6 @@
 
 using Lockstep.Math;
-using LockstepTutorial;
+using Lockstep.Game;
 
 namespace Lockstep.Game {
     public class BaseSystem : BaseGameService {

@@ -4,7 +4,7 @@ using Lockstep.Math;
 using Lockstep.Util;
 using UnityEngine;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     public class UnityEntityService {
         public static GameObject CreateEntity(BaseEntity entity, int prefabId, LVector3 position, GameObject prefab,
             EntityConfig config){

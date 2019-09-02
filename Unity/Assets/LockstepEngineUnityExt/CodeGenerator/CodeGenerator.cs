@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using Lockstep.Serialization;
-
 #if UNITY_EDITOR
 using UnityEngine;
 
@@ -26,11 +26,16 @@ namespace Lockstep.CodeGenerator {
         public string InterfaceName;
         public string TypeHandlerConfigPath;
         public bool IsNeedCopyEnum;
+        public string IgnoreTypeAttriName;
+        public string IgnoreFiledAttriName;
+        public string ForceGenAttriName;
         public FileHandlerInfo FileHandlerInfo;
     }
 
     public class CodeGenerator {
-        const BindingFlags bindingAttr = BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetField;
+        public GenInfo GenInfo;
+        const BindingFlags PropertyBindingAttr = BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetField;
+        const BindingFlags FiledBindingAttr =BindingFlags.Public | BindingFlags.NonPublic|  BindingFlags.Instance | BindingFlags.SetField;
         readonly Queue<Type> todoTypes = new Queue<Type>();
         readonly HashSet<Type> todoTypesSet = new HashSet<Type>();
         readonly HashSet<Type> IgnoredTypes = new HashSet<Type>();
@@ -111,6 +116,21 @@ namespace Lockstep.CodeGenerator {
             return typeHandler.DealType(type, sbfs);
         }
 
+        public static bool HasAttribute(MemberInfo memberInfo, string ignoreAttris){
+            if (!string.IsNullOrEmpty(ignoreAttris)) {
+                var attris = ignoreAttris.Split(';');
+                foreach (var atrri in attris) {
+                    var noBytesAttris = memberInfo.GetCustomAttributes(false)
+                        .Where((a) => a.GetType().Name.Equals(atrri)).ToArray();
+                    if (noBytesAttris.Length > 0) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         public List<FieldInfo> FilterFields(FieldInfo[] fields){
             List<FieldInfo> retfileds = new List<FieldInfo>();
             for (int i = 0; i < fields.Length; i++) {
@@ -119,12 +139,14 @@ namespace Lockstep.CodeGenerator {
                     continue;
                 }
 
-                var noBytesAttris = field.GetCustomAttributes(typeof(NoGenCodeAttribute), true);
-                if (noBytesAttris != null && noBytesAttris.Length > 0) {
+
+                if (HasAttribute(field, GenInfo.IgnoreFiledAttriName)) {
                     continue;
                 }
 
-                retfileds.Add(field);
+                if (field.IsPublic || HasAttribute(field, GenInfo.ForceGenAttriName)) {
+                    retfileds.Add(field);
+                }
             }
 
             //属性排序
@@ -169,11 +191,12 @@ namespace Lockstep.CodeGenerator {
             List<PropertyInfo> retfileds = new List<PropertyInfo>();
             for (int i = 0; i < fields.Length; i++) {
                 var field = fields[i];
-                var noBytesAttris = field.GetCustomAttributes(typeof(NoGenCodeAttribute), true);
-                if (noBytesAttris != null && noBytesAttris.Length > 0) {
+                if (HasAttribute(field, GenInfo.IgnoreFiledAttriName)) {
                     continue;
                 }
 
+                if (!(field.CanWrite && field.SetMethod.IsPublic) || !(field.CanRead && field.GetMethod.IsPublic))
+                    continue;
                 retfileds.Add(field);
             }
 
@@ -216,8 +239,12 @@ namespace Lockstep.CodeGenerator {
         }
 
         string GetFiledInfo(Type type, IFiledHandler Handler){
-            var fileds = FilterFields(type.GetFields(bindingAttr));
-            var properties = FilterProperties(type.GetProperties(bindingAttr));
+            if (type == typeof(Lockstep.Game.CAnimator)) {
+                int iss = 0;
+            }
+
+            var fileds = FilterFields(type.GetFields(FiledBindingAttr));
+            var properties = FilterProperties(type.GetProperties(PropertyBindingAttr));
             StringBuilder sb = new StringBuilder();
             int i = 0;
             var count = fileds.Count + properties.Count;

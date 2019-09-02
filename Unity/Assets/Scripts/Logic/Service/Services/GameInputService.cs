@@ -3,11 +3,11 @@ using Lockstep.Game;
 using Lockstep.Serialization;
 using NetMsg.Common;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     public class GameInputService : IInputService {
         public static PlayerInput CurGameInput = new PlayerInput();
 
-        public void Execute(InputCmd cmd, IEntity entity){
+        public void Execute(InputCmd cmd, object entity){
             var input = new Deserializer(cmd.content).Parse<PlayerInput>();
             var playerInput = entity as PlayerInput;
             playerInput.mousePos = input.mousePos;

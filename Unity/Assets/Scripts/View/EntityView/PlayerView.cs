@@ -3,7 +3,7 @@ using Lockstep.Math;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     public class PlayerView : EntityView, IPlayerView {
     
     }

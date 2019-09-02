@@ -14,7 +14,7 @@ namespace Lockstep.Collision2D {
 }
 namespace Lockstep.Collision2D {
     [Serializable]
-    public class CTransform2D {
+    public partial class CTransform2D :IComponent{
         public LVector2 pos;
         public LFloat y;
         public LFloat deg; //same as Unity CW deg(up) =0

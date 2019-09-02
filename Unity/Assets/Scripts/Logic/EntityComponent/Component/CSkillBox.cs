@@ -3,19 +3,50 @@ using System.Collections.Generic;
 using Lockstep.Logging;
 using Lockstep.Game;
 using Lockstep.Math;
+using Lockstep.Serialization;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
+    public static class BackupExt {
+        public static void WriteBackup(this Serializer writer, CSkillBox data){data.WriteBackup(writer);}
+        public static CSkillBox ReadBackup(this Deserializer reader, ref CSkillBox data){data.ReadBackup(reader);return data;}
+    }
+
+    public partial class CSkillBox  {                                                                                
+        public void WriteBackup(Serializer writer){                                                          
+            writer.Write(skillConfigId);      
+            writer.Write(isFiring);                                               
+            writer.Write(_curSkillIdx);
+            writer.Write(_skills.Count);
+            for (int i = 0; i < _skills.Count; i++) {
+                writer.WriteBackup(_skills[i]);
+            }
+        }                                                                                                           
+                                                                                                                    
+        public void ReadBackup(Deserializer reader){                                                     
+            skillConfigId = reader.ReadInt32();   
+            isFiring = reader.ReadBoolean();                                                
+            _curSkillIdx = reader.ReadInt32();
+            _skills = new List<Skill>(reader.ReadInt32());
+            for (int i = 0; i < _skills.Count; i++) {
+                var skill = new Skill();
+                _skills[i] = reader.ReadBackup(ref skill);
+            }
+        }                                         
+    }     
+    
     [Serializable]
+    [SelfImplement]
     public partial class CSkillBox : Component, ISkillEventHandler {
-        public SkillBoxConfig config;
+        public int skillConfigId;
         public bool isFiring;
-        public Skill curSkill => (_curSkillIdx >= 0) ? skills[_curSkillIdx] : null;
         [Backup] private int _curSkillIdx = 0;
+        [ReRefBackup] public SkillBoxConfig config;
+        private List<Skill> _skills = new List<Skill>();
+        public Skill curSkill => (_curSkillIdx >= 0) ? _skills[_curSkillIdx] : null;
 
 #if UNITY_EDITOR
         [UnityEngine.SerializeField]
 #endif
-        [Backup] private List<Skill> skills = new List<Skill>();
 
         public override void DoStart(){
             base.DoStart();
@@ -24,26 +55,26 @@ namespace LockstepTutorial {
                 foreach (var info in config.skillInfos) {
                     var skill = new Skill();
                     skill.DoStart(entity, info, this);
-                    skills.Add(skill);
+                    _skills.Add(skill);
                 }
             }
         }
 
         public override void DoUpdate(LFloat deltaTime){
-            foreach (var skill in skills) {
+            foreach (var skill in _skills) {
                 skill.DoUpdate(deltaTime);
             }
         }
 
         public bool Fire(int idx){
-            if (idx < 0 || idx > skills.Count) {
+            if (idx < 0 || idx > _skills.Count) {
                 return false;
             }
 
             //Debug.Log("TryFire " + idx);
 
             if (isFiring) return false; //
-            var skill = skills[idx];
+            var skill = _skills[idx];
             if (skill.Fire()) {
                 _curSkillIdx = idx;
                 return true;
@@ -58,7 +89,7 @@ namespace LockstepTutorial {
                 idx = _curSkillIdx;
             }
 
-            if (idx < 0 || idx > skills.Count) {
+            if (idx < 0 || idx > _skills.Count) {
                 return;
             }
 
@@ -85,7 +116,7 @@ namespace LockstepTutorial {
 
         public void OnDrawGizmos(){
 #if UNITY_EDITOR
-            foreach (var skill in skills) {
+            foreach (var skill in _skills) {
                 skill.OnDrawGizmos();
             }
 #endif

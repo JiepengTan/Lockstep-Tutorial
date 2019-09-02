@@ -3,7 +3,7 @@ using Lockstep.Math;
 using Lockstep.Serialization;
 
 namespace Lockstep.Game {
-    public class PlayerInput : BaseFormater,IEntity {
+    public partial class PlayerInput : BaseFormater,IComponent {
         public LVector2 mousePos;
         public LVector2 inputUV;
         public bool isInputFire;

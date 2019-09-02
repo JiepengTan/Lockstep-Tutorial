@@ -3,14 +3,15 @@ using Lockstep.Logging;
 using Lockstep.Game;
 using Lockstep.Math;
 
-namespace LockstepTutorial {
+namespace Lockstep.Game {
     [Serializable]
+    [NoBackup]
     public partial class Entity : BaseEntity {
         public CAnimator animator = new CAnimator();
         public CSkillBox skillBox = new CSkillBox();
-        public IGameStateService GameStateService { get;  set; }
+        [ReRefBackup] public IGameStateService GameStateService { get;  set; }
         
-        public IEntityView EntityView;
+        [ReRefBackup] public IEntityView EntityView;
         public LFloat moveSpd = 5;
         public LFloat turnSpd = 360;
         public int curHealth;
@@ -22,7 +23,7 @@ namespace LockstepTutorial {
 
         public bool isDead => curHealth <= 0;
 
-        public Action<Entity> OnDied;
+        [ReRefBackup] public Action<Entity> OnDied;
         public Entity(){
             RegisterComponent(animator);
             RegisterComponent(skillBox);

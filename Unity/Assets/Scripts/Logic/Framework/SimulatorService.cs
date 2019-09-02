@@ -7,7 +7,7 @@ using Lockstep.Logging;
 using Lockstep.Math;
 using Lockstep.Serialization;
 using Lockstep.Util;
-using LockstepTutorial;
+using Lockstep.Game;
 using NetMsg.Common;
 using Logger = Lockstep.Logging.Logger;
 

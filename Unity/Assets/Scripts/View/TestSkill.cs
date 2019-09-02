@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Lockstep.Game;
-using LockstepTutorial;
+using Lockstep.Game;
 using UnityEngine;
 
 public class TestSkill : MonoBehaviour

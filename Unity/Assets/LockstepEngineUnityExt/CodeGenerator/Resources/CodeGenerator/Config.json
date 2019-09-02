@@ -8,7 +8,46 @@
       "GeneratePath": "../../../../LockstepEngine/NetMsg.Common/Src/",
       "GenerateFileName": "ExtensionMsg.cs",
       "InterfaceName": "IBaseMsg",
+      "IgnoreTypeAttriName": "SelfImplementAttribute",
+      "IgnoreFiledAttriName": "NoGenCodeAttribute",
+      "ForceGenAttriName": "",
       "TypeHandlerConfigPath": "../CodeGenerator/TypeHandler/Msg.json"
+    },{
+      "__Comment": "BackupEntity",
+      "DllRelPath": "",
+      "ProjectFilePath": "",
+      "NameSpace": "Lockstep.Game",
+      "GeneratePath": "../../../../Scripts/Backup/Ext/",
+      "GenerateFileName": "ExtensionBackupEntity.cs",
+      "InterfaceName": "IEntity",
+      "IgnoreTypeAttriName": "NoBackupAttribute;SelfImplementAttribute",
+      "IgnoreFiledAttriName": "ReRefBackupAttribute;NoBackupAttribute",
+      "ForceGenAttriName": "BackupAttribute",      
+      "TypeHandlerConfigPath": "../CodeGenerator/TypeHandler/BackupEntity.json"
+    },{
+      "__Comment": "BackupComponent",
+      "DllRelPath": "",
+      "ProjectFilePath": "",
+      "NameSpace": "Lockstep.Game",
+      "GeneratePath": "../../../../Scripts/Backup/Ext/",
+      "GenerateFileName": "ExtensionBackupComponent.cs",
+      "InterfaceName": "IComponent",
+      "IgnoreTypeAttriName": "NoBackupAttribute;SelfImplementAttribute",
+      "IgnoreFiledAttriName": "ReRefBackupAttribute;NoBackupAttribute",
+      "ForceGenAttriName": "BackupAttribute",
+      "TypeHandlerConfigPath": "../CodeGenerator/TypeHandler/BackupComponent.json"
+    },{
+      "__Comment": "BackupComponentExt",
+      "DllRelPath": "",
+      "ProjectFilePath": "",
+      "NameSpace": "Lockstep.Game",
+      "GeneratePath": "../../../../Scripts/Backup/Ext/",
+      "GenerateFileName": "ExtensionBackupComponentExt.cs",
+      "InterfaceName": "IComponent",
+      "IgnoreTypeAttriName": "NoBackupAttribute;SelfImplementAttribute",
+      "IgnoreFiledAttriName": "ReRefBackupAttribute;NoBackupAttribute",
+      "ForceGenAttriName": "BackupAttribute",
+      "TypeHandlerConfigPath": "../CodeGenerator/TypeHandler/BackupComponentExt.json"
     }
   ]
 }
