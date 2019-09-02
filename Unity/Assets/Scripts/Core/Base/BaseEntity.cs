@@ -11,11 +11,26 @@ namespace Lockstep.Game {
     [Serializable]
     [NoBackup]
     public partial class BaseEntity : BaseLifeCycle, IEntity, ILPTriggerEventHandler {
-        public int EntityId { get; set; }
+        public int EntityId;
         public int PrefabId;
         public CTransform2D transform = new CTransform2D();
         [NoBackup] public object engineTransform;
         protected List<BaseComponent> allComponents;
+
+        [ReRefBackup] public IGameStateService GameStateService { get; set; }
+        [ReRefBackup] public IServiceContainer ServiceContainer { get; set; }
+        
+        public T GetService<T>() where T : IService{
+            return ServiceContainer.GetService<T>();
+        }
+        
+        public void DoBindRef(){
+            BindRef();
+        }
+
+        protected virtual void BindRef(){
+            allComponents?.Clear();
+        }
 
         protected void RegisterComponent(BaseComponent comp){
             if (allComponents == null) {

@@ -33,25 +33,29 @@ namespace Lockstep.Game {
     [Serializable]
     [SelfImplement]
     public partial class CSkillBox : Component, ISkillEventHandler {
-        public int skillConfigId;
+        public int configId;
         public bool isFiring;
-        [Backup] private int _curSkillIdx = 0;
         [ReRefBackup] public SkillBoxConfig config;
+        [Backup] private int _curSkillIdx = 0;
         [Backup] private List<Skill> _skills = new List<Skill>();
         public Skill curSkill => (_curSkillIdx >= 0) ? _skills[_curSkillIdx] : null;
 
-#if UNITY_EDITOR
-        [UnityEngine.SerializeField]
-#endif
-        public override void DoStart(){
-            base.DoStart();
-            if (config != null) {
-                config.CheckInit();
+        public override void BindEntity(BaseEntity e){
+            base.BindEntity(e);
+            config = entity.GetService<IGameConfigService>().GetSkillConfig(configId);
+            if (config == null) return;
+            config.CheckInit();
+            if (config.skillInfos.Count != _skills.Count) {
+                _skills.Clear();
                 foreach (var info in config.skillInfos) {
                     var skill = new Skill();
-                    skill.DoStart(entity, info, this);
                     _skills.Add(skill);
+                    skill.BindEntity(entity, info, this);
                 }
+            }
+            for (int i = 0; i < _skills.Count; i++) {
+                var skill = _skills[i];
+                skill.BindEntity(entity, config.skillInfos[i], this);
             }
         }
 

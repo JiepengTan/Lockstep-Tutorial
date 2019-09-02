@@ -4,8 +4,12 @@ using Lockstep.Game;
 using Lockstep.Collision2D;
 using Lockstep.Math;
 using Lockstep.Game;
+using Lockstep.UnityExt;
 using Debug = Lockstep.Logging.Debug;
 
+#if UNITY_5_3_OR_NEWER
+using HideInInspector = UnityEngine.HideInInspector;
+#endif
 
 namespace Lockstep.Game {
     public interface IAnimatorView {
@@ -13,12 +17,14 @@ namespace Lockstep.Game {
         void Sample(LFloat time);
     }
 
+
     [Serializable]
-    public partial class CAnimator : BaseComponent {
-        [ReRefBackup] public AnimatorConfig config;
-        [ReRefBackup] public IAnimatorView view;
-        [ReRefBackup] public AnimInfo curAnimInfo;
-        [ReRefBackup] public AnimBindInfo curAnimBindInfo;
+    public partial class CAnimator : Component {
+        public int configId;
+
+        [HideInInspector] [ReRefBackup] public AnimatorConfig config;
+        [HideInInspector] [ReRefBackup] public IAnimatorView view;
+        [HideInInspector] [ReRefBackup] public AnimBindInfo curAnimBindInfo;
 
         [Backup] private LFloat _animLen;
         [Backup] private LFloat _timer;
@@ -29,14 +35,25 @@ namespace Lockstep.Game {
         private LVector3 _intiPos;
 
         private List<AnimInfo> _animInfos => config.anims;
+        public AnimInfo curAnimInfo => _curAnimIdx == -1 ? null : _animInfos[_curAnimIdx];
 
-        public override void DoStart(){
+        public override void BindEntity(BaseEntity baseEntity){
+            base.BindEntity(baseEntity);
+            config = entity.GetService<IGameConfigService>().GetAnimatorConfig(configId);
             if (config == null) return;
+            UpdateBindInfo();
             _animNames.Clear();
             foreach (var info in _animInfos) {
                 _animNames.Add(info.name);
             }
+        }
 
+        void UpdateBindInfo(){
+            curAnimBindInfo = config.events.Find((a) => a.name == _curAnimName);
+            if (curAnimBindInfo == null) curAnimBindInfo = AnimBindInfo.Empty;
+        }
+
+        public override void DoStart(){
             Play(AnimDefine.Idle);
         }
 
@@ -75,9 +92,8 @@ namespace Lockstep.Game {
             Debug.Trace($"{baseEntity.EntityId} PlayAnim {name} rawName {_curAnimName}");
             var hasChangedAnim = _curAnimName != name;
             _curAnimName = name;
-            curAnimInfo = _animInfos[idx];
-            curAnimBindInfo = config.events.Find((a) => a.name == name);
-            if (curAnimBindInfo == null) curAnimBindInfo = AnimBindInfo.Empty;
+            _curAnimIdx = idx;
+            UpdateBindInfo();
             if (hasChangedAnim) {
                 //owner.TakeDamage(0, owner.transform2D.Pos3);
                 ResetAnim();

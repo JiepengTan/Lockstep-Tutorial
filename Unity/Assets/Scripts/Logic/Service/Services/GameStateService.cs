@@ -10,6 +10,7 @@ namespace Lockstep.Game {
     public partial class GameStateService : BaseGameService, IGameStateService {
         private GameState _curGameState;
         private Dictionary<Type, IList> _type2Entities = new Dictionary<Type, IList>();
+        private Dictionary<int, object> _id2Entities = new Dictionary<int, object>();
 
         public class CopyStateCmd : BaseCommand {
             private GameState state;
@@ -74,6 +75,32 @@ namespace Lockstep.Game {
 
         Dictionary<int, Serializer> _tick2Backup = new Dictionary<int, Serializer>();
 
+        
+        public static int maxCount = 1;
+        private static int curCount = 0;
+        private static int enmeyID = 0;
+ 
+        public void CreateEnemy(int prefabId, LVector3 position){
+            if (curCount >= maxCount) {
+                return;
+            }
+            curCount++;
+            var entity = _gameEntityService.CreateEnemy(prefabId, position) as Enemy;
+            entity.OnDied += (e) => { RemoveEnemy(e as Enemy); };
+            AddEnemy(entity);
+        }
+
+
+        public void AddEnemy(Enemy enemy){
+            AddEntity(enemy);
+        }
+
+        public void RemoveEnemy(Enemy enemy){
+            RemoveEntity(enemy);
+        }
+        
+        
+        
         public override void Backup(int tick){
             //
             Serializer writer = new Serializer();
@@ -92,6 +119,9 @@ namespace Lockstep.Game {
                 var enemies = RecoverEntities(new List<Enemy>(), reader);
                 var players = RecoverEntities(new List<Player>(), reader);
                 var spawners = RecoverEntities(new List<Spawner>(), reader);
+                _type2Entities[typeof(Enemy)] = enemies;
+                _type2Entities[typeof(Player)] = players;
+                _type2Entities[typeof(Spawner)] = spawners;
                 //TODO
                 //0. Recover Entities
                 //1. Rebind Ref
@@ -99,8 +129,6 @@ namespace Lockstep.Game {
                 //    1. Find diff
                 //    2. Pool Views
                 //3. Recover Services
-                
-                
             }
             else {
                 Debug.LogError($"Miss backup data  cannot rollback! {tick}");
@@ -111,11 +139,24 @@ namespace Lockstep.Game {
             base.Clean(maxVerifiedTick);
         }
 
-        void BackUpEntities<T>(List<T> lst, Serializer writer) where T : IBackup{
-            //writer.Write();
+        void BackUpEntities<T>(List<T> lst, Serializer writer) where T : IBackup, new(){
+            writer.Write(lst.Count);
+            foreach (var item in lst) {
+                item.WriteBackup(writer);
+            }
         }
 
-        List<T> RecoverEntities<T>(List<T> lst, Deserializer writer) where T : IBackup{
+        List<T> RecoverEntities<T>(List<T> lst, Deserializer reader) where T : IBackup, new(){
+            var count = reader.ReadInt32();
+            for (int i = 0; i < count; i++) {
+                var t = new T();
+                lst.Add(t);
+                t.ReadBackup(reader);
+                if (t is IAfterBackup tt) {
+                    tt.OnAfterDeserialize();
+                }
+            }
+
             return lst;
         }
 

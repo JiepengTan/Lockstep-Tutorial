@@ -9,9 +9,6 @@ namespace Lockstep.Game {
         private List<Spawner> Spawners => _gameStateService.GetSpawners();
         private List<Enemy> AllEnemy => _gameStateService.GetEnemies();
 
-        public static int maxCount = 1;
-        private static int curCount = 0;
-        private static int enmeyID = 0;
 
         public override void DoStart(){
             var spawnerInfos = _gameConfigService.SpawnerConfig.spawners;
@@ -20,7 +17,8 @@ namespace Lockstep.Game {
                 Spawners.Add(new Spawner() {info = item});
             }
             foreach (var spawner in Spawners) {
-                spawner.OnSpawnEvent += OnSpawn;
+                spawner.ServiceContainer = _serviceContainer;
+                spawner.GameStateService = _gameStateService;
                 spawner.DoStart();
             }
         }
@@ -35,26 +33,5 @@ namespace Lockstep.Game {
             }
         }
 
-        private void OnSpawn(int prefabId, LVector3 position){
-
-            if (curCount >= maxCount) {
-                return;
-            }
-        
-            curCount++;
-
-            var entity = _gameEntityService.CreateEnemy(prefabId, position) as Enemy;
-            entity.OnDied += (e) => { RemoveEnemy(e as Enemy); };
-            AddEnemy(entity);
-        }
-
-
-        public void AddEnemy(Enemy enemy){
-            AllEnemy.Add(enemy);
-        }
-
-        public void RemoveEnemy(Enemy enemy){
-            AllEnemy.Remove(enemy);
-        }
     }
 }

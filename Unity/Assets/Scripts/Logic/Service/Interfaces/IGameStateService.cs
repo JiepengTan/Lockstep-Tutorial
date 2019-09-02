@@ -11,5 +11,7 @@ namespace Lockstep.Game {
         List<Enemy> GetEnemies();
         List<Player> GetPlayers();
         List<Spawner> GetSpawners();
+        object GetEntity(int id);
+        void CreateEnemy(int prefabId, LVector3 position);
     }
 }

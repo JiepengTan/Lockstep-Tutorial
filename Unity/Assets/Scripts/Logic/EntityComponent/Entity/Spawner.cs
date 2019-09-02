@@ -5,8 +5,6 @@ using Lockstep.Math;
 namespace Lockstep.Game {
     public partial class Spawner : BaseEntity {
         public SpawnerInfo info = new SpawnerInfo();
-        [NoBackup] public Action<int, LVector3> OnSpawnEvent;
-
         [Backup] private LFloat _timer;
 
         public override void DoStart(){
@@ -22,7 +20,7 @@ namespace Lockstep.Game {
         }
 
         public void Spawn(){
-            OnSpawnEvent(info.prefabId, info.spawnPoint);
+            GameStateService.CreateEnemy(info.prefabId, info.spawnPoint);
         }
     }
 }

@@ -31,8 +31,10 @@ namespace Lockstep.Game {
             var prefab = prefabObj as GameObject;
             var obj = (GameObject) GameObject.Instantiate(prefab, position.ToVector3(), Quaternion.identity);
             entity.GameStateService = _gameStateService;
+            entity.ServiceContainer = _serviceContainer;
             entity.engineTransform = obj.transform;
             entity.transform.Pos3 = position;
+            entity.DoBindRef();
             config.CopyTo(entity);
             entity.PrefabId = prefabId;
             PhysicSystem.Instance.RegisterEntity(prefab, obj, entity);

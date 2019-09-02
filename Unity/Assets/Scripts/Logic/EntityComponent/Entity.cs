@@ -11,7 +11,7 @@ namespace Lockstep.Game {
         public CRigidbody rigidbody = new CRigidbody();
         public CAnimator animator = new CAnimator();
         public ColliderData colliderData = new ColliderData();
-        
+
         public CSkillBox skillBox = new CSkillBox();
         public LFloat moveSpd = 5;
         public LFloat turnSpd = 360;
@@ -24,11 +24,13 @@ namespace Lockstep.Game {
 
         public bool isDead => curHealth <= 0;
 
-        [ReRefBackup] public IGameStateService GameStateService { get;  set; }
-        
+
         [ReRefBackup] public IEntityView EntityView;
         [ReRefBackup] public Action<Entity> OnDied;
-        public Entity(){
+
+
+        protected override void BindRef(){
+            base.BindRef();
             RegisterComponent(animator);
             RegisterComponent(skillBox);
         }
@@ -48,7 +50,7 @@ namespace Lockstep.Game {
             rigidbody.DoUpdate(deltaTime);
             base.DoUpdate(deltaTime);
         }
-        
+
         public bool Fire(int idx = 0){
             return skillBox.Fire(idx);
         }
@@ -69,13 +71,11 @@ namespace Lockstep.Game {
                 PhysicSystem.Instance.RemoveCollider(this);
             }
         }
+
         protected virtual void OnTakeDamage(int amount, LVector3 hitPoint){ }
 
         protected virtual void OnDead(){
             Debug.Log($"{EntityId} Dead");
         }
-        
-        
-        
     }
 }

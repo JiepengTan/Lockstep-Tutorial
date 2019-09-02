@@ -53,7 +53,7 @@ namespace Lockstep.Game {
 
         public void ForceStop(){ }
 
-        public void DoStart(Entity entity, SkillInfo info, ISkillEventHandler eventHandler){
+        public void BindEntity(Entity entity, SkillInfo info, ISkillEventHandler eventHandler){
             this.entity = entity;
             this.SkillInfo = info;
             this.eventHandler = eventHandler;

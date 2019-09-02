@@ -2,7 +2,9 @@ using Lockstep.Game;
 
 namespace Lockstep.Game {
     public partial class Enemy : IAfterBackup {
-        public void OnAfterDeserialize(){ }
+        public void OnAfterDeserialize(){
+            
+        }
     }
 
     public partial class Player : IAfterBackup {

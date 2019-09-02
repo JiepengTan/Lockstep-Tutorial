@@ -9,6 +9,8 @@ namespace Lockstep.Game {
         EnemyConfig GetEnemyConfig(int id);
 
         PlayerConfig GetPlayerConfig(int id);
+        AnimatorConfig GetAnimatorConfig(int id);
+        SkillBoxConfig GetSkillConfig(int id);
 
         CollisionConfig CollisionConfig { get; }
         SpawnerConfig SpawnerConfig { get; }

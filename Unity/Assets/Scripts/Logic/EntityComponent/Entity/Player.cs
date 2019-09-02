@@ -12,8 +12,9 @@ namespace Lockstep.Game {
         public int localId;
         public PlayerInput input = new PlayerInput();
         public CMover mover = new CMover();
-
-        public Player(){
+ 
+        protected override void BindRef(){
+            base.BindRef();
             RegisterComponent(mover);
         }
         public override void DoUpdate(LFloat deltaTime){

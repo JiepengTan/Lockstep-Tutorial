@@ -129,6 +129,7 @@ namespace Lockstep.Collision2D{
 namespace Lockstep.Game{                                                                                               
     public partial class Enemy :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
+			writer.Write(EntityId);
 			writer.Write(PrefabId);
 			writer.Write(curHealth);
 			writer.Write(damage);
@@ -142,11 +143,11 @@ namespace Lockstep.Game{
 			colliderData.WriteBackup(writer);
 			rigidbody.WriteBackup(writer);
 			skillBox.WriteBackup(writer);
-			transform.WriteBackup(writer);
-			writer.Write(EntityId);                                                                                     
+			transform.WriteBackup(writer);                                                                                     
        }                                                                                            
                                                                                                     
        public void ReadBackup(Deserializer reader){                                       
+			EntityId = reader.ReadInt32();
 			PrefabId = reader.ReadInt32();
 			curHealth = reader.ReadInt32();
 			damage = reader.ReadInt32();
@@ -160,8 +161,7 @@ namespace Lockstep.Game{
 			colliderData.ReadBackup(reader);
 			rigidbody.ReadBackup(reader);
 			skillBox.ReadBackup(reader);
-			transform.ReadBackup(reader);
-			EntityId = reader.ReadInt32();                                                                                     
+			transform.ReadBackup(reader);                                                                                     
        }                                                                                            
     }                                                               
 }                                                              
@@ -169,6 +169,7 @@ namespace Lockstep.Game{
 namespace Lockstep.Game{                                                                                               
     public partial class Player :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
+			writer.Write(EntityId);
 			writer.Write(PrefabId);
 			writer.Write(curHealth);
 			writer.Write(damage);
@@ -184,11 +185,11 @@ namespace Lockstep.Game{
 			mover.WriteBackup(writer);
 			rigidbody.WriteBackup(writer);
 			skillBox.WriteBackup(writer);
-			transform.WriteBackup(writer);
-			writer.Write(EntityId);                                                                                     
+			transform.WriteBackup(writer);                                                                                     
        }                                                                                            
                                                                                                     
        public void ReadBackup(Deserializer reader){                                       
+			EntityId = reader.ReadInt32();
 			PrefabId = reader.ReadInt32();
 			curHealth = reader.ReadInt32();
 			damage = reader.ReadInt32();
@@ -204,8 +205,7 @@ namespace Lockstep.Game{
 			mover.ReadBackup(reader);
 			rigidbody.ReadBackup(reader);
 			skillBox.ReadBackup(reader);
-			transform.ReadBackup(reader);
-			EntityId = reader.ReadInt32();                                                                                     
+			transform.ReadBackup(reader);                                                                                     
        }                                                                                            
     }                                                               
 }                                                              
@@ -251,19 +251,19 @@ namespace Lockstep.Game{
 namespace Lockstep.Game{                                                                                               
     public partial class Spawner :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
+			writer.Write(EntityId);
 			writer.Write(PrefabId);
 			writer.Write(_timer);
 			info.WriteBackup(writer);
-			transform.WriteBackup(writer);
-			writer.Write(EntityId);                                                                                     
+			transform.WriteBackup(writer);                                                                                     
        }                                                                                            
                                                                                                     
        public void ReadBackup(Deserializer reader){                                       
+			EntityId = reader.ReadInt32();
 			PrefabId = reader.ReadInt32();
 			_timer = reader.ReadLFloat();
 			info.ReadBackup(reader);
-			transform.ReadBackup(reader);
-			EntityId = reader.ReadInt32();                                                                                     
+			transform.ReadBackup(reader);                                                                                     
        }                                                                                            
     }                                                               
 }                                                              

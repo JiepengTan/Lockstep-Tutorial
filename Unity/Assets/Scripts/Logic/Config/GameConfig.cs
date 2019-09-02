@@ -21,9 +21,7 @@ namespace Lockstep.Game {
             FieldInfo[] fields = dst.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
             foreach (var field in fields) {
                 var type = field.FieldType;
-                if (typeof(BaseComponent).IsAssignableFrom(type)
-                    || typeof(CRigidbody).IsAssignableFrom(type)
-                    || typeof(Transform).IsAssignableFrom(type)
+                if (typeof(INeedBackup).IsAssignableFrom(type)
                 ) {
                     CopyTo(field.GetValue(dst), field.GetValue(Entity));
                 }
