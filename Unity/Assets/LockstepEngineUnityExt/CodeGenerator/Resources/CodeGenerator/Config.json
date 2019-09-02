@@ -1,0 +1,14 @@
+{
+  "GenInfos": [
+    {
+      "__Comment": "NetMsg.Commons",
+      "DllRelPath": "",
+      "ProjectFilePath": "",
+      "NameSpace": "NetMsg.Commons",
+      "GeneratePath": "../../../../LockstepEngine/NetMsg.Commons/Src/",
+      "GenerateFileName": "ExtensionMsg.cs",
+      "InterfaceName": "IBaseMsg",
+      "TypeHandlerConfigPath": "../CodeGenerator/TypeHandler/Msg.json"
+    }
+  ]
+}
