@@ -15,10 +15,10 @@ namespace Lockstep.Game {
     public class SimulatorService : BaseGameService, ISimulatorService {
         public const int MinMissFrameReqTickDiff = 10;
         public const int MaxSimulationMsPerFrame = 20;
-        
+
         public static int PingVal;
         public static List<float> Delays = new List<float>();
-        
+
         public static SimulatorService Instance { get; private set; }
 
         public SimulatorService(){
@@ -28,7 +28,7 @@ namespace Lockstep.Game {
         public World World => _world;
         private World _world = new World();
         public bool IsRunning { get; set; }
-        
+
         private byte _localActorId;
 
         private float _tickDt;
@@ -170,6 +170,7 @@ namespace Lockstep.Game {
         }
 
         private float remainTime = 0;
+
         public void DoUpdate(float deltaTime){
             if (!IsRunning) {
                 return;
@@ -178,18 +179,24 @@ namespace Lockstep.Game {
             if (_constStateService.IsVideoMode) {
                 return;
             }
-         
-            if (_constStateService.IsClientMode) {  
-                remainTime += deltaTime;
-                while (remainTime >= 0.03f) {
-                    remainTime -= 0.03f;   
-                    var input = new Msg_PlayerInput(_world.Tick, _localActorId, _inputService.GetInputCmds());
-                    var frame = new ServerFrame() {
-                        tick = _world.Tick,
-                        _inputs = new Msg_PlayerInput[] {input}
-                    };
-                    Simulate(frame);
-                }
+
+            remainTime += deltaTime;
+            while (remainTime >= 0.03f) {
+                remainTime -= 0.03f;
+                Step();
+            }
+        }
+
+        private void Step(){
+            if (_constStateService.IsClientMode) {
+                var input = new Msg_PlayerInput(_world.Tick, _localActorId, _inputService.GetInputCmds());
+                var frame = new ServerFrame() {
+                    tick = _world.Tick,
+                    _inputs = new Msg_PlayerInput[] {input}
+                };
+                _cmdBuffer.PushLocalFrame(frame);
+                _cmdBuffer.PushServerFrames(new ServerFrame[]{frame});
+                Simulate(_cmdBuffer.GetFrame(_world.Tick));
                 return;
             }
 
@@ -391,7 +398,7 @@ namespace Lockstep.Game {
             }
 
             _world.StartSimulate(_serviceContainer, _mgrContainer);
-            EventHelper.Trigger(EEvent.LevelLoadProgress,1f);
+            EventHelper.Trigger(EEvent.LevelLoadProgress, 1f);
         }
 
         private void FillInputWithLastFrame(ServerFrame frame){

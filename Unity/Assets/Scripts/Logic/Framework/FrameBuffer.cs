@@ -69,7 +69,7 @@ namespace Lockstep.Game {
                 var data = frames[i];
 
                 if (data == null || data.tick < nextTickToCheck) {
-                    //已经验证过的帧 直接抛弃
+                    //the frame is already checked
                     return;
                 }
 
