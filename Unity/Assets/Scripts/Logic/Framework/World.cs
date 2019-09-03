@@ -63,8 +63,6 @@ namespace Lockstep.Game {
             _traceLogPath = $"c:/tmp/LPDemo/Dump_{Instance.localPlayerId}.txt";
 #endif
             Debug.TraceSavePath = _traceLogPath;
-            var allPlayers = _gameStateService.GetPlayers();
-            allPlayers.Clear();
 
             Debug.Trace("CreatePlayer " + playerCount);
             //create Players 
@@ -73,8 +71,8 @@ namespace Lockstep.Game {
                 var initPos = LVector2.zero; //TODO
                 var player = _gameStateService.CreateEntity<Player>(PrefabId, initPos);
                 player.localId = i;
-                allPlayers.Add(player);
             }
+            var allPlayers = _gameStateService.GetPlayers();
 
             for (int i = 0; i < playerCount; i++) {
                 allPlayers[i].input = PlayerInputs[i];

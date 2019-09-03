@@ -17,7 +17,7 @@
       "DllRelPath": "",
       "ProjectFilePath": "",
       "NameSpace": "Lockstep.Game",
-      "GeneratePath": "../../../../Scripts/Backup/Ext/",
+      "GeneratePath": "../../../../Scripts/Logic/Backup/Ext/",
       "GenerateFileName": "ExtensionBackup.cs",
       "InterfaceName": "INeedBackup",
       "IgnoreTypeAttriName": "NoBackupAttribute;SelfImplementAttribute",

@@ -20,6 +20,7 @@ namespace Lockstep.Game {
             }
 
             var config = _gameConfigService.GetEntityConfig(id);
+            if (string.IsNullOrEmpty(config.prefabPath)) return null;
             var prefab = (GameObject) Resources.Load(pathPrefix + config.prefabPath);
             _id2Prefab[id] = prefab;
             PhysicSystem.Instance.RigisterPrefab(id, id < 10 ? (int) EColliderLayer.Hero : (int) EColliderLayer.Enemy);

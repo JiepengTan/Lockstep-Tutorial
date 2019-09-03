@@ -55,7 +55,12 @@ namespace Lockstep.Game {
         public override object Entity => entity;
         public Player entity = new Player();
     }
-
+    [Serializable]
+    public class SpawnerConfig : EntityConfig {
+        public override object Entity => entity;
+        public Spawner entity = new Spawner();
+    }
+    
     [Serializable]
     public class CollisionConfig {
         public Vector2 scrollPos;
@@ -99,34 +104,28 @@ namespace Lockstep.Game {
         public int showTreeId = 0;
     }
 
-    [Serializable]
-    public class SpawnerConfig {
-        public List<SpawnerInfo> spawners = new List<SpawnerInfo>();
-    }
 
     [CreateAssetMenu(menuName = "GameConfig")]
     public class GameConfig : ScriptableObject {
         public List<PlayerConfig> player = new List<PlayerConfig>();
         public List<EnemyConfig> enemies = new List<EnemyConfig>();
+        public List<SpawnerConfig> spawner = new List<SpawnerConfig>();
         public List<AnimatorConfig> animators = new List<AnimatorConfig>();
         public List<SkillBoxConfig> skills = new List<SkillBoxConfig>();
 
-        public EnemyConfig GetEnemyConfig(int id){
-            if (id < 0 || id >= enemies.Count) {
-                Debug.LogError("Miss EnemyConfig" + id);
+        private T GetConfig<T>(List<T> lst, int id) where T: EntityConfig{
+            if (id < 0 || id >= lst.Count) {
+                Debug.LogError("Miss " + typeof(T)  + " "+ id);
                 return null;
             }
-
-            return enemies[id];
+            return lst[id];
         }
 
-        public PlayerConfig GetPlayerConfig(int id){
-            if (id < 0 ||id >= player.Count) {
-                Debug.LogError("Miss PlayerConfig" + id);
-                return null;
-            }
-            return player[id];
-        }
+        public EntityConfig GetEnemyConfig(int id){return  GetConfig(enemies, id);}
+        public EntityConfig GetPlayerConfig(int id){return  GetConfig(player, id);}
+        public EntityConfig GetSpawnerConfig(int id){return  GetConfig(spawner, id);}
+
+     
 
         public AnimatorConfig GetAnimatorConfig(int id){
             return (id < 0 ||id >= animators.Count) ? null : animators[id];
@@ -135,9 +134,7 @@ namespace Lockstep.Game {
         public SkillBoxConfig GetSkillConfig(int id){
             return (id < 0 ||id >= skills.Count) ? null : skills[id];
         }
-
         public CollisionConfig CollisionConfig;
-        public SpawnerConfig SpawnerConfig;
         public string RecorderFilePath;
         public Msg_G2C_GameStartInfo ClientModeInfo = new Msg_G2C_GameStartInfo();
     }

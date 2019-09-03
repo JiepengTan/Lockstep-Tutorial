@@ -14,6 +14,11 @@ namespace Lockstep.Game {
         private Dictionary<int, Serializer> _tick2Backup = new Dictionary<int, Serializer>();
 
         private void AddEntity<T>(T e) where T : BaseEntity{
+            if (typeof(T) == typeof(Player)) {
+                int i = 0;
+                Debug.Log("Add Player");
+            }
+
             var t = e.GetType();
             if (_type2Entities.TryGetValue(t, out var lstObj)) {
                 var lst = lstObj as List<T>;
@@ -50,19 +55,17 @@ namespace Lockstep.Game {
                 return lst;
             }
         }
-
-        public List<Enemy> GetEnemies(){
-            return GetEntities<Enemy>();
+        public Enemy[] GetEnemies(){
+            return GetEntities<Enemy>().ToArray();
         }
 
-        public List<Player> GetPlayers(){
-            return GetEntities<Player>();
+        public Player[] GetPlayers(){
+            return GetEntities<Player>().ToArray();
         }
 
-        public List<Spawner> GetSpawners(){
-            return GetEntities<Spawner>();
+        public Spawner[] GetSpawners(){
+            return GetEntities<Spawner>().ToArray();//TODO Cache
         }
-
 
         public object GetEntity(int id){
             if (_id2Entities.TryGetValue(id, out var val)) {
@@ -74,9 +77,8 @@ namespace Lockstep.Game {
 
         public T CreateEntity<T>(int prefabId, LVector3 position) where T : BaseEntity, new(){
             Debug.Trace($"CreateEntity {prefabId} pos {prefabId}");
-            var config = _gameConfigService.GetEntityConfig(prefabId);
             var baseEntity = new T();
-            config.CopyTo(baseEntity); 
+            _gameConfigService.GetEntityConfig(prefabId)?.CopyTo(baseEntity);
             baseEntity.EntityId = _idService.GenId();
             baseEntity.PrefabId = prefabId;
             baseEntity.GameStateService = _gameStateService;
@@ -119,7 +121,6 @@ namespace Lockstep.Game {
                 foreach (var pair in _id2Entities) {
                     _gameViewService.UnbindView(pair.Value);
                 }
-
                 _id2Entities.Clear();
                 _type2Entities.Clear();
 
@@ -150,8 +151,8 @@ namespace Lockstep.Game {
             base.Clean(maxVerifiedTick);
         }
 
-        void BackUpEntities<T>(List<T> lst, Serializer writer) where T : BaseEntity, IBackup, new(){
-            writer.Write(lst.Count);
+        void BackUpEntities<T>(T[] lst, Serializer writer) where T : BaseEntity, IBackup, new(){
+            writer.Write(lst.Length);
             foreach (var item in lst) {
                 item.WriteBackup(writer);
             }

@@ -181,6 +181,10 @@ namespace Lockstep.Game {
             }
 
             remainTime += deltaTime;
+            if (_commonStateService.IsPause) {
+                return;
+            }
+
             while (remainTime >= 0.03f) {
                 remainTime -= 0.03f;
                 Step();

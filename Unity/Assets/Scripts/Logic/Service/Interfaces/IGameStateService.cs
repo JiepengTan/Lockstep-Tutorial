@@ -13,9 +13,9 @@ namespace Lockstep.Game {
         
         
         
-        List<Enemy> GetEnemies();
-        List<Player> GetPlayers();
-        List<Spawner> GetSpawners();
+        Enemy[] GetEnemies();
+        Player[] GetPlayers();
+        Spawner[] GetSpawners();
         object GetEntity(int id);
         T CreateEntity<T>(int prefabId, LVector3 position) where T:BaseEntity, new ();
         void DestroyEntity(BaseEntity entity);

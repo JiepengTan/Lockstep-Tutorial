@@ -22,14 +22,16 @@ namespace Lockstep.Game{
 			writer.Write(_animLen);
 			writer.Write(_curAnimIdx);
 			writer.Write(_curAnimName);
-			writer.Write(_timer);                                                                                     
+			writer.Write(_timer);
+			writer.Write(configId);                                                                                     
        }                                                                                            
                                                                                                     
        public void ReadBackup(Deserializer reader){                                       
 			_animLen = reader.ReadLFloat();
 			_curAnimIdx = reader.ReadInt32();
 			_curAnimName = reader.ReadString();
-			_timer = reader.ReadLFloat();                                                                                     
+			_timer = reader.ReadLFloat();
+			configId = reader.ReadInt32();                                                                                     
        }                                                                                            
     }                                                               
 }                                                              
@@ -38,12 +40,14 @@ namespace Lockstep.Game{
     public partial class CBrain :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(atkInterval);
-			writer.Write(stopDistSqr);                                                                                     
+			writer.Write(stopDistSqr);
+			writer.Write(targetId);                                                                                     
        }                                                                                            
                                                                                                     
        public void ReadBackup(Deserializer reader){                                       
 			atkInterval = reader.ReadLFloat();
-			stopDistSqr = reader.ReadLFloat();                                                                                     
+			stopDistSqr = reader.ReadLFloat();
+			targetId = reader.ReadInt32();                                                                                     
        }                                                                                            
     }                                                               
 }                                                              
@@ -254,7 +258,7 @@ namespace Lockstep.Game{
 			writer.Write(EntityId);
 			writer.Write(PrefabId);
 			writer.Write(_timer);
-			info.WriteBackup(writer);
+			Info.WriteBackup(writer);
 			transform.WriteBackup(writer);                                                                                     
        }                                                                                            
                                                                                                     
@@ -262,14 +266,14 @@ namespace Lockstep.Game{
 			EntityId = reader.ReadInt32();
 			PrefabId = reader.ReadInt32();
 			_timer = reader.ReadLFloat();
-			info.ReadBackup(reader);
+			Info.ReadBackup(reader);
 			transform.ReadBackup(reader);                                                                                     
        }                                                                                            
     }                                                               
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class SpawnerInfo :IBackup{                                                                  
+    public partial class SpawnerInfo : IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(prefabId);
 			writer.Write(spawnPoint);

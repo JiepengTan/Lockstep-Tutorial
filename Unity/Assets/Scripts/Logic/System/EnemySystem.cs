@@ -6,16 +6,17 @@ using Debug = Lockstep.Logging.Debug;
 
 namespace Lockstep.Game {
     public class EnemySystem : BaseSystem {
-        private List<Spawner> Spawners => _gameStateService.GetSpawners();
-        private List<Enemy> AllEnemy => _gameStateService.GetEnemies();
+        private Spawner[] Spawners => _gameStateService.GetSpawners();
+        private Enemy[] AllEnemy => _gameStateService.GetEnemies();
 
 
         public override void DoStart(){
-            var spawnerInfos = _gameConfigService.SpawnerConfig.spawners;
-            Spawners.Clear();
-            foreach (var item in spawnerInfos) {
-                Spawners.Add(new Spawner() {info = item});
+            for (int i = 0; i < 3; i++) {
+                var configId = 100 + i;
+                var config = _gameConfigService.GetEntityConfig(configId) as SpawnerConfig;
+                _gameStateService.CreateEntity<Spawner>(configId, config.entity.Info.spawnPoint);
             }
+
             foreach (var spawner in Spawners) {
                 spawner.ServiceContainer = _serviceContainer;
                 spawner.GameStateService = _gameStateService;
@@ -32,6 +33,5 @@ namespace Lockstep.Game {
                 enemy.DoUpdate(deltaTime);
             }
         }
-
     }
 }

@@ -15,6 +15,9 @@ namespace Lockstep.Game {
         }
 
         public EntityConfig GetEntityConfig(int id){
+            if (id >= 100) {
+                return _config.GetSpawnerConfig(id - 100);
+            }
             if (id >= 10) {
                 return _config.GetEnemyConfig(id - 10);
             }
@@ -29,9 +32,7 @@ namespace Lockstep.Game {
             return _config.GetSkillConfig(id - 1);
         }
 
-
         public CollisionConfig CollisionConfig => _config.CollisionConfig;
-        public SpawnerConfig SpawnerConfig => _config.SpawnerConfig;
         public string RecorderFilePath => _config.RecorderFilePath;
         public Msg_G2C_GameStartInfo ClientModeInfo => _config.ClientModeInfo;
     }

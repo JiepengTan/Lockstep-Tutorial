@@ -7,6 +7,7 @@ namespace Lockstep.Game {
         int Tick { get; }
         LFloat DeltaTime { get;  }
         LFloat TimeSinceGameStart { get; }
+        bool IsPause { get; set; }
 
         void SetTick(int val);
         void SetDeltaTime(LFloat val);

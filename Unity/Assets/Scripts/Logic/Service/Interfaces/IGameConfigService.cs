@@ -11,8 +11,6 @@ namespace Lockstep.Game {
         SkillBoxConfig GetSkillConfig(int id);
 
         CollisionConfig CollisionConfig { get; }
-        SpawnerConfig SpawnerConfig { get; }
-
         string RecorderFilePath { get; }
         Msg_G2C_GameStartInfo ClientModeInfo{ get; }
     }

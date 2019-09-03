@@ -2,18 +2,19 @@ using System;
 using Lockstep.Game;
 using Lockstep.Math;
 
-namespace Lockstep.Game {
+namespace Lockstep.Game {    
+    [Serializable]
     public partial class Spawner : BaseEntity {
-        public SpawnerInfo info = new SpawnerInfo();
+        public SpawnerInfo Info = new SpawnerInfo();
         [Backup] private LFloat _timer;
 
         public override void DoStart(){
-            _timer = info.spawnTime;
+            _timer = Info.spawnTime;
         }
 
         public override void DoUpdate(LFloat deltaTime){
             _timer += deltaTime;
-            if (_timer > info.spawnTime) {
+            if (_timer > Info.spawnTime) {
                 _timer = LFloat.zero;
                 Spawn();
             }
@@ -23,8 +24,9 @@ namespace Lockstep.Game {
             if (GameStateService.CurEnemyCount >= GameStateService.MaxEnemyCount) {
                 return;
             }
+
             GameStateService.CurEnemyCount++;
-            GameStateService.CreateEntity<Enemy>(info.prefabId, info.spawnPoint);
+            GameStateService.CreateEntity<Enemy>(Info.prefabId, Info.spawnPoint);
         }
     }
 }

@@ -57,7 +57,7 @@ public class MainScript : MonoBehaviour {
         launcher.OnApplicationQuit();
     }
 
-    private T GetService<T>() where T : IService{
+    public T GetService<T>() where T : IService{
         return _serviceContainer.GetService<T>();
     }
 }

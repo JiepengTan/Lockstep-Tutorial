@@ -6,8 +6,8 @@ using Lockstep.Game;
 
 namespace Lockstep.Game {
     public class HashSystem : BaseSystem {
-        public List<Enemy> AllEnemies => _gameStateService.GetEnemies();
-        public List<Player> AllPlayers => _gameStateService.GetPlayers();
+        public Enemy[] AllEnemies => _gameStateService.GetEnemies();
+        public Player[] AllPlayers => _gameStateService.GetPlayers();
 
         //{string.Format("{0:yyyyMMddHHmmss}", DateTime.Now)}_
         public int GetHash(){
