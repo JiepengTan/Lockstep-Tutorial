@@ -106,25 +106,34 @@ namespace Lockstep.Game {
 
     [CreateAssetMenu(menuName = "GameConfig")]
     public class GameConfig : ScriptableObject {
-        public List<EnemyConfig> enemies = new List<EnemyConfig>();
         public List<PlayerConfig> player = new List<PlayerConfig>();
+        public List<EnemyConfig> enemies = new List<EnemyConfig>();
         public List<AnimatorConfig> animators = new List<AnimatorConfig>();
         public List<SkillBoxConfig> skills = new List<SkillBoxConfig>();
 
         public EnemyConfig GetEnemyConfig(int id){
+            if (id < 0 || id >= enemies.Count) {
+                Debug.LogError("Miss EnemyConfig" + id);
+                return null;
+            }
+
             return enemies[id];
         }
 
         public PlayerConfig GetPlayerConfig(int id){
+            if (id < 0 ||id >= player.Count) {
+                Debug.LogError("Miss PlayerConfig" + id);
+                return null;
+            }
             return player[id];
         }
 
         public AnimatorConfig GetAnimatorConfig(int id){
-            return animators[id];
+            return (id < 0 ||id >= animators.Count) ? null : animators[id];
         }
 
         public SkillBoxConfig GetSkillConfig(int id){
-            return skills[id];
+            return (id < 0 ||id >= skills.Count) ? null : skills[id];
         }
 
         public CollisionConfig CollisionConfig;

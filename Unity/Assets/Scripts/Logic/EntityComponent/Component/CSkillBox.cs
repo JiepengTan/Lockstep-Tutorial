@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
-using Lockstep.Logging;
 using Lockstep.Game;
 using Lockstep.Math;
 using Lockstep.Serialization;
+using Lockstep.UnityExt;
+using Debug = Lockstep.Logging.Debug;
+#if UNITY_EDITOR
+using HideInInspector = UnityEngine.HideInInspector;
+#endif
 
 namespace Lockstep.Game {
     public partial class CSkillBox : IBackup {
@@ -35,7 +39,7 @@ namespace Lockstep.Game {
     public partial class CSkillBox : Component, ISkillEventHandler {
         public int configId;
         public bool isFiring;
-        [ReRefBackup] public SkillBoxConfig config;
+        [HideInInspector]  [ReRefBackup] public SkillBoxConfig config;
         [Backup] private int _curSkillIdx = 0;
         [Backup] private List<Skill> _skills = new List<Skill>();
         public Skill curSkill => (_curSkillIdx >= 0) ? _skills[_curSkillIdx] : null;
@@ -60,12 +64,14 @@ namespace Lockstep.Game {
         }
 
         public override void DoUpdate(LFloat deltaTime){
+            if (config == null) return;
             foreach (var skill in _skills) {
                 skill.DoUpdate(deltaTime);
             }
         }
 
         public bool Fire(int idx){
+            if (config == null) return false;
             if (idx < 0 || idx > _skills.Count) {
                 return false;
             }
@@ -84,6 +90,7 @@ namespace Lockstep.Game {
         }
 
         public void ForceStop(int idx = -1){
+            if (config == null) return;
             if (idx == -1) {
                 idx = _curSkillIdx;
             }
@@ -114,6 +121,7 @@ namespace Lockstep.Game {
         }
 
         public void OnDrawGizmos(){
+            if (config == null) return;
 #if UNITY_EDITOR
             foreach (var skill in _skills) {
                 skill.OnDrawGizmos();

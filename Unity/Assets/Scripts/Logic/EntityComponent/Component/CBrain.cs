@@ -6,7 +6,7 @@ namespace Lockstep.Game {
     [Serializable]
     public partial class CBrain : Component {
         public Entity target { get; private set; }
-        public int targetId ;
+        public int targetId;
         public LFloat stopDistSqr = 1 * 1;
         public LFloat atkInterval = 1;
         private LFloat atkTimer;
@@ -20,6 +20,7 @@ namespace Lockstep.Game {
             if (!entity.rigidbody.isOnFloor) {
                 return;
             }
+
             //find target
             var allPlayer = GameStateService.GetPlayers();
             var minDist = LFloat.MaxValue;
@@ -34,8 +35,8 @@ namespace Lockstep.Game {
             }
 
             target = minTarget;
-            targetId = target.EntityId;
-            
+            targetId = target?.EntityId ?? -1;
+
             if (minTarget == null)
                 return;
             if (minDist > stopDistSqr) {

@@ -3,6 +3,8 @@ using Lockstep.Game;
 
 public class BaseGameServicesContainer : ServiceContainer {
     public BaseGameServicesContainer(){
+        RegisterService(new RandomService());
+        RegisterService(new CommonStateService());
         RegisterService(new ConstStateService());
         RegisterService(new SimulatorService());
         RegisterService(new NetworkService());

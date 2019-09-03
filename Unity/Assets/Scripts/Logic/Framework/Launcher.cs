@@ -11,15 +11,8 @@ using Debug = UnityEngine.Debug;
 namespace Lockstep.Game {
     [Serializable]
     public class Launcher : ILifeCycle {
-        private int _curTick;
 
-        public int CurTick {
-            get => _curTick;
-            set {
-                _curTick = value;
-                _timeMachineContainer.CurTick = value;
-            }
-        }
+        public int CurTick => _serviceContainer.GetService<ICommonStateService>().Tick;
 
         public static Launcher Instance { get; private set; }
 
@@ -37,6 +30,7 @@ namespace Lockstep.Game {
 
         private SimulatorService _simulatorService = new SimulatorService();
         private NetworkService _networkService = new NetworkService();
+
 
         private IConstStateService _constStateService;
         public bool IsRunVideo => _constStateService.IsRunVideo;
@@ -100,6 +94,7 @@ namespace Lockstep.Game {
             _simulatorService = serviceContainer.GetService<ISimulatorService>() as SimulatorService;
             _networkService = serviceContainer.GetService<INetworkService>() as NetworkService;
             _constStateService = serviceContainer.GetService<IConstStateService>();
+            _constStateService = serviceContainer.GetService<IConstStateService>();
 
             if (IsVideoMode) {
                 _constStateService.SnapshotFrameInterval = 20;
@@ -143,7 +138,7 @@ namespace Lockstep.Game {
                 _simulatorService.JumpTo(JumpToTick);
             }
 
-            _simulatorService.DoUpdate(deltaTime);
+            _simulatorService.DoUpdate(fDeltaTime);
         }
 
         public void DoDestroy(){

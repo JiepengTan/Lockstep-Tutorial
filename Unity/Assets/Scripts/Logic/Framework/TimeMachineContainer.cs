@@ -10,22 +10,7 @@ namespace Lockstep.Game {
         private HashSet<ITimeMachine> _timeMachineHash = new HashSet<ITimeMachine>();
         private ITimeMachine[] _allTimeMachines;
 
-        private int _curTick;
-
-        public int CurTick {
-            get { return _curTick; }
-            set {
-                _curTick = value;
-                UpdateTick(_curTick);
-            }
-        }
-
-        private void UpdateTick(int _curTick){
-            foreach (var timeMachine in GetAllTimeMachines()) {
-                timeMachine.CurTick = _curTick;
-            }
-        }
-
+        public int CurTick { get; private set; }
         private ITimeMachine[] GetAllTimeMachines(){
             if (_allTimeMachines == null) {
                 _allTimeMachines = _timeMachineHash.ToArray();
@@ -42,12 +27,14 @@ namespace Lockstep.Game {
         }
 
         public void RollbackTo(int tick){
+            CurTick = tick;
             foreach (var timeMachine in GetAllTimeMachines()) {
                 timeMachine.RollbackTo(tick);
             }
         }
 
         public void Backup(int tick){
+            CurTick = tick;
             foreach (var timeMachine in GetAllTimeMachines()) {
                 timeMachine.Backup(tick);
             }

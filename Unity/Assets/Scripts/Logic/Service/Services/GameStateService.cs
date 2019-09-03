@@ -31,8 +31,7 @@ namespace Lockstep.Game {
         private void RemoveEntity<T>(T e) where T : BaseEntity{
             var t = e.GetType();
             if (_type2Entities.TryGetValue(t, out var lstObj)) {
-                var lst = lstObj as List<T>;
-                lst.Remove(e);
+                lstObj.Remove(e);
                 _id2Entities.Remove(e.EntityId);
             }
             else {
@@ -75,7 +74,7 @@ namespace Lockstep.Game {
 
         public T CreateEntity<T>(int prefabId, LVector3 position) where T : BaseEntity, new(){
             Debug.Trace($"CreateEntity {prefabId} pos {prefabId}");
-            var config = _gameConfigService.GetEnemyConfig(prefabId);
+            var config = _gameConfigService.GetEntityConfig(prefabId);
             var baseEntity = new T();
             config.CopyTo(baseEntity); 
             baseEntity.EntityId = _idService.GenId();

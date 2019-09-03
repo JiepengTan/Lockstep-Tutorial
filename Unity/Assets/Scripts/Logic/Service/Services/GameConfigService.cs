@@ -14,20 +14,19 @@ namespace Lockstep.Game {
             _config = Resources.Load<GameConfig>(configPath);
         }
 
-        public EnemyConfig GetEnemyConfig(int id){
-            return _config.GetEnemyConfig(id - 10);
-        }
-
-        public PlayerConfig GetPlayerConfig(int id){
+        public EntityConfig GetEntityConfig(int id){
+            if (id >= 10) {
+                return _config.GetEnemyConfig(id - 10);
+            }
             return _config.GetPlayerConfig(id);
         }
 
         public AnimatorConfig GetAnimatorConfig(int id){
-            return _config.GetAnimatorConfig(id);
+            return _config.GetAnimatorConfig(id - 1);
         }
 
         public SkillBoxConfig GetSkillConfig(int id){
-            return _config.GetSkillConfig(id);
+            return _config.GetSkillConfig(id - 1);
         }
 
 

@@ -21,7 +21,7 @@ namespace Lockstep.Game {
             return null;
         }
 
-        public int CurTick { get; set; }
+        public int CurTick => _commonStateService.Tick;
 
         public virtual void Backup(int tick){ }
 

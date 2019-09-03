@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Lockstep.Math;
 using Lockstep.Game;
 using NetMsg.Common;
+using UnityEngine;
 using Debug = Lockstep.Logging.Debug;
 using Profiler = Lockstep.Util.Profiler;
 
@@ -17,13 +18,17 @@ namespace Lockstep.Game {
         private bool _hasStart = false;
         public int HashCode;
 
+        private ServiceContainer _svcContainer;
         public void RollbackTo(int tick, int missFrameTick, bool isNeedClear = true){
             Debug.Log($" curTick {Tick} RevertTo {tick} {missFrameTick} {isNeedClear}");
+            _timeMachineService.RollbackTo(tick);
+            _commonStateService.SetTick(tick);
         }
 
         public void StartSimulate(IServiceContainer serviceContainer, IManagerContainer mgrContainer){
             Instance = this;
             _serviceContainer = serviceContainer;
+            _svcContainer = serviceContainer as ServiceContainer;
             RegisterSystems();
             if (!serviceContainer.GetService<IConstStateService>().IsVideoMode) {
                 RegisterSystem(new TraceLogSystem());
@@ -104,7 +109,10 @@ namespace Lockstep.Game {
         }
 
 
+
         private void Step(){
+            _commonStateService.SetTick(Tick);
+            _timeMachineService.Backup(Tick);
             var deltaTime = new LFloat(true, 30);
             foreach (var system in _systems) {
                 if (system.enable) {
@@ -114,6 +122,7 @@ namespace Lockstep.Game {
 
             Tick++;
         }
+
 
         public void RegisterSystems(){
             RegisterSystem(new HeroSystem());
