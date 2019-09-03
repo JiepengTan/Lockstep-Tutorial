@@ -25,6 +25,11 @@ namespace Lockstep.Game {
             GameObject.Destroy(gameObject);
         }
 
+        public virtual void OnRollbackDestroy(){
+            if (uiFloatBar != null) FloatBarManager.DestroyText(uiFloatBar);
+            GameObject.Destroy(gameObject);
+        }
+
         private void Update(){
             var pos = entity.transform.Pos3.ToVector3();
             transform.position = Vector3.Lerp(transform.position, pos, 0.3f);

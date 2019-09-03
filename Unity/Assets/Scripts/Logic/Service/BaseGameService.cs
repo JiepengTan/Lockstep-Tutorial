@@ -18,7 +18,7 @@ namespace Lockstep.Game {
         protected IGameEffectService _gameEffectService;
         protected IGameAudioService _gameAudioService;
         protected IGameConfigService _gameConfigService;
-        protected IGameEntityService _gameEntityService;
+        protected IGameViewService _gameViewService;
         protected IGameResourceService _gameResourceService;
         
         public override void InitReference( IServiceContainer serviceContainer,IManagerContainer mgrContainer){
@@ -32,7 +32,7 @@ namespace Lockstep.Game {
             _gameAudioService = serviceContainer.GetService<IGameAudioService>();
             _gameStateService = serviceContainer.GetService<IGameStateService>();
             _gameConfigService = serviceContainer.GetService<IGameConfigService>();
-            _gameEntityService = serviceContainer.GetService<IGameEntityService>();
+            _gameViewService = serviceContainer.GetService<IGameViewService>();
             _gameResourceService = serviceContainer.GetService<IGameResourceService>();
         }
     }

@@ -19,8 +19,8 @@ namespace Lockstep.Game {
         ICollisionSystem collisionSystem;
         public CollisionConfig config;
 
-        static Dictionary<GameObject, ColliderPrefab> _go2ColPrefab = new Dictionary<GameObject, ColliderPrefab>();
-        static Dictionary<GameObject, int> _go2Layer = new Dictionary<GameObject, int>();
+        static Dictionary<int, ColliderPrefab> _fabId2ColPrefab = new Dictionary<int, ColliderPrefab>();
+        static Dictionary<int, int> _fabId2Layer = new Dictionary<int, int>();
 
         static Dictionary<ILPTriggerEventHandler, ColliderProxy> _mono2ColProxy =
             new Dictionary<ILPTriggerEventHandler, ColliderProxy>();
@@ -127,26 +127,24 @@ namespace Lockstep.Game {
         }
 
 
-        public void RigisterPrefab(GameObject go, int val){
-            _go2Layer[go] = val;
+        public void RigisterPrefab(int prefabId, int val){
+            _fabId2Layer[prefabId] = val;
         }
 
-        public void RegisterEntity(GameObject fab, GameObject obj, Entity entity){
+        public void RegisterEntity(int prefabId, Entity entity){
             ColliderPrefab prefab = null;
-            if (!_go2ColPrefab.TryGetValue(fab, out prefab)) {
+            var fab = _gameResourceService.LoadPrefab(prefabId) as GameObject;
+            if (!_fabId2ColPrefab.TryGetValue(prefabId, out prefab)) {
                 prefab = CollisionSystem.CreateColliderPrefab(fab, entity.colliderData);
             }
 
-            AttachToColSystem(_go2Layer[fab], prefab, obj, entity);
+            AttachToColSystem(_fabId2Layer[prefabId], prefab,  entity);
         }
 
-        public void AttachToColSystem(int layer, ColliderPrefab prefab, GameObject obj, BaseEntity entity){
+        public void AttachToColSystem(int layer, ColliderPrefab prefab, BaseEntity entity){
             var proxy = new ColliderProxy();
             proxy.EntityObject = entity;
             proxy.Init(prefab, entity.transform);
-#if UNITY_EDITOR
-            proxy.UnityTransform = obj.transform;
-#endif
             proxy.IsStatic = false;
             proxy.LayerType = layer;
             var eventHandler = entity;

@@ -10,24 +10,10 @@ namespace Lockstep.Game {
     public partial class GameStateService : BaseGameService, IGameStateService {
         private GameState _curGameState;
         private Dictionary<Type, IList> _type2Entities = new Dictionary<Type, IList>();
-        private Dictionary<int, object> _id2Entities = new Dictionary<int, object>();
-        Dictionary<int, Serializer> _tick2Backup = new Dictionary<int, Serializer>();
+        private Dictionary<int, BaseEntity> _id2Entities = new Dictionary<int, BaseEntity>();
+        private Dictionary<int, Serializer> _tick2Backup = new Dictionary<int, Serializer>();
 
-
-        public class CopyStateCmd : BaseCommand {
-            private GameState _state;
-
-            public override void Do(object param){
-                _state = ((GameStateService) param)._curGameState;
-            }
-
-            public override void Undo(object param){
-                ((GameStateService) param)._curGameState = _state;
-            }
-        }
-
-
-        private void AddEntity<T>(T e) where T : class{
+        private void AddEntity<T>(T e) where T : BaseEntity{
             var t = e.GetType();
             if (_type2Entities.TryGetValue(t, out var lstObj)) {
                 var lst = lstObj as List<T>;
@@ -38,13 +24,16 @@ namespace Lockstep.Game {
                 _type2Entities.Add(t, lst);
                 lst.Add(e);
             }
+
+            _id2Entities[e.EntityId] = e;
         }
 
-        private void RemoveEntity<T>(T e) where T : class{
+        private void RemoveEntity<T>(T e) where T : BaseEntity{
             var t = e.GetType();
             if (_type2Entities.TryGetValue(t, out var lstObj)) {
                 var lst = lstObj as List<T>;
                 lst.Remove(e);
+                _id2Entities.Remove(e.EntityId);
             }
             else {
                 Debug.LogError("Try remove a deleted Entity" + e);
@@ -84,31 +73,33 @@ namespace Lockstep.Game {
             return null;
         }
 
-        public void CreateEnemy(int prefabId, LVector3 position){
-            if (CurEnemyCount >= MaxEnemyCount) {
-                return;
+        public T CreateEntity<T>(int prefabId, LVector3 position) where T : BaseEntity, new(){
+            Debug.Trace($"CreateEntity {prefabId} pos {prefabId}");
+            var config = _gameConfigService.GetEnemyConfig(prefabId);
+            var baseEntity = new T();
+            config.CopyTo(baseEntity); 
+            baseEntity.EntityId = _idService.GenId();
+            baseEntity.PrefabId = prefabId;
+            baseEntity.GameStateService = _gameStateService;
+            baseEntity.ServiceContainer = _serviceContainer;
+            baseEntity.transform.Pos3 = position;
+            baseEntity.DoBindRef();
+            if (baseEntity is Entity entity) {
+                PhysicSystem.Instance.RegisterEntity(prefabId, entity);
             }
 
-            CurEnemyCount++;
-            var entity = _gameEntityService.CreateEnemy(prefabId, position) as Enemy;
-            entity.OnDied += (e) => { RemoveEnemy(e as Enemy); };
-            AddEnemy(entity);
+            baseEntity.DoAwake();
+            baseEntity.DoStart();
+            _gameViewService.BindView(baseEntity);
+            AddEntity(baseEntity);
+            return baseEntity;
         }
 
-
-        public void AddEnemy(Enemy enemy){
-            AddEntity(enemy);
-        }
-
-        public void RemoveEnemy(Enemy enemy){
-            RemoveEntity(enemy);
-        }
-        public void AddPlayer(Player entity){
-            AddEntity(entity);
-        }
-        public void RemovePlayer(Player entity){
+        public void DestroyEntity(BaseEntity entity){
             RemoveEntity(entity);
         }
+        
+
         public override void Backup(int tick){
             //
             Serializer writer = new Serializer();
@@ -123,50 +114,79 @@ namespace Lockstep.Game {
         public override void RollbackTo(int tick){
             base.RollbackTo(tick);
             if (_tick2Backup.TryGetValue(tick, out var backupData)) {
+                //.TODO reduce the unnecessary create and destroy 
                 var reader = new Deserializer(backupData.Data);
-                var enemies = RecoverEntities(new List<Enemy>(), reader);
-                var players = RecoverEntities(new List<Player>(), reader);
-                var spawners = RecoverEntities(new List<Spawner>(), reader);
-                _type2Entities[typeof(Enemy)] = enemies;
-                _type2Entities[typeof(Player)] = players;
-                _type2Entities[typeof(Spawner)] = spawners;
-                //TODO
-                //0. Recover Entities
-                //1. Rebind Ref
-                //2. Rebind Views 
-                //    1. Find diff
-                //    2. Pool Views
-                //3. Recover Services
+                //. Unbind Entity views
+                foreach (var pair in _id2Entities) {
+                    _gameViewService.UnbindView(pair.Value);
+                }
+
+                _id2Entities.Clear();
+                _type2Entities.Clear();
+
+                //. Recover Entities
+                RecoverEntities(new List<Enemy>(), reader);
+                RecoverEntities(new List<Player>(), reader);
+                RecoverEntities(new List<Spawner>(), reader);
+
+                //. Rebind Ref
+                foreach (var entity in _id2Entities.Values) {
+                    entity.GameStateService = _gameStateService;
+                    entity.ServiceContainer = _serviceContainer;
+                    entity.DoBindRef();
+                }
+
+                //. Rebind Views 
+                foreach (var pair in _id2Entities) {
+                    _gameViewService.BindView(pair.Value);
+                }
             }
             else {
                 Debug.LogError($"Miss backup data  cannot rollback! {tick}");
             }
         }
 
+
         public override void Clean(int maxVerifiedTick){
             base.Clean(maxVerifiedTick);
         }
 
-        void BackUpEntities<T>(List<T> lst, Serializer writer) where T : IBackup, new(){
+        void BackUpEntities<T>(List<T> lst, Serializer writer) where T : BaseEntity, IBackup, new(){
             writer.Write(lst.Count);
             foreach (var item in lst) {
                 item.WriteBackup(writer);
             }
         }
 
-        List<T> RecoverEntities<T>(List<T> lst, Deserializer reader) where T : IBackup, new(){
+        List<T> RecoverEntities<T>(List<T> lst, Deserializer reader) where T : BaseEntity, IBackup, new(){
             var count = reader.ReadInt32();
             for (int i = 0; i < count; i++) {
                 var t = new T();
                 lst.Add(t);
                 t.ReadBackup(reader);
-                if (t is IAfterBackup tt) {
-                    tt.OnAfterDeserialize();
-                }
+            }
+
+            _type2Entities[typeof(T)] = lst;
+            foreach (var e in lst) {
+                _id2Entities[e.EntityId] = e;
             }
 
             return lst;
         }
+
+
+        public class CopyStateCmd : BaseCommand {
+            private GameState _state;
+
+            public override void Do(object param){
+                _state = ((GameStateService) param)._curGameState;
+            }
+
+            public override void Undo(object param){
+                ((GameStateService) param)._curGameState = _state;
+            }
+        }
+
 
         protected override FuncUndoCommands GetRollbackFunc(){
             return (minTickNode, maxTickNode, param) => { minTickNode.cmd.Undo(param); };
@@ -189,14 +209,17 @@ namespace Lockstep.Game {
             get => _curGameState.DeltaTime;
             set => _curGameState.DeltaTime = value;
         }
+
         public int MaxEnemyCount {
             get => _curGameState.MaxEnemyCount;
             set => _curGameState.MaxEnemyCount = value;
         }
+
         public int CurEnemyCount {
             get => _curGameState.CurEnemyCount;
             set => _curGameState.CurEnemyCount = value;
         }
+
         public int CurEnemyId {
             get => _curGameState.CurEnemyId;
             set => _curGameState.CurEnemyId = value;

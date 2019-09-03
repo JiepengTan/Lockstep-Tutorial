@@ -32,7 +32,7 @@ namespace Lockstep.Game {
                 var config = _gameConfigService.GetPlayerConfig(id);
                 var prefab = (GameObject) Resources.Load(pathPrefix + config.prefabPath);
                 _id2Prefab[id] = prefab;
-                PhysicSystem.Instance.RigisterPrefab(prefab, (int) EColliderLayer.Hero);
+                PhysicSystem.Instance.RigisterPrefab(id, (int) EColliderLayer.Hero);
                 return prefab;
             }
 
@@ -40,7 +40,7 @@ namespace Lockstep.Game {
                 var config = _gameConfigService.GetEnemyConfig(id );
                 var prefab = (GameObject) Resources.Load(pathPrefix + config.prefabPath);
                 _id2Prefab[id] = prefab;
-                PhysicSystem.Instance.RigisterPrefab(prefab, (int) EColliderLayer.Enemy);
+                PhysicSystem.Instance.RigisterPrefab(id, (int) EColliderLayer.Enemy);
                 return prefab;
             }
 

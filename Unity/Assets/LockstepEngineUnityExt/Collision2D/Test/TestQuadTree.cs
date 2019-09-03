@@ -119,9 +119,6 @@ namespace Lockstep.Collision2D {
 
             var proxy = new ColliderProxy();
             proxy.Init(prefab, obj.transform.position.ToLVector2XZ());
-#if UNITY_EDITOR
-            proxy.UnityTransform = obj.transform;
-#endif
             if (!isStatic) {
                 var mover = obj.gameObject.AddComponent<RandomMove>();
                 mover.halfworldSize = halfworldSize;

@@ -33,17 +33,20 @@ namespace Lockstep.Game {
             foreach (var mgr in _systems) {
                 mgr.InitReference(serviceContainer, mgrContainer);
             }
+
             foreach (var mgr in _systems) {
                 mgr.DoAwake(serviceContainer);
             }
+
             DoAwake(serviceContainer);
             foreach (var mgr in _systems) {
                 mgr.DoStart();
             }
+
             DoStart();
         }
 
-        public void StartGame(Msg_G2C_GameStartInfo gameStartInfo,int localPlayerId){
+        public void StartGame(Msg_G2C_GameStartInfo gameStartInfo, int localPlayerId){
             if (_hasStart) return;
             _hasStart = true;
             var playerInfos = gameStartInfo.UserInfos;
@@ -57,22 +60,21 @@ namespace Lockstep.Game {
             Debug.TraceSavePath = _traceLogPath;
             var allPlayers = _gameStateService.GetPlayers();
             allPlayers.Clear();
+
+            Debug.Trace("CreatePlayer " + playerCount);
+            //create Players 
             for (int i = 0; i < playerCount; i++) {
-                Debug.Trace("CreatePlayer");
-                var player = new Player() {localId = i};
+                var PrefabId = 0; //TODO
+                var initPos = LVector2.zero; //TODO
+                var player = _gameStateService.CreateEntity<Player>(PrefabId, initPos);
+                player.localId = i;
                 allPlayers.Add(player);
             }
 
-            //create Players 
-            var entitySvc = _gameEntityService;
-            for (int i = 0; i < playerCount; i++) {
-                var PrefabId = 0;//TODO
-                var initPos = LVector2.zero;//TODO
-                entitySvc.CreatePlayer(allPlayers[i], PrefabId, initPos);
-            }
             for (int i = 0; i < playerCount; i++) {
                 allPlayers[i].input = PlayerInputs[i];
             }
+
             MyPlayer = allPlayers[localPlayerId];
         }
 
@@ -100,8 +102,7 @@ namespace Lockstep.Game {
         public override void OnApplicationQuit(){
             DoDestroy();
         }
-        
-        
+
 
         private void Step(){
             var deltaTime = new LFloat(true, 30);
@@ -113,7 +114,7 @@ namespace Lockstep.Game {
 
             Tick++;
         }
- 
+
         public void RegisterSystems(){
             RegisterSystem(new HeroSystem());
             RegisterSystem(new EnemySystem());

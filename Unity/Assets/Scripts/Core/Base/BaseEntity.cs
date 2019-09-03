@@ -19,6 +19,8 @@ namespace Lockstep.Game {
 
         [ReRefBackup] public IGameStateService GameStateService { get; set; }
         [ReRefBackup] public IServiceContainer ServiceContainer { get; set; }
+
+        [ReRefBackup] public IEntityView EntityView;
         
         public T GetService<T>() where T : IService{
             return ServiceContainer.GetService<T>();
@@ -26,6 +28,12 @@ namespace Lockstep.Game {
         
         public void DoBindRef(){
             BindRef();
+        }
+
+        public virtual void OnRollbackDestroy(){
+            EntityView?.OnRollbackDestroy();
+            EntityView = null;
+            engineTransform = null;
         }
 
         protected virtual void BindRef(){

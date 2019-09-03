@@ -9,10 +9,10 @@ namespace Lockstep.Game {
     [NoBackup]
     public partial class Entity : BaseEntity {
         public CRigidbody rigidbody = new CRigidbody();
-        public CAnimator animator = new CAnimator();
         public ColliderData colliderData = new ColliderData();
-
+        public CAnimator animator = new CAnimator();
         public CSkillBox skillBox = new CSkillBox();
+        
         public LFloat moveSpd = 5;
         public LFloat turnSpd = 360;
         public int curHealth;
@@ -24,9 +24,6 @@ namespace Lockstep.Game {
 
         public bool isDead => curHealth <= 0;
 
-
-        [ReRefBackup] public IEntityView EntityView;
-        [ReRefBackup] public Action<Entity> OnDied;
 
 
         protected override void BindRef(){
@@ -65,17 +62,17 @@ namespace Lockstep.Game {
             EntityView?.OnTakeDamage(amount, hitPoint);
             OnTakeDamage(amount, hitPoint);
             if (isDead) {
-                OnDied?.Invoke(this);
-                EntityView?.OnDead();
                 OnDead();
-                PhysicSystem.Instance.RemoveCollider(this);
             }
         }
 
         protected virtual void OnTakeDamage(int amount, LVector3 hitPoint){ }
 
         protected virtual void OnDead(){
-            Debug.Log($"{EntityId} Dead");
+            EntityView?.OnDead();
+            PhysicSystem.Instance.RemoveCollider(this);
+            GameStateService.DestroyEntity(this);
         }
+
     }
 }

@@ -9,11 +9,8 @@ public class BaseGameServicesContainer : ServiceContainer {
         RegisterService(new IdService());
         RegisterService(new GameResourceService());
         
-        RegisterService(new GameEntityService());
         RegisterService(new GameStateService());
         RegisterService(new GameConfigService());
         RegisterService(new GameInputService());
-        
-        
     }
 }

@@ -20,7 +20,11 @@ namespace Lockstep.Game {
         }
 
         public void Spawn(){
-            GameStateService.CreateEnemy(info.prefabId, info.spawnPoint);
+            if (GameStateService.CurEnemyCount >= GameStateService.MaxEnemyCount) {
+                return;
+            }
+            GameStateService.CurEnemyCount++;
+            GameStateService.CreateEntity<Enemy>(info.prefabId, info.spawnPoint);
         }
     }
 }
