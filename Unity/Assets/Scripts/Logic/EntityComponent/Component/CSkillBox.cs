@@ -25,11 +25,12 @@ namespace Lockstep.Game {
             configId = reader.ReadInt32();
             isFiring = reader.ReadBoolean();
             _curSkillIdx = reader.ReadInt32();
-            _skills = new List<Skill>(reader.ReadInt32());
-            for (int i = 0; i < _skills.Count; i++) {
+            var count = reader.ReadInt32();
+            _skills = new List<Skill>();
+            for (int i = 0; i <count; i++) {
                 var skill = new Skill();
                 skill.ReadBackup(reader);
-                _skills[i] = skill;
+                _skills.Add(skill);
             }
         }
     }
@@ -55,6 +56,7 @@ namespace Lockstep.Game {
                     var skill = new Skill();
                     _skills.Add(skill);
                     skill.BindEntity(entity, info, this);
+                    skill.DoStart();
                 }
             }
             for (int i = 0; i < _skills.Count; i++) {

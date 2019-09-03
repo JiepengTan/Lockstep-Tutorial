@@ -57,6 +57,9 @@ namespace Lockstep.Game {
             this.entity = entity;
             this.SkillInfo = info;
             this.eventHandler = eventHandler;
+        }
+
+        public void DoStart(){
             skillTimer = MaxPartTime;
             State = ESkillState.Idle;
             _curPartIdx = -1;

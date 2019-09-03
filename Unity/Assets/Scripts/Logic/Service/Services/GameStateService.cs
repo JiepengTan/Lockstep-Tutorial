@@ -55,6 +55,7 @@ namespace Lockstep.Game {
                 return lst;
             }
         }
+
         public Enemy[] GetEnemies(){
             return GetEntities<Enemy>().ToArray();
         }
@@ -64,7 +65,7 @@ namespace Lockstep.Game {
         }
 
         public Spawner[] GetSpawners(){
-            return GetEntities<Spawner>().ToArray();//TODO Cache
+            return GetEntities<Spawner>().ToArray(); //TODO Cache
         }
 
         public object GetEntity(int id){
@@ -99,13 +100,14 @@ namespace Lockstep.Game {
         public void DestroyEntity(BaseEntity entity){
             RemoveEntity(entity);
         }
-        
+
 
         public override void Backup(int tick){
             //
             Serializer writer = new Serializer();
-            BackUpEntities(GetEnemies(), writer);
+            writer.Write(_commonStateService.Hash); //hash
             BackUpEntities(GetPlayers(), writer);
+            BackUpEntities(GetEnemies(), writer);
             BackUpEntities(GetSpawners(), writer);
             _tick2Backup[tick] = writer;
 
@@ -117,16 +119,19 @@ namespace Lockstep.Game {
             if (_tick2Backup.TryGetValue(tick, out var backupData)) {
                 //.TODO reduce the unnecessary create and destroy 
                 var reader = new Deserializer(backupData.Data);
+                var hash = reader.ReadInt32();
+                _commonStateService.Hash = hash;
                 //. Unbind Entity views
                 foreach (var pair in _id2Entities) {
                     _gameViewService.UnbindView(pair.Value);
                 }
+
                 _id2Entities.Clear();
                 _type2Entities.Clear();
 
                 //. Recover Entities
-                RecoverEntities(new List<Enemy>(), reader);
                 RecoverEntities(new List<Player>(), reader);
+                RecoverEntities(new List<Enemy>(), reader);
                 RecoverEntities(new List<Spawner>(), reader);
 
                 //. Rebind Ref

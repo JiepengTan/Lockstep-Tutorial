@@ -11,6 +11,7 @@ public class MainScript : MonoBehaviour {
     public bool IsRunVideo;
     public bool IsVideoMode = false;
     public string RecordFilePath;
+    public bool HasInit = false;
 
     private ServiceContainer _serviceContainer;
 
@@ -42,6 +43,7 @@ public class MainScript : MonoBehaviour {
         Debug.Log(path);
         stateService.RelPath = path;
         launcher.DoStart();
+        HasInit = true;
     }
 
     private void Update(){

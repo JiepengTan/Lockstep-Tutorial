@@ -12,8 +12,9 @@
                                                                                                  
 using Lockstep.Serialization;                                                                    
 using Lockstep.Game;                                                                    
-using Lockstep.Collision2D;                                                                    
-                                                                            
+using Lockstep.Collision2D;
+using Lockstep.Math;
+
 #if !DONT_USE_GENERATE_CODE                                                                      
 
 namespace Lockstep.Game{                                                                                               
@@ -91,17 +92,13 @@ namespace Lockstep.Collision2D{
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(deg);
 			writer.Write(pos);
-			writer.Write(y);
-			writer.Write(Pos3);
-			writer.Write(forward);                                                                                     
+			writer.Write(y);                                                                                     
        }                                                                                            
                                                                                                     
        public void ReadBackup(Deserializer reader){                                       
 			deg = reader.ReadLFloat();
 			pos = reader.ReadLVector2();
-			y = reader.ReadLFloat();
-			Pos3 = reader.ReadLVector3();
-			forward = reader.ReadLVector2();                                                                                     
+			y = reader.ReadLFloat();                                                                                     
        }                                                                                            
     }                                                               
 }                                                              
@@ -273,7 +270,7 @@ namespace Lockstep.Game{
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class SpawnerInfo : IBackup{                                                                  
+    public partial class SpawnerInfo :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(prefabId);
 			writer.Write(spawnPoint);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Lockstep.Math;
 using Lockstep.Game;
 using NetMsg.Common;
@@ -11,7 +12,7 @@ namespace Lockstep.Game {
     public class World : BaseSystem {
         public static World Instance { get; private set; }
         public int Tick;
-        public List<PlayerInput> PlayerInputs = new List<PlayerInput>();
+        public PlayerInput[] PlayerInputs => _gameStateService.GetPlayers().Select(a=>a.input).ToArray();
         public static Player MyPlayer;
         public static object MyPlayerTrans => MyPlayer?.engineTransform;
         private List<BaseSystem> _systems = new List<BaseSystem>();
@@ -19,10 +20,22 @@ namespace Lockstep.Game {
         public int HashCode;
 
         private ServiceContainer _svcContainer;
+
         public void RollbackTo(int tick, int missFrameTick, bool isNeedClear = true){
+            if (tick < 0) {
+                Debug.LogError("Target Tick invalid!" + tick);
+                return;
+            }
+
             Debug.Log($" curTick {Tick} RevertTo {tick} {missFrameTick} {isNeedClear}");
             _timeMachineService.RollbackTo(tick);
             _commonStateService.SetTick(tick);
+            Tick = tick;
+            var hash = _commonStateService.Hash;
+            var curHash = HashSystem.GetHash(_gameStateService);
+            if (hash != curHash) {
+                Debug.LogError($"Rollback error: Hash isDiff oldHash ={hash}  curHash{curHash}");
+            }
         }
 
         public void StartSimulate(IServiceContainer serviceContainer, IManagerContainer mgrContainer){
@@ -72,11 +85,8 @@ namespace Lockstep.Game {
                 var player = _gameStateService.CreateEntity<Player>(PrefabId, initPos);
                 player.localId = i;
             }
-            var allPlayers = _gameStateService.GetPlayers();
 
-            for (int i = 0; i < playerCount; i++) {
-                allPlayers[i].input = PlayerInputs[i];
-            }
+            var allPlayers = _gameStateService.GetPlayers();
 
             MyPlayer = allPlayers[localPlayerId];
         }
@@ -107,9 +117,9 @@ namespace Lockstep.Game {
         }
 
 
-
         private void Step(){
             _commonStateService.SetTick(Tick);
+            _commonStateService.Hash = HashSystem.GetHash(_gameStateService);
             _timeMachineService.Backup(Tick);
             var deltaTime = new LFloat(true, 30);
             foreach (var system in _systems) {

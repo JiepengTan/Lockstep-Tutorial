@@ -8,6 +8,7 @@ namespace Lockstep.Game {
        public int Tick { get; set; }
        public LFloat DeltaTime { get;set;  }
        public LFloat TimeSinceGameStart { get; set;}
+       public int Hash { get; set; }
        public bool IsPause { get; set; }
 
        public void SetTick(int val){ Tick = val;}

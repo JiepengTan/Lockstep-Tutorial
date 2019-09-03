@@ -18,7 +18,7 @@ namespace Lockstep.Collision2D {
             CRigidbody = new CRigidbody();
             CTransform2D = new CTransform2D();
             CTransform2D.Pos3 = transform.position.ToLVector3();
-            CRigidbody.Init(CTransform2D); 
+            CRigidbody.BindRef(CTransform2D); 
             CRigidbody.DoStart();
         }
 

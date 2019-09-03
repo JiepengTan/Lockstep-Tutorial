@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Lockstep.Game;
+using Lockstep.Logging;
 using Lockstep.Serialization;
 using NetMsg.Common;
 
@@ -15,6 +16,7 @@ namespace Lockstep.Game {
             playerInput.isInputFire = input.isInputFire;
             playerInput.skillId = input.skillId;
             playerInput.isSpeedUp = input.isSpeedUp;
+            Debug.Log("InputUV  " + input.inputUV);
         }
 
         public List<InputCmd> GetInputCmds(){

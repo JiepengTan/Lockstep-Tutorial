@@ -3,29 +3,30 @@ using Lockstep.Math;
 using UnityEngine;
 
 namespace Lockstep.Game {
-    public class EntityView : MonoBehaviour, IEntityView {
+    public class EntityView : BaseEntityView, IEntityView {
         public UIFloatBar uiFloatBar;
         public Entity entity;
         protected bool isDead => entity?.isDead ?? true;
 
-        public virtual void BindEntity(BaseEntity entity){
-            this.entity = entity as Entity;
-            this.entity.EntityView = this;
+        public override void BindEntity(BaseEntity e){
+            base.BindEntity(e);
+            e.EntityView = this;
+            this.entity = e as Entity;
             uiFloatBar = FloatBarManager.CreateFloatBar(transform, this.entity.curHealth, this.entity.maxHealth);
             transform.position = this.entity.transform.Pos3.ToVector3();
         }
 
-        public virtual void OnTakeDamage(int amount, LVector3 hitPoint){
+        public override void OnTakeDamage(int amount, LVector3 hitPoint){
             uiFloatBar.UpdateHp(entity.curHealth, entity.maxHealth);
             FloatTextManager.CreateFloatText(hitPoint.ToVector3(), -amount);
         }
 
-        public virtual void OnDead(){
+        public override void OnDead(){
             if (uiFloatBar != null) FloatBarManager.DestroyText(uiFloatBar);
             GameObject.Destroy(gameObject);
         }
 
-        public virtual void OnRollbackDestroy(){
+        public override void OnRollbackDestroy(){
             if (uiFloatBar != null) FloatBarManager.DestroyText(uiFloatBar);
             GameObject.Destroy(gameObject);
         }

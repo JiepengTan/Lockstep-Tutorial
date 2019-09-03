@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
+using Lockstep.Math;
 
 namespace Lockstep.Serialization {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
@@ -268,6 +269,13 @@ namespace Lockstep.Serialization {
         public void Write(short[] value){_PutArray(value, sizeof(short), FastBitConverter.GetBytes);}
 
         public void Write(bool[] value){_PutArray(value, sizeof(bool), FastBitConverter.GetBytes);}
+
+        public void Write(LFloat val){Write(val._val);}
+
+        public void Write(LVector2 val){Write(val._x);Write(val._y);}
+
+        public void Write( LVector3 val){Write(val._x);Write(val._y);Write(val._z);}
+
 
 
         public void Write<T>(T[] value) where T : BaseFormater{

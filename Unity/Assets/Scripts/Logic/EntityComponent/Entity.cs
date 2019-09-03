@@ -30,11 +30,7 @@ namespace Lockstep.Game {
             base.BindRef();
             RegisterComponent(animator);
             RegisterComponent(skillBox);
-        }
-
-        public override void DoAwake(){
-            base.DoAwake();
-            rigidbody.Init(transform);
+            rigidbody.BindRef(transform);
         }
 
         public override void DoStart(){

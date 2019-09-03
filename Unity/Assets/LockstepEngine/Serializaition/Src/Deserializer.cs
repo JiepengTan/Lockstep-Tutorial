@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Lockstep.Math;
 
 namespace Lockstep.Serialization {
     public class Deserializer {
@@ -160,7 +161,25 @@ namespace Lockstep.Serialization {
             _position += 8;
             return result;
         }
+        public LFloat ReadLFloat(){
+            var x = ReadInt32();
+            return new LFloat(true, x);
+        }
 
+        public LVector2 ReadLVector2(){
+            var x = ReadInt32();
+            var y = ReadInt32();
+            return new LVector2(true, x, y);
+        }
+
+        public LVector3 ReadLVector3(){
+            var x = ReadInt32();
+            var y = ReadInt32();
+            var z = ReadInt32();
+            return new LVector3(true, x, y, z);
+        }
+        
+        
         public T ReadRef<T>(ref T _) where T : BaseFormater, new(){
             if (ReadBoolean())
                 return null;

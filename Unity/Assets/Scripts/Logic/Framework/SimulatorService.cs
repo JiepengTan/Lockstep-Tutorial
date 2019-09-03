@@ -52,7 +52,7 @@ namespace Lockstep.Game {
         private float _timestampOnLastJumpTo;
         private int _tickOnLastJumpTo;
 
-        private List<PlayerInput> _playerInputs => _world.PlayerInputs;
+        private PlayerInput[] _playerInputs => _world.PlayerInputs;
         private IManagerContainer _mgrContainer;
         private IServiceContainer _serviceContainer;
         private Msg_G2C_GameStartInfo _gameStartInfo;
@@ -180,11 +180,12 @@ namespace Lockstep.Game {
                 return;
             }
 
-            remainTime += deltaTime;
+
             if (_commonStateService.IsPause) {
                 return;
             }
 
+            remainTime += deltaTime;
             while (remainTime >= 0.03f) {
                 remainTime -= 0.03f;
                 Step();
@@ -395,11 +396,6 @@ namespace Lockstep.Game {
 
             _actorCount = allActors.Length;
             _tickDt = 1000f / targetFps;
-
-            _playerInputs.Clear();
-            for (int i = 0; i < actorCount; i++) {
-                _playerInputs.Add(new PlayerInput());
-            }
 
             _world.StartSimulate(_serviceContainer, _mgrContainer);
             EventHelper.Trigger(EEvent.LevelLoadProgress, 1f);

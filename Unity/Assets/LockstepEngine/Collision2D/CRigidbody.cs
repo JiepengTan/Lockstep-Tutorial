@@ -23,7 +23,7 @@ namespace Lockstep.Game {
         public bool isSleep = false;
         public bool isOnFloor;
 
-        public void Init(CTransform2D transform2D){
+        public void BindRef(CTransform2D transform2D){
             this.transform = transform2D;
         }
 
