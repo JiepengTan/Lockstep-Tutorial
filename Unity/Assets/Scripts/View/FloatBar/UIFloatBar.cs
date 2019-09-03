@@ -109,7 +109,7 @@ public class UIFloatBar : MonoBehaviour {
         if (taragetTrans == null) return;
         var pos = taragetTrans.position;
         var curTranPos = FloatBarManager.cam.WorldToScreenPoint(new Vector3(pos.x, pos.y + yOffset, pos.z));
-        transform.position = Vector3.Lerp(transform.position, curTranPos, 0.3f);
+        transform.position = curTranPos;//Vector3.Lerp(transform.position, curTranPos, 0.3f);
         var camDistance = Vector3.Dot(taragetTrans.position - cam.transform.position, cam.transform.forward);
 #if false
         if (
