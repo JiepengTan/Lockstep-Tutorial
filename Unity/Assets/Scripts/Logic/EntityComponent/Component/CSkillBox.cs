@@ -8,7 +8,7 @@ using Lockstep.Serialization;
 namespace Lockstep.Game {
     public partial class CSkillBox : IBackup {
         public void WriteBackup(Serializer writer){
-            writer.Write(skillConfigId);
+            writer.Write(configId);
             writer.Write(isFiring);
             writer.Write(_curSkillIdx);
             writer.Write(_skills.Count);
@@ -18,7 +18,7 @@ namespace Lockstep.Game {
         }
 
         public void ReadBackup(Deserializer reader){
-            skillConfigId = reader.ReadInt32();
+            configId = reader.ReadInt32();
             isFiring = reader.ReadBoolean();
             _curSkillIdx = reader.ReadInt32();
             _skills = new List<Skill>(reader.ReadInt32());

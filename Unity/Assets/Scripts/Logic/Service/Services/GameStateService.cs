@@ -11,21 +11,23 @@ namespace Lockstep.Game {
         private GameState _curGameState;
         private Dictionary<Type, IList> _type2Entities = new Dictionary<Type, IList>();
         private Dictionary<int, object> _id2Entities = new Dictionary<int, object>();
+        Dictionary<int, Serializer> _tick2Backup = new Dictionary<int, Serializer>();
+
 
         public class CopyStateCmd : BaseCommand {
-            private GameState state;
+            private GameState _state;
 
             public override void Do(object param){
-                state = ((GameStateService) param)._curGameState;
+                _state = ((GameStateService) param)._curGameState;
             }
 
             public override void Undo(object param){
-                ((GameStateService) param)._curGameState = state;
+                ((GameStateService) param)._curGameState = _state;
             }
         }
 
 
-        public void AddEntity<T>(T e) where T : class{
+        private void AddEntity<T>(T e) where T : class{
             var t = e.GetType();
             if (_type2Entities.TryGetValue(t, out var lstObj)) {
                 var lst = lstObj as List<T>;
@@ -38,7 +40,7 @@ namespace Lockstep.Game {
             }
         }
 
-        public void RemoveEntity<T>(T e) where T : class{
+        private void RemoveEntity<T>(T e) where T : class{
             var t = e.GetType();
             if (_type2Entities.TryGetValue(t, out var lstObj)) {
                 var lst = lstObj as List<T>;
@@ -49,7 +51,7 @@ namespace Lockstep.Game {
             }
         }
 
-        public List<T> GetEntities<T>(){
+        private List<T> GetEntities<T>(){
             var t = typeof(T);
             if (_type2Entities.TryGetValue(t, out var lstObj)) {
                 return lstObj as List<T>;
@@ -73,18 +75,21 @@ namespace Lockstep.Game {
             return GetEntities<Spawner>();
         }
 
-        Dictionary<int, Serializer> _tick2Backup = new Dictionary<int, Serializer>();
 
-        
-        public static int maxCount = 1;
-        private static int curCount = 0;
-        private static int enmeyID = 0;
- 
+        public object GetEntity(int id){
+            if (_id2Entities.TryGetValue(id, out var val)) {
+                return val;
+            }
+
+            return null;
+        }
+
         public void CreateEnemy(int prefabId, LVector3 position){
-            if (curCount >= maxCount) {
+            if (CurEnemyCount >= MaxEnemyCount) {
                 return;
             }
-            curCount++;
+
+            CurEnemyCount++;
             var entity = _gameEntityService.CreateEnemy(prefabId, position) as Enemy;
             entity.OnDied += (e) => { RemoveEnemy(e as Enemy); };
             AddEnemy(entity);
@@ -98,9 +103,12 @@ namespace Lockstep.Game {
         public void RemoveEnemy(Enemy enemy){
             RemoveEntity(enemy);
         }
-        
-        
-        
+        public void AddPlayer(Player entity){
+            AddEntity(entity);
+        }
+        public void RemovePlayer(Player entity){
+            RemoveEntity(entity);
+        }
         public override void Backup(int tick){
             //
             Serializer writer = new Serializer();
@@ -167,6 +175,9 @@ namespace Lockstep.Game {
         public struct GameState {
             public LFloat RemainTime;
             public LFloat DeltaTime;
+            public int MaxEnemyCount;
+            public int CurEnemyCount;
+            public int CurEnemyId;
         }
 
         public LFloat RemainTime {
@@ -177,6 +188,18 @@ namespace Lockstep.Game {
         public LFloat DeltaTime {
             get => _curGameState.DeltaTime;
             set => _curGameState.DeltaTime = value;
+        }
+        public int MaxEnemyCount {
+            get => _curGameState.MaxEnemyCount;
+            set => _curGameState.MaxEnemyCount = value;
+        }
+        public int CurEnemyCount {
+            get => _curGameState.CurEnemyCount;
+            set => _curGameState.CurEnemyCount = value;
+        }
+        public int CurEnemyId {
+            get => _curGameState.CurEnemyId;
+            set => _curGameState.CurEnemyId = value;
         }
     }
 }

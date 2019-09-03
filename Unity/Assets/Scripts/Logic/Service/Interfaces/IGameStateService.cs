@@ -3,10 +3,15 @@ using Lockstep.Math;
 using Lockstep.Game;
 
 namespace Lockstep.Game {
-    public interface IGameStateService : IService ,IEntityService{
+    public interface IGameStateService : IService {
         //changed in the game
         LFloat RemainTime { get; set; }
         LFloat DeltaTime { get; set; }
+        int MaxEnemyCount { get; set; }
+        int CurEnemyCount { get; set; }
+        int CurEnemyId { get; set; }
+        
+        
         
         List<Enemy> GetEnemies();
         List<Player> GetPlayers();

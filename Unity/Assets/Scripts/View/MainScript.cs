@@ -17,11 +17,11 @@ public class MainScript : MonoBehaviour {
     private void Awake(){
         gameObject.AddComponent<PingMono>();
         gameObject.AddComponent<InputMono>();
-        EnemySystem.maxCount = MaxEnemyCount;
         _serviceContainer = new UnityServiceContainer();
         _serviceContainer.GetService<IConstStateService>().GameName = "ARPGDemo";
         _serviceContainer.GetService<IConstStateService>().IsClientMode = IsClientMode;
         _serviceContainer.GetService<IConstStateService>().IsVideoMode = IsVideoMode;
+        _serviceContainer.GetService<IGameStateService>().MaxEnemyCount = MaxEnemyCount;
         Lockstep.Logging.Logger.OnMessage += UnityLogHandler.OnLog;
         Screen.SetResolution(1024, 768, false);
 

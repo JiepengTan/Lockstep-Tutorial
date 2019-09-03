@@ -57,7 +57,7 @@ namespace Lockstep.Game {
     }
 
     [Serializable]
-    public class CollisionConfig  {
+    public class CollisionConfig {
         public Vector2 scrollPos;
         public bool isShow = true;
         public bool[] collisionMatrix = new bool[(int) EColliderLayer.EnumCount * (int) EColliderLayer.EnumCount];
@@ -108,6 +108,8 @@ namespace Lockstep.Game {
     public class GameConfig : ScriptableObject {
         public List<EnemyConfig> enemies = new List<EnemyConfig>();
         public List<PlayerConfig> player = new List<PlayerConfig>();
+        public List<AnimatorConfig> animators = new List<AnimatorConfig>();
+        public List<SkillBoxConfig> skills = new List<SkillBoxConfig>();
 
         public EnemyConfig GetEnemyConfig(int id){
             return enemies[id];
@@ -115,6 +117,14 @@ namespace Lockstep.Game {
 
         public PlayerConfig GetPlayerConfig(int id){
             return player[id];
+        }
+
+        public AnimatorConfig GetAnimatorConfig(int id){
+            return animators[id];
+        }
+
+        public SkillBoxConfig GetSkillConfig(int id){
+            return skills[id];
         }
 
         public CollisionConfig CollisionConfig;
