@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Lockstep.Math;
 
 namespace Lockstep.Game {
-    public class IdService : IIdService, IHashCode, ITimeMachine {
+    public partial class IdService : IIdService,  ITimeMachine {
         public int CurTick { get; set; }
 
         private int Id;
@@ -23,11 +23,5 @@ namespace Lockstep.Game {
 
         public void Clean(int maxVerifiedTick){ }
 
-        public int GetHash(ref int idx){
-            return Id * PrimerLUT.GetPrimer(idx++);
-        }
-        public void DumpStr(System.Text.StringBuilder sb,string prefix){                        
-            sb.AppendLine(prefix + "Id"+":" + Id.ToString());
-        }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
+using Lockstep.Game;
 using Lockstep.Math;
 
 namespace Lockstep.Serialization {
@@ -274,8 +275,7 @@ namespace Lockstep.Serialization {
 
         public void Write(LVector2 val){Write(val._x);Write(val._y);}
 
-        public void Write( LVector3 val){Write(val._x);Write(val._y);Write(val._z);}
-
+        public void Write(LVector3 val){Write(val._x);Write(val._y);Write(val._z);}
 
 
         public void Write<T>(T[] value) where T : BaseFormater{

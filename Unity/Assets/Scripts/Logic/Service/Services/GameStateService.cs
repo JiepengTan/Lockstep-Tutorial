@@ -104,34 +104,7 @@ namespace Lockstep.Game {
             RemoveEntity(entity);
         }
 
-        public override int GetHash(ref int idx){
-            int hash = 1;
-            foreach (var entity in GetPlayers()) {
-                hash += entity.curHealth.GetHash() * PrimerLUT.GetPrimer(idx++);
-                hash += entity.transform.GetHash() * PrimerLUT.GetPrimer(idx++);
-            }
-
-            foreach (var entity in GetEnemies()) {
-                hash += entity.curHealth.GetHash() * PrimerLUT.GetPrimer(idx++);
-                hash += entity.transform.GetHash() * PrimerLUT.GetPrimer(idx++);
-            }
-
-            foreach (var entity in GetSpawners()) {
-                hash += entity.Timer.GetHash() * PrimerLUT.GetPrimer(idx++);
-                hash += entity.transform.GetHash() * PrimerLUT.GetPrimer(idx++);
-            }
-
-            hash += _curGameState.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
-            return hash;
-        }
-
-        public override void DumpStr(StringBuilder sb,string prefix){  
-            DumpStrUtil.DumpList(GetPlayers(),sb,prefix);
-            DumpStrUtil.DumpList(GetEnemies(),sb,prefix);
-            DumpStrUtil.DumpList(GetSpawners(),sb,prefix);                       
-            sb.AppendLine(prefix + "EntityId"+":" + _curGameState.ToString());
-        }
-
+ 
         public override void Backup(int tick){
             if (_constStateService.IsClientMode) {
                 if (_tick2Backup.TryGetValue(tick, out var val)) {
@@ -246,9 +219,9 @@ namespace Lockstep.Game {
 
             public int GetHash(ref int idx){
                 int hash = 1;
-                hash += CurEnemyCount.GetHash() * PrimerLUT.GetPrimer(idx++);
-                hash += MaxEnemyCount.GetHash() * PrimerLUT.GetPrimer(idx++);
-                hash += CurEnemyId.GetHash() * PrimerLUT.GetPrimer(idx++);
+                hash += CurEnemyCount.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+                hash += MaxEnemyCount.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+                hash += CurEnemyId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
                 return hash;
             }
         }

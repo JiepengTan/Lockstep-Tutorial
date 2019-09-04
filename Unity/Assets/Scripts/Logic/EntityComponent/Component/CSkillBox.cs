@@ -13,40 +13,8 @@ using HideInInspector = UnityEngine.HideInInspector;
 #endif
 
 namespace Lockstep.Game {
-    public partial class CSkillBox : IBackup, IDumpStr {
-        public void WriteBackup(Serializer writer){
-            writer.Write(configId);
-            writer.Write(isFiring);
-            writer.Write(_curSkillIdx);
-            writer.Write(_skills.Count);
-            for (int i = 0; i < _skills.Count; i++) {
-                _skills[i].WriteBackup(writer);
-            }
-        }
-
-        public void ReadBackup(Deserializer reader){
-            configId = reader.ReadInt32();
-            isFiring = reader.ReadBoolean();
-            _curSkillIdx = reader.ReadInt32();
-            var count = reader.ReadInt32();
-            _skills = new List<Skill>();
-            for (int i = 0; i < count; i++) {
-                var skill = new Skill();
-                skill.ReadBackup(reader);
-                _skills.Add(skill);
-            }
-        }
-
-        public void DumpStr(StringBuilder sb, string prefix){
-            sb.AppendLine(prefix + "configId" + ":" + configId.ToString());
-            sb.AppendLine(prefix + "isFiring" + ":" + isFiring.ToString());
-            sb.AppendLine(prefix + "_curSkillIdx" + ":" + _curSkillIdx.ToString());
-            DumpStrUtil.DumpList(_skills, sb, prefix);
-        }
-    }
 
     [Serializable]
-    [SelfImplement]
     public partial class CSkillBox : Component, ISkillEventHandler {
         public int configId;
         public bool isFiring;

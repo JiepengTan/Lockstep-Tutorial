@@ -83,11 +83,11 @@ namespace Lockstep.CodeGenerator {
         }
 
         public string DealArray(Type t, MemberInfo field){
-            return string.Format(arrayCodeTemplete, prefix, field.Name);
+            return string.Format(arrayCodeTemplete, prefix, field.Name,t.GetElementType().FullName);
         }
 
         public string DealList(Type t, MemberInfo field){
-            return string.Format(lstCodeTemplete, prefix, field.Name);
+            return string.Format(lstCodeTemplete, prefix, field.Name,t.GetGenericArguments()[0].FullName);
         }
 
         public string DealDic(Type t, MemberInfo field){

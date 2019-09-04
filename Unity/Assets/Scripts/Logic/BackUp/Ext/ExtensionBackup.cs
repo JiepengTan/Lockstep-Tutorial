@@ -12,13 +12,14 @@
                                                                                                  
 using Lockstep.Util;                                                                    
 using Lockstep.Serialization;                                                                    
+using Lockstep.Math;                                                                    
 using Lockstep.Game;                                                                    
 using Lockstep.Collision2D;                                                                    
 using System.Text;                                                                          
 #if !DONT_USE_GENERATE_CODE                                                                      
 
 namespace Lockstep.Game{                                                                                               
-    public partial class CAnimator :IBackup,IDumpStr{                                                                  
+    public partial class CAnimator :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(_animLen);
 			writer.Write(_curAnimIdx);
@@ -35,6 +36,16 @@ namespace Lockstep.Game{
 			configId = reader.ReadInt32();                                                                                     
        }                                                                                            
                                                                                                     
+       public int GetHash(ref int idx){                                      
+           int hash = 1;                                                                             
+			hash += _animLen.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += _curAnimIdx.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += _curAnimName.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += _timer.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += configId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
+           return hash;                                                                                    
+       }                                                                                            
+                                                                                                    
        public void DumpStr(StringBuilder sb,string prefix){                                       
 			sb.AppendLine(prefix + "_animLen"+":" + _animLen.ToString());
 			sb.AppendLine(prefix + "_curAnimIdx"+":" + _curAnimIdx.ToString());
@@ -46,7 +57,7 @@ namespace Lockstep.Game{
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class CBrain :IBackup,IDumpStr{                                                                  
+    public partial class CBrain :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(atkInterval);
 			writer.Write(stopDistSqr);
@@ -59,6 +70,14 @@ namespace Lockstep.Game{
 			targetId = reader.ReadInt32();                                                                                     
        }                                                                                            
                                                                                                     
+       public int GetHash(ref int idx){                                      
+           int hash = 1;                                                                             
+			hash += atkInterval.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += stopDistSqr.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += targetId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
+           return hash;                                                                                    
+       }                                                                                            
+                                                                                                    
        public void DumpStr(StringBuilder sb,string prefix){                                       
 			sb.AppendLine(prefix + "atkInterval"+":" + atkInterval.ToString());
 			sb.AppendLine(prefix + "stopDistSqr"+":" + stopDistSqr.ToString());
@@ -68,7 +87,7 @@ namespace Lockstep.Game{
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class CMover :IBackup,IDumpStr{                                                                  
+    public partial class CMover :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(hasReachTarget);
 			writer.Write(needMove);                                                                                     
@@ -79,6 +98,13 @@ namespace Lockstep.Game{
 			needMove = reader.ReadBoolean();                                                                                     
        }                                                                                            
                                                                                                     
+       public int GetHash(ref int idx){                                      
+           int hash = 1;                                                                             
+			hash += hasReachTarget.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += needMove.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
+           return hash;                                                                                    
+       }                                                                                            
+                                                                                                    
        public void DumpStr(StringBuilder sb,string prefix){                                       
 			sb.AppendLine(prefix + "hasReachTarget"+":" + hasReachTarget.ToString());
 			sb.AppendLine(prefix + "needMove"+":" + needMove.ToString());                                                                                     
@@ -87,7 +113,7 @@ namespace Lockstep.Game{
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class CRigidbody :IBackup,IDumpStr{                                                                  
+    public partial class CRigidbody :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(Mass);
 			writer.Write(Speed);
@@ -104,6 +130,16 @@ namespace Lockstep.Game{
 			isSleep = reader.ReadBoolean();                                                                                     
        }                                                                                            
                                                                                                     
+       public int GetHash(ref int idx){                                      
+           int hash = 1;                                                                             
+			hash += Mass.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += Speed.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += isEnable.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += isOnFloor.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += isSleep.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
+           return hash;                                                                                    
+       }                                                                                            
+                                                                                                    
        public void DumpStr(StringBuilder sb,string prefix){                                       
 			sb.AppendLine(prefix + "Mass"+":" + Mass.ToString());
 			sb.AppendLine(prefix + "Speed"+":" + Speed.ToString());
@@ -114,8 +150,42 @@ namespace Lockstep.Game{
     }                                                               
 }                                                              
 
+namespace Lockstep.Game{                                                                                               
+    public partial class CSkillBox :IBackup{                                                                  
+       public void WriteBackup(Serializer writer){                                           
+			writer.Write(_curSkillIdx);
+			writer.Write(configId);
+			writer.Write(isFiring);
+			writer.Write(_skills);                                                                                     
+       }                                                                                            
+                                                                                                    
+       public void ReadBackup(Deserializer reader){                                       
+			_curSkillIdx = reader.ReadInt32();
+			configId = reader.ReadInt32();
+			isFiring = reader.ReadBoolean();
+			_skills = reader.ReadList(this._skills);                                                                                     
+       }                                                                                            
+                                                                                                    
+       public int GetHash(ref int idx){                                      
+           int hash = 1;                                                                             
+			hash += _curSkillIdx.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += configId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += isFiring.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			if(_skills != null) foreach (var item in _skills) {if(item != default(Lockstep.Game.Skill))hash += item.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);}                                                                                     
+           return hash;                                                                                    
+       }                                                                                            
+                                                                                                    
+       public void DumpStr(StringBuilder sb,string prefix){                                       
+			sb.AppendLine(prefix + "_curSkillIdx"+":" + _curSkillIdx.ToString());
+			sb.AppendLine(prefix + "configId"+":" + configId.ToString());
+			sb.AppendLine(prefix + "isFiring"+":" + isFiring.ToString());
+			BackUpUtil.DumpList("_skills", _skills, sb, prefix);                                                                                     
+       }                                                                                            
+    }                                                               
+}                                                              
+
 namespace Lockstep.Collision2D{                                                                                               
-    public partial class CTransform2D :IBackup,IDumpStr{                                                                  
+    public partial class CTransform2D :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(deg);
 			writer.Write(pos);
@@ -128,6 +198,14 @@ namespace Lockstep.Collision2D{
 			y = reader.ReadLFloat();                                                                                     
        }                                                                                            
                                                                                                     
+       public int GetHash(ref int idx){                                      
+           int hash = 1;                                                                             
+			hash += deg.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += pos.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += y.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
+           return hash;                                                                                    
+       }                                                                                            
+                                                                                                    
        public void DumpStr(StringBuilder sb,string prefix){                                       
 			sb.AppendLine(prefix + "deg"+":" + deg.ToString());
 			sb.AppendLine(prefix + "pos"+":" + pos.ToString());
@@ -137,7 +215,7 @@ namespace Lockstep.Collision2D{
 }                                                              
 
 namespace Lockstep.Collision2D{                                                                                               
-    public partial class ColliderData :IBackup,IDumpStr{                                                                  
+    public partial class ColliderData :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(deg);
 			writer.Write(high);
@@ -158,6 +236,18 @@ namespace Lockstep.Collision2D{
 			y = reader.ReadLFloat();                                                                                     
        }                                                                                            
                                                                                                     
+       public int GetHash(ref int idx){                                      
+           int hash = 1;                                                                             
+			hash += deg.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += high.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += pos.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += radius.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += size.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += up.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += y.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
+           return hash;                                                                                    
+       }                                                                                            
+                                                                                                    
        public void DumpStr(StringBuilder sb,string prefix){                                       
 			sb.AppendLine(prefix + "deg"+":" + deg.ToString());
 			sb.AppendLine(prefix + "high"+":" + high.ToString());
@@ -171,7 +261,7 @@ namespace Lockstep.Collision2D{
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class Enemy :IBackup,IDumpStr{                                                                  
+    public partial class Enemy :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(EntityId);
 			writer.Write(PrefabId);
@@ -208,6 +298,26 @@ namespace Lockstep.Game{
 			transform.ReadBackup(reader);                                                                                     
        }                                                                                            
                                                                                                     
+       public int GetHash(ref int idx){                                      
+           int hash = 1;                                                                             
+			hash += EntityId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += PrefabId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += curHealth.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += damage.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += isFire.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += isInvincible.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += maxHealth.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += moveSpd.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += turnSpd.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += animator.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += brain.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += colliderData.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += rigidbody.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += skillBox.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += transform.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
+           return hash;                                                                                    
+       }                                                                                            
+                                                                                                    
        public void DumpStr(StringBuilder sb,string prefix){                                       
 			sb.AppendLine(prefix + "EntityId"+":" + EntityId.ToString());
 			sb.AppendLine(prefix + "PrefabId"+":" + PrefabId.ToString());
@@ -229,7 +339,7 @@ namespace Lockstep.Game{
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class Player :IBackup,IDumpStr{                                                                  
+    public partial class Player :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(EntityId);
 			writer.Write(PrefabId);
@@ -270,6 +380,28 @@ namespace Lockstep.Game{
 			transform.ReadBackup(reader);                                                                                     
        }                                                                                            
                                                                                                     
+       public int GetHash(ref int idx){                                      
+           int hash = 1;                                                                             
+			hash += EntityId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += PrefabId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += curHealth.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += damage.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += isFire.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += isInvincible.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += localId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += maxHealth.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += moveSpd.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += turnSpd.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += animator.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += colliderData.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += input.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += mover.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += rigidbody.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += skillBox.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += transform.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
+           return hash;                                                                                    
+       }                                                                                            
+                                                                                                    
        public void DumpStr(StringBuilder sb,string prefix){                                       
 			sb.AppendLine(prefix + "EntityId"+":" + EntityId.ToString());
 			sb.AppendLine(prefix + "PrefabId"+":" + PrefabId.ToString());
@@ -293,7 +425,7 @@ namespace Lockstep.Game{
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class PlayerInput :IBackup,IDumpStr{                                                                  
+    public partial class PlayerInput :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(inputUV);
 			writer.Write(isInputFire);
@@ -310,6 +442,16 @@ namespace Lockstep.Game{
 			skillId = reader.ReadInt32();                                                                                     
        }                                                                                            
                                                                                                     
+       public int GetHash(ref int idx){                                      
+           int hash = 1;                                                                             
+			hash += inputUV.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += isInputFire.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += isSpeedUp.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += mousePos.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += skillId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
+           return hash;                                                                                    
+       }                                                                                            
+                                                                                                    
        public void DumpStr(StringBuilder sb,string prefix){                                       
 			sb.AppendLine(prefix + "inputUV"+":" + inputUV.ToString());
 			sb.AppendLine(prefix + "isInputFire"+":" + isInputFire.ToString());
@@ -321,7 +463,7 @@ namespace Lockstep.Game{
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class Skill :IBackup,IDumpStr{                                                                  
+    public partial class Skill :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(CdTimer);
 			writer.Write(_curPartIdx);
@@ -338,18 +480,28 @@ namespace Lockstep.Game{
 			partCounter = reader.ReadArray(this.partCounter);                                                                                     
        }                                                                                            
                                                                                                     
+       public int GetHash(ref int idx){                                      
+           int hash = 1;                                                                             
+			hash += CdTimer.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += _curPartIdx.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += skillTimer.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += ((int)State) * PrimerLUT.GetPrimer(idx++);
+			if(partCounter != null) foreach (var item in partCounter) {if(item != default(System.Int32))hash += item.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);}                                                                                     
+           return hash;                                                                                    
+       }                                                                                            
+                                                                                                    
        public void DumpStr(StringBuilder sb,string prefix){                                       
 			sb.AppendLine(prefix + "CdTimer"+":" + CdTimer.ToString());
 			sb.AppendLine(prefix + "_curPartIdx"+":" + _curPartIdx.ToString());
 			sb.AppendLine(prefix + "skillTimer"+":" + skillTimer.ToString());
 			sb.AppendLine(prefix + "State"+":" + State.ToString());
-			DumpStrUtil.DumpList("partCounter", partCounter, sb, prefix);                                                                                     
+			BackUpUtil.DumpList("partCounter", partCounter, sb, prefix);                                                                                     
        }                                                                                            
     }                                                               
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class Spawner :IBackup,IDumpStr{                                                                  
+    public partial class Spawner :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(EntityId);
 			writer.Write(PrefabId);
@@ -366,6 +518,16 @@ namespace Lockstep.Game{
 			transform.ReadBackup(reader);                                                                                     
        }                                                                                            
                                                                                                     
+       public int GetHash(ref int idx){                                      
+           int hash = 1;                                                                             
+			hash += EntityId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += PrefabId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += Timer.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += Info.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += transform.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
+           return hash;                                                                                    
+       }                                                                                            
+                                                                                                    
        public void DumpStr(StringBuilder sb,string prefix){                                       
 			sb.AppendLine(prefix + "EntityId"+":" + EntityId.ToString());
 			sb.AppendLine(prefix + "PrefabId"+":" + PrefabId.ToString());
@@ -377,7 +539,7 @@ namespace Lockstep.Game{
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class SpawnerInfo :IBackup,IDumpStr{                                                                  
+    public partial class SpawnerInfo :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(prefabId);
 			writer.Write(spawnPoint);
@@ -388,6 +550,14 @@ namespace Lockstep.Game{
 			prefabId = reader.ReadInt32();
 			spawnPoint = reader.ReadLVector3();
 			spawnTime = reader.ReadLFloat();                                                                                     
+       }                                                                                            
+                                                                                                    
+       public int GetHash(ref int idx){                                      
+           int hash = 1;                                                                             
+			hash += prefabId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += spawnPoint.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += spawnTime.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
+           return hash;                                                                                    
        }                                                                                            
                                                                                                     
        public void DumpStr(StringBuilder sb,string prefix){                                       
