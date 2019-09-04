@@ -463,9 +463,10 @@ namespace Lockstep.Game {
 
             foreach (var input in inputs) {
                 if (input.Commands == null) continue;
+                if(input.ActorId >= _playerInputs.Length) continue;
+                var inputEntity = _playerInputs[input.ActorId];
                 foreach (var command in input.Commands) {
                     Logger.Trace(this, input.ActorId + " >> " + input.Tick + ": " + input.Commands.Count());
-                    var inputEntity = _playerInputs[input.ActorId];
                     _inputService.Execute(command, inputEntity);
                 }
             }

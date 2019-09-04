@@ -60,7 +60,7 @@ namespace Lockstep.Game {
             config = entity.GetService<IGameConfigService>().GetSkillConfig(configId);
             if (config == null) return;
             if (config.skillInfos.Count != _skills.Count) {
-                Debug.LogError("Skill count diff");
+                //Debug.LogError("Skill count diff");
                 _skills.Clear();
                 foreach (var info in config.skillInfos) {
                     var skill = new Skill();
