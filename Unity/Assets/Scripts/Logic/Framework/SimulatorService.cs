@@ -171,6 +171,8 @@ namespace Lockstep.Game {
 
         private float remainTime = 0;
 
+        public int __debugRockbackToTick ;
+
         public void DoUpdate(float deltaTime){
             if (!IsRunning) {
                 return;
@@ -180,10 +182,16 @@ namespace Lockstep.Game {
                 return;
             }
 
+            if (__debugRockbackToTick > 0) {
+                GetService<ICommonStateService>().IsPause = true;
+                _world.RollbackTo(__debugRockbackToTick, 0, false);
+                __debugRockbackToTick = -1;
+            }
 
             if (_commonStateService.IsPause) {
                 return;
             }
+
 
             remainTime += deltaTime;
             while (remainTime >= 0.03f) {
@@ -200,7 +208,7 @@ namespace Lockstep.Game {
                     _inputs = new Msg_PlayerInput[] {input}
                 };
                 _cmdBuffer.PushLocalFrame(frame);
-                _cmdBuffer.PushServerFrames(new ServerFrame[]{frame});
+                _cmdBuffer.PushServerFrames(new ServerFrame[] {frame});
                 _cmdBuffer.UpdateFramesInfo();
                 Simulate(_cmdBuffer.GetFrame(_world.Tick));
                 return;
@@ -463,7 +471,7 @@ namespace Lockstep.Game {
 
             foreach (var input in inputs) {
                 if (input.Commands == null) continue;
-                if(input.ActorId >= _playerInputs.Length) continue;
+                if (input.ActorId >= _playerInputs.Length) continue;
                 var inputEntity = _playerInputs[input.ActorId];
                 foreach (var command in input.Commands) {
                     Logger.Trace(this, input.ActorId + " >> " + input.Tick + ": " + input.Commands.Count());

@@ -16,8 +16,7 @@ public class EditorMainScript : Editor {
         EditorGUILayout.LabelField("CurTick " + world.Tick);
         rollbackTickCount = EditorGUILayout.IntField("RollbackTickCount", rollbackTickCount);
         if (GUILayout.Button("Rollback")) {
-            owner.GetService<ICommonStateService>().IsPause = true;
-            world.RollbackTo(world.Tick - rollbackTickCount,0,false);
+            ((owner.GetService<ISimulatorService>()) as SimulatorService).__debugRockbackToTick = world.Tick - rollbackTickCount;
         }
         if (GUILayout.Button("Resume")) {
             owner.GetService<ICommonStateService>().IsPause = false;
