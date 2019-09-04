@@ -201,6 +201,7 @@ namespace Lockstep.Game {
                 };
                 _cmdBuffer.PushLocalFrame(frame);
                 _cmdBuffer.PushServerFrames(new ServerFrame[]{frame});
+                _cmdBuffer.UpdateFramesInfo();
                 Simulate(_cmdBuffer.GetFrame(_world.Tick));
                 return;
             }
@@ -242,7 +243,7 @@ namespace Lockstep.Game {
                 var curTick = _world.Tick;
                 _cmdBuffer.UpdateFramesInfo();
                 //校验服务器包  如果有预测失败 则需要进行回滚
-                if (_cmdBuffer.IsNeedRevert) {
+                if (_cmdBuffer.IsNeedRollback) {
                     _world.RollbackTo(_cmdBuffer.nextTickToCheck, missFrameTick);
                     _world.CleanUselessSnapshot(System.Math.Min(_cmdBuffer.nextTickToCheck - 1, _world.Tick));
 

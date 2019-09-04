@@ -10,15 +10,15 @@
 // </auto-generated>                                                                             
 //------------------------------------------------------------------------------                 
                                                                                                  
+using Lockstep.Util;                                                                    
 using Lockstep.Serialization;                                                                    
 using Lockstep.Game;                                                                    
-using Lockstep.Collision2D;
-using Lockstep.Math;
-
+using Lockstep.Collision2D;                                                                    
+using System.Text;                                                                          
 #if !DONT_USE_GENERATE_CODE                                                                      
 
 namespace Lockstep.Game{                                                                                               
-    public partial class CAnimator :IBackup{                                                                  
+    public partial class CAnimator :IBackup,IDumpStr{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(_animLen);
 			writer.Write(_curAnimIdx);
@@ -34,11 +34,19 @@ namespace Lockstep.Game{
 			_timer = reader.ReadLFloat();
 			configId = reader.ReadInt32();                                                                                     
        }                                                                                            
+                                                                                                    
+       public void DumpStr(StringBuilder sb,string prefix){                                       
+			sb.AppendLine(prefix + "_animLen"+":" + _animLen.ToString());
+			sb.AppendLine(prefix + "_curAnimIdx"+":" + _curAnimIdx.ToString());
+			sb.AppendLine(prefix + "_curAnimName"+":" + _curAnimName.ToString());
+			sb.AppendLine(prefix + "_timer"+":" + _timer.ToString());
+			sb.AppendLine(prefix + "configId"+":" + configId.ToString());                                                                                     
+       }                                                                                            
     }                                                               
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class CBrain :IBackup{                                                                  
+    public partial class CBrain :IBackup,IDumpStr{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(atkInterval);
 			writer.Write(stopDistSqr);
@@ -50,11 +58,17 @@ namespace Lockstep.Game{
 			stopDistSqr = reader.ReadLFloat();
 			targetId = reader.ReadInt32();                                                                                     
        }                                                                                            
+                                                                                                    
+       public void DumpStr(StringBuilder sb,string prefix){                                       
+			sb.AppendLine(prefix + "atkInterval"+":" + atkInterval.ToString());
+			sb.AppendLine(prefix + "stopDistSqr"+":" + stopDistSqr.ToString());
+			sb.AppendLine(prefix + "targetId"+":" + targetId.ToString());                                                                                     
+       }                                                                                            
     }                                                               
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class CMover :IBackup{                                                                  
+    public partial class CMover :IBackup,IDumpStr{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(hasReachTarget);
 			writer.Write(needMove);                                                                                     
@@ -64,11 +78,16 @@ namespace Lockstep.Game{
 			hasReachTarget = reader.ReadBoolean();
 			needMove = reader.ReadBoolean();                                                                                     
        }                                                                                            
+                                                                                                    
+       public void DumpStr(StringBuilder sb,string prefix){                                       
+			sb.AppendLine(prefix + "hasReachTarget"+":" + hasReachTarget.ToString());
+			sb.AppendLine(prefix + "needMove"+":" + needMove.ToString());                                                                                     
+       }                                                                                            
     }                                                               
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class CRigidbody :IBackup{                                                                  
+    public partial class CRigidbody :IBackup,IDumpStr{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(Mass);
 			writer.Write(Speed);
@@ -84,11 +103,19 @@ namespace Lockstep.Game{
 			isOnFloor = reader.ReadBoolean();
 			isSleep = reader.ReadBoolean();                                                                                     
        }                                                                                            
+                                                                                                    
+       public void DumpStr(StringBuilder sb,string prefix){                                       
+			sb.AppendLine(prefix + "Mass"+":" + Mass.ToString());
+			sb.AppendLine(prefix + "Speed"+":" + Speed.ToString());
+			sb.AppendLine(prefix + "isEnable"+":" + isEnable.ToString());
+			sb.AppendLine(prefix + "isOnFloor"+":" + isOnFloor.ToString());
+			sb.AppendLine(prefix + "isSleep"+":" + isSleep.ToString());                                                                                     
+       }                                                                                            
     }                                                               
 }                                                              
 
 namespace Lockstep.Collision2D{                                                                                               
-    public partial class CTransform2D :IBackup{                                                                  
+    public partial class CTransform2D :IBackup,IDumpStr{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(deg);
 			writer.Write(pos);
@@ -100,11 +127,17 @@ namespace Lockstep.Collision2D{
 			pos = reader.ReadLVector2();
 			y = reader.ReadLFloat();                                                                                     
        }                                                                                            
+                                                                                                    
+       public void DumpStr(StringBuilder sb,string prefix){                                       
+			sb.AppendLine(prefix + "deg"+":" + deg.ToString());
+			sb.AppendLine(prefix + "pos"+":" + pos.ToString());
+			sb.AppendLine(prefix + "y"+":" + y.ToString());                                                                                     
+       }                                                                                            
     }                                                               
 }                                                              
 
 namespace Lockstep.Collision2D{                                                                                               
-    public partial class ColliderData :IBackup{                                                                  
+    public partial class ColliderData :IBackup,IDumpStr{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(deg);
 			writer.Write(high);
@@ -124,11 +157,21 @@ namespace Lockstep.Collision2D{
 			up = reader.ReadLVector2();
 			y = reader.ReadLFloat();                                                                                     
        }                                                                                            
+                                                                                                    
+       public void DumpStr(StringBuilder sb,string prefix){                                       
+			sb.AppendLine(prefix + "deg"+":" + deg.ToString());
+			sb.AppendLine(prefix + "high"+":" + high.ToString());
+			sb.AppendLine(prefix + "pos"+":" + pos.ToString());
+			sb.AppendLine(prefix + "radius"+":" + radius.ToString());
+			sb.AppendLine(prefix + "size"+":" + size.ToString());
+			sb.AppendLine(prefix + "up"+":" + up.ToString());
+			sb.AppendLine(prefix + "y"+":" + y.ToString());                                                                                     
+       }                                                                                            
     }                                                               
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class Enemy :IBackup{                                                                  
+    public partial class Enemy :IBackup,IDumpStr{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(EntityId);
 			writer.Write(PrefabId);
@@ -164,11 +207,29 @@ namespace Lockstep.Game{
 			skillBox.ReadBackup(reader);
 			transform.ReadBackup(reader);                                                                                     
        }                                                                                            
+                                                                                                    
+       public void DumpStr(StringBuilder sb,string prefix){                                       
+			sb.AppendLine(prefix + "EntityId"+":" + EntityId.ToString());
+			sb.AppendLine(prefix + "PrefabId"+":" + PrefabId.ToString());
+			sb.AppendLine(prefix + "curHealth"+":" + curHealth.ToString());
+			sb.AppendLine(prefix + "damage"+":" + damage.ToString());
+			sb.AppendLine(prefix + "isFire"+":" + isFire.ToString());
+			sb.AppendLine(prefix + "isInvincible"+":" + isInvincible.ToString());
+			sb.AppendLine(prefix + "maxHealth"+":" + maxHealth.ToString());
+			sb.AppendLine(prefix + "moveSpd"+":" + moveSpd.ToString());
+			sb.AppendLine(prefix + "turnSpd"+":" + turnSpd.ToString());
+			sb.AppendLine(prefix + "animator" +":");  animator.DumpStr(sb,"\t" + prefix);
+			sb.AppendLine(prefix + "brain" +":");  brain.DumpStr(sb,"\t" + prefix);
+			sb.AppendLine(prefix + "colliderData" +":");  colliderData.DumpStr(sb,"\t" + prefix);
+			sb.AppendLine(prefix + "rigidbody" +":");  rigidbody.DumpStr(sb,"\t" + prefix);
+			sb.AppendLine(prefix + "skillBox" +":");  skillBox.DumpStr(sb,"\t" + prefix);
+			sb.AppendLine(prefix + "transform" +":");  transform.DumpStr(sb,"\t" + prefix);                                                                                     
+       }                                                                                            
     }                                                               
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class Player :IBackup{                                                                  
+    public partial class Player :IBackup,IDumpStr{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(EntityId);
 			writer.Write(PrefabId);
@@ -208,11 +269,31 @@ namespace Lockstep.Game{
 			skillBox.ReadBackup(reader);
 			transform.ReadBackup(reader);                                                                                     
        }                                                                                            
+                                                                                                    
+       public void DumpStr(StringBuilder sb,string prefix){                                       
+			sb.AppendLine(prefix + "EntityId"+":" + EntityId.ToString());
+			sb.AppendLine(prefix + "PrefabId"+":" + PrefabId.ToString());
+			sb.AppendLine(prefix + "curHealth"+":" + curHealth.ToString());
+			sb.AppendLine(prefix + "damage"+":" + damage.ToString());
+			sb.AppendLine(prefix + "isFire"+":" + isFire.ToString());
+			sb.AppendLine(prefix + "isInvincible"+":" + isInvincible.ToString());
+			sb.AppendLine(prefix + "localId"+":" + localId.ToString());
+			sb.AppendLine(prefix + "maxHealth"+":" + maxHealth.ToString());
+			sb.AppendLine(prefix + "moveSpd"+":" + moveSpd.ToString());
+			sb.AppendLine(prefix + "turnSpd"+":" + turnSpd.ToString());
+			sb.AppendLine(prefix + "animator" +":");  animator.DumpStr(sb,"\t" + prefix);
+			sb.AppendLine(prefix + "colliderData" +":");  colliderData.DumpStr(sb,"\t" + prefix);
+			sb.AppendLine(prefix + "input" +":");  input.DumpStr(sb,"\t" + prefix);
+			sb.AppendLine(prefix + "mover" +":");  mover.DumpStr(sb,"\t" + prefix);
+			sb.AppendLine(prefix + "rigidbody" +":");  rigidbody.DumpStr(sb,"\t" + prefix);
+			sb.AppendLine(prefix + "skillBox" +":");  skillBox.DumpStr(sb,"\t" + prefix);
+			sb.AppendLine(prefix + "transform" +":");  transform.DumpStr(sb,"\t" + prefix);                                                                                     
+       }                                                                                            
     }                                                               
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class PlayerInput :IBackup{                                                                  
+    public partial class PlayerInput :IBackup,IDumpStr{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(inputUV);
 			writer.Write(isInputFire);
@@ -228,33 +309,51 @@ namespace Lockstep.Game{
 			mousePos = reader.ReadLVector2();
 			skillId = reader.ReadInt32();                                                                                     
        }                                                                                            
+                                                                                                    
+       public void DumpStr(StringBuilder sb,string prefix){                                       
+			sb.AppendLine(prefix + "inputUV"+":" + inputUV.ToString());
+			sb.AppendLine(prefix + "isInputFire"+":" + isInputFire.ToString());
+			sb.AppendLine(prefix + "isSpeedUp"+":" + isSpeedUp.ToString());
+			sb.AppendLine(prefix + "mousePos"+":" + mousePos.ToString());
+			sb.AppendLine(prefix + "skillId"+":" + skillId.ToString());                                                                                     
+       }                                                                                            
     }                                                               
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class Skill :IBackup{                                                                  
+    public partial class Skill :IBackup,IDumpStr{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(CdTimer);
 			writer.Write(_curPartIdx);
 			writer.Write(skillTimer);
-			writer.Write((int)(State));                                                                                     
+			writer.Write((int)(State));
+			writer.Write(partCounter);                                                                                     
        }                                                                                            
                                                                                                     
        public void ReadBackup(Deserializer reader){                                       
 			CdTimer = reader.ReadLFloat();
 			_curPartIdx = reader.ReadInt32();
 			skillTimer = reader.ReadLFloat();
-			State = (ESkillState)reader.ReadInt32();                                                                                     
+			State = (ESkillState)reader.ReadInt32();
+			partCounter = reader.ReadArray(this.partCounter);                                                                                     
+       }                                                                                            
+                                                                                                    
+       public void DumpStr(StringBuilder sb,string prefix){                                       
+			sb.AppendLine(prefix + "CdTimer"+":" + CdTimer.ToString());
+			sb.AppendLine(prefix + "_curPartIdx"+":" + _curPartIdx.ToString());
+			sb.AppendLine(prefix + "skillTimer"+":" + skillTimer.ToString());
+			sb.AppendLine(prefix + "State"+":" + State.ToString());
+			DumpStrUtil.DumpList("partCounter", partCounter, sb, prefix);                                                                                     
        }                                                                                            
     }                                                               
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class Spawner :IBackup{                                                                  
+    public partial class Spawner :IBackup,IDumpStr{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(EntityId);
 			writer.Write(PrefabId);
-			writer.Write(_timer);
+			writer.Write(Timer);
 			Info.WriteBackup(writer);
 			transform.WriteBackup(writer);                                                                                     
        }                                                                                            
@@ -262,15 +361,23 @@ namespace Lockstep.Game{
        public void ReadBackup(Deserializer reader){                                       
 			EntityId = reader.ReadInt32();
 			PrefabId = reader.ReadInt32();
-			_timer = reader.ReadLFloat();
+			Timer = reader.ReadLFloat();
 			Info.ReadBackup(reader);
 			transform.ReadBackup(reader);                                                                                     
+       }                                                                                            
+                                                                                                    
+       public void DumpStr(StringBuilder sb,string prefix){                                       
+			sb.AppendLine(prefix + "EntityId"+":" + EntityId.ToString());
+			sb.AppendLine(prefix + "PrefabId"+":" + PrefabId.ToString());
+			sb.AppendLine(prefix + "Timer"+":" + Timer.ToString());
+			sb.AppendLine(prefix + "Info" +":");  Info.DumpStr(sb,"\t" + prefix);
+			sb.AppendLine(prefix + "transform" +":");  transform.DumpStr(sb,"\t" + prefix);                                                                                     
        }                                                                                            
     }                                                               
 }                                                              
 
 namespace Lockstep.Game{                                                                                               
-    public partial class SpawnerInfo :IBackup{                                                                  
+    public partial class SpawnerInfo :IBackup,IDumpStr{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(prefabId);
 			writer.Write(spawnPoint);
@@ -281,6 +388,12 @@ namespace Lockstep.Game{
 			prefabId = reader.ReadInt32();
 			spawnPoint = reader.ReadLVector3();
 			spawnTime = reader.ReadLFloat();                                                                                     
+       }                                                                                            
+                                                                                                    
+       public void DumpStr(StringBuilder sb,string prefix){                                       
+			sb.AppendLine(prefix + "prefabId"+":" + prefabId.ToString());
+			sb.AppendLine(prefix + "spawnPoint"+":" + spawnPoint.ToString());
+			sb.AppendLine(prefix + "spawnTime"+":" + spawnTime.ToString());                                                                                     
        }                                                                                            
     }                                                               
 }                                                              

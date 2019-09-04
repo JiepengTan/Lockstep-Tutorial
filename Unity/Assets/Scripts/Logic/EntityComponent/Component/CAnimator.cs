@@ -28,7 +28,7 @@ namespace Lockstep.Game {
 
         [Backup] private LFloat _animLen;
         [Backup] private LFloat _timer;
-        [Backup] private string _curAnimName;
+        [Backup] private string _curAnimName = "";
         [Backup] private int _curAnimIdx = -1;
 
         private List<string> _animNames = new List<string>();

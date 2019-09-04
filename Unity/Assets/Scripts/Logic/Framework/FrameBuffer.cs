@@ -41,7 +41,7 @@ namespace Lockstep.Game {
         public int maxServerTickInBuffer = -1;
 
 
-        public bool IsNeedRevert = false;
+        public bool IsNeedRollback = false;
         private int firstMissFrameTick;
 
         public FrameBuffer(){
@@ -98,7 +98,7 @@ namespace Lockstep.Game {
             //不考虑追帧
             //UnityEngine.Debug.Assert(nextTickToCheck <= nextClientTick, "localServerTick <= localClientTick ");
             //Confirm frames
-            IsNeedRevert = false;
+            IsNeedRollback = false;
             while (nextTickToCheck <= maxServerTickInBuffer) {
                 var sIdx = nextTickToCheck % BufferSize;
                 var cFrame = clientBuffer[sIdx];
@@ -112,7 +112,7 @@ namespace Lockstep.Game {
                     nextTickToCheck++;
                 }
                 else {
-                    IsNeedRevert = true;
+                    IsNeedRollback = true;
                     break;
                 }
             }

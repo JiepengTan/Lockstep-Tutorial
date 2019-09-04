@@ -11,10 +11,11 @@
     "\n// </auto-generated>                                                                            ",
     "\n//------------------------------------------------------------------------------                ",
     "\n                                                                                                ",
+    "\nusing Lockstep.Util;                                                                   ",
     "\nusing Lockstep.Serialization;                                                                   ",
     "\nusing Lockstep.Game;                                                                   ",
     "\nusing Lockstep.Collision2D;                                                                   ",
-    "\n                                                                           ",
+    "\nusing System.Text;                                                                         ",
     "\n#if !DONT_USE_GENERATE_CODE                                                                     ",
     "\n//#TYPES_EXTENSIONS                                                                             ",
     "\n#endif                                                                                          ",
@@ -36,17 +37,29 @@
       "_arrayCodeTemplete": "{0}{1} = reader.ReadArray(this.{1});",
       "_lstCodeTemplete": "{0}{1} = reader.ReadList(this.{1});",
       "_dictCodeTemplete": "{0}{1} = reader.ReadDict(this.{1});"
+    },
+    {
+      "_defaultCodeTemplete": "{0}sb.AppendLine(prefix + \"{1}\"+\":\" + {1}.ToString());",
+      "_enumCodeTemplete":  "{0}sb.AppendLine(prefix + \"{1}\"+\":\" + {1}.ToString());",
+      "_clsCodeTemplete": "{0}sb.AppendLine(prefix + \"{1}\" +\":\");  {1}.DumpStr(sb,\"\\t\" + prefix);",
+      "_arrayCodeTemplete": "{0}DumpStrUtil.DumpList(\"{1}\", {1}, sb, prefix);",
+      "_lstCodeTemplete": "{0}DumpStrUtil.DumpList(\"{1}\", {1}, sb, prefix);",
+      "_dictCodeTemplete": "{0}sb.AppendLine(prefix + \"{1}\"+\":\" + {1}.ToString());"
     }
   ],
   "ClsCodeTemplate": [
     "\nnamespace #NameSpace{                                                                                              ",
-    "\n    public partial class #ClsName :IBackup{                                                                 ",
+    "\n    public partial class #ClsName :IBackup,IDumpStr{                                                                 ",
     "\n       public void WriteBackup(Serializer writer){                                          ",
     "\n#TYPE_HANDLE0                                                                                    ",
     "\n       }                                                                                           ",
     "\n                                                                                                   ",
     "\n       public void ReadBackup(Deserializer reader){                                      ",
     "\n#TYPE_HANDLE1                                                                                    ",
+    "\n       }                                                                                           ",
+    "\n                                                                                                   ",
+    "\n       public void DumpStr(StringBuilder sb,string prefix){                                      ",
+    "\n#TYPE_HANDLE2                                                                                    ",
     "\n       }                                                                                           ",
     "\n    }                                                              ",
     "\n}                                                              "

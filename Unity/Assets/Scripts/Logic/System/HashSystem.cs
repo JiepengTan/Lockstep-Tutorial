@@ -11,22 +11,6 @@ namespace Lockstep.Game {
         }
 
         //{string.Format("{0:yyyyMMddHHmmss}", DateTime.Now)}_
-        public static int GetHash(IGameStateService _gameStateService){
-            var allEnemies = _gameStateService.GetEnemies();
-            var allPlayers = _gameStateService.GetPlayers();
-            int hash = 1;
-            int idx = 0;
-            foreach (var entity in allPlayers) {
-                hash += entity.curHealth.GetHash() * PrimerLUT.GetPrimer(idx++);
-                hash += entity.transform.GetHash() * PrimerLUT.GetPrimer(idx++);
-            }
-
-            foreach (var entity in allEnemies) {
-                hash += entity.curHealth.GetHash() * PrimerLUT.GetPrimer(idx++);
-                hash += entity.transform.GetHash() * PrimerLUT.GetPrimer(idx++);
-            }
-
-            return hash;
-        }
+   
     }
 }

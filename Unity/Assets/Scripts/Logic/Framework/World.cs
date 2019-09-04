@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using Lockstep.Math;
 using Lockstep.Game;
 using NetMsg.Common;
@@ -11,8 +13,8 @@ using Profiler = Lockstep.Util.Profiler;
 namespace Lockstep.Game {
     public class World : BaseSystem {
         public static World Instance { get; private set; }
-        public int Tick;
-        public PlayerInput[] PlayerInputs => _gameStateService.GetPlayers().Select(a=>a.input).ToArray();
+        public int Tick { get; set; }
+        public PlayerInput[] PlayerInputs => _gameStateService.GetPlayers().Select(a => a.input).ToArray();
         public static Player MyPlayer;
         public static object MyPlayerTrans => MyPlayer?.engineTransform;
         private List<BaseSystem> _systems = new List<BaseSystem>();
@@ -32,7 +34,7 @@ namespace Lockstep.Game {
             _commonStateService.SetTick(tick);
             Tick = tick;
             var hash = _commonStateService.Hash;
-            var curHash = HashSystem.GetHash(_gameStateService);
+            var curHash = GetHash();
             if (hash != curHash) {
                 Debug.LogError($"Rollback error: Hash isDiff oldHash ={hash}  curHash{curHash}");
             }
@@ -116,10 +118,84 @@ namespace Lockstep.Game {
             DoDestroy();
         }
 
+        public int GetHash(){
+            int idx = 0;
+            return _GetHash(ref idx);
+        }
 
+        public StringBuilder DumpStr(){
+            var sb = new StringBuilder();
+            sb.AppendLine("Tick : " + Tick + "--------------------");
+            _DumpStr(sb, "");
+            return sb;
+        }
+
+        private int _GetHash(ref int idx){
+            int hashIdx = 0;
+            int hashCode = 0;
+            foreach (var svc in _svcContainer.GetAllServices()) {
+                if (svc is IHashCode hashSvc) {
+                    hashCode += hashSvc.GetHash(ref hashIdx) * PrimerLUT.GetPrimer(hashIdx++);
+                }
+            }
+
+            return hashCode;
+        }
+
+        private void _DumpStr(System.Text.StringBuilder sb, string prefix){
+            foreach (var svc in _svcContainer.GetAllServices()) {
+                if (svc is IDumpStr hashSvc) {
+                    sb.AppendLine(svc.GetType() + " --------------------");
+                    hashSvc.DumpStr(sb, "\t" + prefix);
+                }
+            }
+        }
+
+        Dictionary<int, int> _tick2Hash = new Dictionary<int, int>();
+        Dictionary<int, StringBuilder> _tick2RawDumpString = new Dictionary<int, StringBuilder>();
+        Dictionary<int, StringBuilder> _tick2ResumeDumpString = new Dictionary<int, StringBuilder>();
+#if UNITY_EDITOR
+        public string dumpPath => Path.Combine(Application.dataPath, _gameConfigService.DumpStrPath);
+#endif
         private void Step(){
+            if (_commonStateService.IsPause) return;
             _commonStateService.SetTick(Tick);
-            _commonStateService.Hash = HashSystem.GetHash(_gameStateService);
+
+            var hash = GetHash();
+            if (_constStateService.IsClientMode) {
+                if (_tick2Hash.TryGetValue(Tick, out var val)) {
+                    _tick2ResumeDumpString[Tick] = DumpStr();
+                    if (hash != val) {
+                        Debug.LogError($"Tick : CurHash {hash} is different from oldHash {val}");
+#if UNITY_EDITOR
+                        var path = dumpPath + "/cur.txt";
+                        var dir = Path.GetDirectoryName(path);
+                        if (!Directory.Exists(dir)) {
+                            Directory.CreateDirectory(dir);
+                        }
+
+                        var minTick = _tick2ResumeDumpString.Keys.Min();
+                        StringBuilder sbResume = new StringBuilder();
+                        StringBuilder sbRaw = new StringBuilder();
+                        for (int i = minTick; i <= Tick; i++) {
+                            sbRaw.AppendLine(_tick2RawDumpString[i].ToString());
+                            sbResume.AppendLine(_tick2ResumeDumpString[i].ToString());
+                        }
+
+                        File.WriteAllText(dumpPath + "/resume.txt", sbResume.ToString());
+                        File.WriteAllText(dumpPath + "/raw.txt", sbRaw.ToString());
+                        _commonStateService.IsPause = true;
+                        UnityEngine.Debug.Break();
+#endif
+                    }
+                }
+                else {
+                    _tick2RawDumpString[Tick] = DumpStr();
+                }
+            }
+
+            _commonStateService.Hash = hash;
+            _tick2Hash[Tick] = hash;
             _timeMachineService.Backup(Tick);
             var deltaTime = new LFloat(true, 30);
             foreach (var system in _systems) {

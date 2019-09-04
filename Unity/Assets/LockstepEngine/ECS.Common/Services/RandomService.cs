@@ -8,6 +8,13 @@ namespace Lockstep.Game {
         Random _i = new Math.Random();
         public LFloat value => _i.value;
 
+        public override int GetHash(ref int idx){
+            return (int) _i.randSeed * PrimerLUT.GetPrimer(idx++);
+        }        
+        public override void DumpStr(System.Text.StringBuilder sb,string prefix){
+            sb.AppendLine(prefix + "randSeed"+":" + _i.randSeed.ToString());
+        }
+
         public uint Next(){
             return _i.Next();
         }

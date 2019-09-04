@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using Lockstep.Game;
 using Lockstep.Math;
 using Lockstep.Util;
@@ -112,7 +113,11 @@ namespace Lockstep.Game {
         public List<SpawnerConfig> spawner = new List<SpawnerConfig>();
         public List<AnimatorConfig> animators = new List<AnimatorConfig>();
         public List<SkillBoxConfig> skills = new List<SkillBoxConfig>();
-
+        public void DoAwake(){
+            foreach (var skill in skills) {
+                skill.CheckInit();
+            }
+        }
         private T GetConfig<T>(List<T> lst, int id) where T: EntityConfig{
             if (id < 0 || id >= lst.Count) {
                 Debug.LogError("Miss " + typeof(T)  + " "+ id);
@@ -136,6 +141,7 @@ namespace Lockstep.Game {
         }
         public CollisionConfig CollisionConfig;
         public string RecorderFilePath;
+        public string DumpStrPath;
         public Msg_G2C_GameStartInfo ClientModeInfo = new Msg_G2C_GameStartInfo();
     }
 }

@@ -37,6 +37,7 @@ namespace Lockstep.Game {
         public LFloat CdTimer;
         public ESkillState State;
         public LFloat skillTimer;
+        public int[] partCounter = new int[0];
         [Backup] private int _curPartIdx;
 
         public SkillPart CurPart => _curPartIdx == -1 ? null : Parts[_curPartIdx];
@@ -63,6 +64,7 @@ namespace Lockstep.Game {
             skillTimer = MaxPartTime;
             State = ESkillState.Idle;
             _curPartIdx = -1;
+            partCounter = new int[Parts.Count];
         }
 
 
@@ -70,8 +72,8 @@ namespace Lockstep.Game {
             if (CdTimer <= 0 && State == ESkillState.Idle) {
                 CdTimer = CD;
                 skillTimer = LFloat.zero;
-                foreach (var part in Parts) {
-                    part.counter = 0;
+                for (int i = 0; i < partCounter.Length; i++) {
+                    partCounter[i] = 0;
                 }
 
                 State = ESkillState.Firing;
@@ -118,10 +120,10 @@ namespace Lockstep.Game {
         }
 
         void CheckSkillPart(SkillPart part, int idx){
-            if (part.counter > part.otherCount) return;
-            if (skillTimer > part.NextTriggerTimer()) {
+            if (partCounter[idx] > part.otherCount) return;
+            if (skillTimer > part.NextTriggerTimer(partCounter[idx])) {
                 TriggerPart(part, idx);
-                part.counter++;
+                partCounter[idx]++;
             }
         }
 

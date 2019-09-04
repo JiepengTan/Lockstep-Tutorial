@@ -6,7 +6,7 @@ using UnityEngine;
 [CustomEditor(typeof(MainScript))]
 public class EditorMainScript : Editor {
     private MainScript owner;
-    public int rollbackTickCount = 3;
+    public int rollbackTickCount = 60;
 
     public override void OnInspectorGUI(){
         base.OnInspectorGUI();

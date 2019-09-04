@@ -32,9 +32,7 @@ namespace Lockstep.Game {
         public static LFloat AnimFrameScale = new LFloat(true, 1667);
         [HideInInspector] public LFloat DeadTimer => startTimer + interval * (otherCount + LFloat.half);
 
-        [HideInInspector] public int counter;
-
-        public LFloat NextTriggerTimer(){
+        public LFloat NextTriggerTimer(int counter){
             return startTimer + interval * counter;
         }
     }

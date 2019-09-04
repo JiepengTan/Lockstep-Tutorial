@@ -6,16 +6,16 @@ namespace Lockstep.Game {
     [Serializable]
     public partial class Spawner : BaseEntity {
         public SpawnerInfo Info = new SpawnerInfo();
-        [Backup] private LFloat _timer;
+        public LFloat Timer;
 
         public override void DoStart(){
-            _timer = Info.spawnTime;
+            Timer = Info.spawnTime;
         }
 
         public override void DoUpdate(LFloat deltaTime){
-            _timer += deltaTime;
-            if (_timer > Info.spawnTime) {
-                _timer = LFloat.zero;
+            Timer += deltaTime;
+            if (Timer > Info.spawnTime) {
+                Timer = LFloat.zero;
                 Spawn();
             }
         }

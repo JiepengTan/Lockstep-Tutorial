@@ -12,6 +12,7 @@ namespace Lockstep.Game {
 
         CollisionConfig CollisionConfig { get; }
         string RecorderFilePath { get; }
+        string DumpStrPath { get; }
         Msg_G2C_GameStartInfo ClientModeInfo{ get; }
     }
 }
