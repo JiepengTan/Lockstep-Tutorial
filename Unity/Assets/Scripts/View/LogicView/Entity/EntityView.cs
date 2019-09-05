@@ -8,12 +8,11 @@ namespace Lockstep.Game {
         public Entity entity;
         protected bool isDead => entity?.isDead ?? true;
 
-        public override void BindEntity(BaseEntity e){
+        public override void BindEntity(BaseEntity e, BaseEntity oldEntity = null){
             base.BindEntity(e);
             e.EntityView = this;
             this.entity = e as Entity;
             uiFloatBar = FloatBarManager.CreateFloatBar(transform, this.entity.curHealth, this.entity.maxHealth);
-            transform.position = this.entity.transform.Pos3.ToVector3();
         }
 
         public override void OnTakeDamage(int amount, LVector3 hitPoint){

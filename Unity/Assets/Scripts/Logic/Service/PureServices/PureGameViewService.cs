@@ -5,7 +5,7 @@ using Debug = Lockstep.Logging.Debug;
 
 namespace Lockstep.Game {
     public class PureGameViewService : BaseService, IGameViewService {
-        public virtual void BindView(BaseEntity entity){ }
+        public void BindView(BaseEntity entity, BaseEntity oldEntity = null){ }
 
         public virtual void UnbindView(BaseEntity entity){ }
     }

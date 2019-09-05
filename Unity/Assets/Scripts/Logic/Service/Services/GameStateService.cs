@@ -134,12 +134,9 @@ namespace Lockstep.Game {
                 var reader = new Deserializer(backupData.Data);
                 var hash = reader.ReadInt32();
                 _commonStateService.Hash = hash;
-                //. Unbind Entity views
-                foreach (var pair in _id2Entities) {
-                    _gameViewService.UnbindView(pair.Value);
-                }
 
-                _id2Entities.Clear();
+                var oldId2Entity = _id2Entities;
+                _id2Entities = new Dictionary<int, BaseEntity>();
                 _type2Entities.Clear();
 
                 //. Recover Entities
@@ -156,7 +153,17 @@ namespace Lockstep.Game {
 
                 //. Rebind Views 
                 foreach (var pair in _id2Entities) {
-                    _gameViewService.BindView(pair.Value);
+                    BaseEntity oldEntity = null;
+                    if (oldId2Entity.TryGetValue(pair.Key, out var poldEntity)) {
+                        oldEntity = poldEntity;
+                        oldId2Entity.Remove(pair.Key);
+                    }
+                    _gameViewService.BindView(pair.Value, oldEntity);
+                }
+                
+                //. Unbind Entity views
+                foreach (var pair in oldId2Entity) {
+                    _gameViewService.UnbindView(pair.Value);
                 }
             }
             else {

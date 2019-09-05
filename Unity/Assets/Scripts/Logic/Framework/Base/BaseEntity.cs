@@ -21,6 +21,9 @@ namespace Lockstep.Game {
         [ReRefBackup] public IServiceContainer ServiceContainer { get; set; }
 
         [ReRefBackup] public IEntityView EntityView;
+
+        public LVector3 prePos3;
+        public LFloat preDeg;
         
         public T GetService<T>() where T : IService{
             return ServiceContainer.GetService<T>();
