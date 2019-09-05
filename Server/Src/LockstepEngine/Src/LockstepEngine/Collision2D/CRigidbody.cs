@@ -7,23 +7,23 @@ namespace Lockstep.Game {
     public delegate void OnFloorResultCallback(bool isOnFloor);
 
     [Serializable]
-    public class CRigidbody {
+    public partial class CRigidbody : IComponent {
         public CTransform2D transform { get; private set; }
         public static LFloat G = new LFloat(10);
         public static LFloat MinSleepSpeed = new LFloat(true, 100);
         public static LFloat FloorFriction = new LFloat(20);
         public static LFloat MinYSpd = new LFloat(-10);
         public static LFloat FloorY = LFloat.zero;
-        
-        public OnFloorResultCallback OnFloorEvent;
-        
+
+        [ReRefBackup] public OnFloorResultCallback OnFloorEvent;
+
         public LVector3 Speed;
         public LFloat Mass = LFloat.one;
         public bool isEnable = true;
         public bool isSleep = false;
         public bool isOnFloor;
 
-        public void Init(CTransform2D transform2D){
+        public void BindRef(CTransform2D transform2D){
             this.transform = transform2D;
         }
 
@@ -54,7 +54,7 @@ namespace Lockstep.Game {
                 LFloat y = pos.y;
                 //Test floor
                 isOnFloor = TestOnFloor(transform.Pos3, ref y);
-                if (isOnFloor && Speed.y <=0) {
+                if (isOnFloor && Speed.y <= 0) {
                     Speed.y = LFloat.zero;
                 }
 
@@ -67,6 +67,7 @@ namespace Lockstep.Game {
                     Speed.x = LFloat.zero;
                     Speed.z = LFloat.zero;
                 }
+
                 if (isOnFloor) {
                     var speedVal = Speed.magnitude - FloorFriction * deltaTime;
                     speedVal = LMath.Max(speedVal, LFloat.zero);
@@ -86,30 +87,32 @@ namespace Lockstep.Game {
             Speed += force / Mass;
             //Debug.Log(__id+ " AddImpulse " + force  +" after " + Speed);
         }
+
         public void ResetSpeed(LFloat ySpeed){
             Speed = LVector3.zero;
             Speed.y = ySpeed;
         }
+
         public void ResetSpeed(){
             Speed = LVector3.zero;
         }
 
         private bool TestOnFloor(LVector3 pos, ref LFloat y){
-            var onFloor = pos.y <= 0;//TODO check with scene
+            var onFloor = pos.y <= 0; //TODO check with scene
             if (onFloor) {
                 y = LFloat.zero;
             }
+
             return onFloor;
         }
 
         private bool TestOnFloor(LVector3 pos){
-            var onFloor = pos.y <= 0;//TODO check with scene
+            var onFloor = pos.y <= 0; //TODO check with scene
             return onFloor;
         }
 
         private bool TestOnWall(ref LVector3 pos){
-            return false;//TODO check with scene
+            return false; //TODO check with scene
         }
-        
     }
 }

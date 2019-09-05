@@ -15,7 +15,7 @@ namespace Lockstep.FakeServer {
         private delegate BaseMsg ParseNetMsg(Deserializer reader);
 
 
-        public const int MaxPlayerCount = 2;
+        public const int MaxPlayerCount = 1;
 
         public int MapId { get; set; }
         public string GameHash { get; set; }
@@ -214,7 +214,7 @@ namespace Lockstep.FakeServer {
                 //将所有未到的包 给予默认的输入
                 for (int i = 0; i < inputs.Length; i++) {
                     if (inputs[i] == null) {
-                        inputs[i] = new Msg_PlayerInput(Tick, (byte) i, null);
+                        inputs[i] = new Msg_PlayerInput(Tick, (byte) i);
                     }
                 }
 

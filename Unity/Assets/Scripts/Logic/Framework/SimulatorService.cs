@@ -80,10 +80,10 @@ namespace Lockstep.Game {
                 snapshotFrameInterval = _constStateService.SnapshotFrameInterval;
             }
 
+            _cmdBuffer = new FrameBuffer(_networkService, 2000, snapshotFrameInterval, MaxPredictFrameCount);
             _world = new World();
             _dumpHelper = new DumpHelper(_serviceContainer, _world);
             _hashHelper = new HashHelper(_serviceContainer, _world, _networkService, _cmdBuffer);
-            _cmdBuffer = new FrameBuffer(_networkService, 2000, snapshotFrameInterval, MaxPredictFrameCount);
         }
 
         public override void DoDestroy(){

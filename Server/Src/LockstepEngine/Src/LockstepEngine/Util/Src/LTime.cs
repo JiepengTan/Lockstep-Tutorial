@@ -64,6 +64,7 @@ namespace Lockstep.Util {
 
         /// The real time in seconds since the game started (Read Only).
         public static float realtimeSinceStartup => (float) (DateTime.Now - _initTime).TotalSeconds;
+        public static long realtimeSinceStartupMS =>  (long)(DateTime.Now - _initTime).TotalMilliseconds;
 
         private static DateTime _initTime;
         private static DateTime lastFrameTime;

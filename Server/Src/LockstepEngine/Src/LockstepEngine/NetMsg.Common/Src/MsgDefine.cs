@@ -23,7 +23,7 @@ namespace NetMsg.Common {
     [Udp]
     public partial class Msg_HashCode : BaseMsg {
         public int StartTick;
-        public long[] HashCodes;
+        public int[] HashCodes;
     }
 
     [Udp]

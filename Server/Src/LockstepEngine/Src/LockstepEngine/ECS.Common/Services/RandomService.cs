@@ -4,7 +4,7 @@ using Lockstep.Math;
 using Random = Lockstep.Math.Random;
 
 namespace Lockstep.Game {
-    public class RandomService : BaseService, IRandomService {
+    public partial class RandomService : BaseService, IRandomService {
         Random _i = new Math.Random();
         public LFloat value => _i.value;
 

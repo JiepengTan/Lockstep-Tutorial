@@ -1,25 +1,17 @@
 using System;
 using System.Runtime.InteropServices;
-using System.Xml.Linq;
 using Lockstep.Math;
 using Lockstep.Util;
-namespace Lockstep.Collision2D {
-    public static class TransformHashCodeExtension {
-        public static int GetHash(this CTransform2D val){
-            return val.Pos3.GetHash() * 13
-                   + val.deg.GetHash() * 31;
-  
-        }
-    }
-}
+
 namespace Lockstep.Collision2D {
     [Serializable]
-    public class CTransform2D {
+    public partial class CTransform2D : IComponent {
         public LVector2 pos;
         public LFloat y;
         public LFloat deg; //same as Unity CW deg(up) =0
 
-        public LVector2 forward {//等同于2D  up
+        [NoBackup]
+        public LVector2 forward { //等同于2D  up
             get {
                 LFloat s, c;
                 var ccwDeg = (-deg + 90);
@@ -34,12 +26,14 @@ namespace Lockstep.Collision2D {
             var deg = 90 - ccwDeg;
             return AbsDeg(deg);
         }
+
         public static LFloat TurnToward(LVector2 targetPos, LVector2 currentPos, LFloat cursDeg, LFloat turnVal,
             out bool isLessDeg){
             var toTarget = (targetPos - currentPos).normalized;
             var toDeg = CTransform2D.ToDeg(toTarget);
             return TurnToward(toDeg, cursDeg, turnVal, out isLessDeg);
         }
+
         public static LFloat TurnToward(LFloat toDeg, LFloat cursDeg, LFloat turnVal,
             out bool isLessDeg){
             var curDeg = CTransform2D.AbsDeg(cursDeg);
@@ -62,6 +56,7 @@ namespace Lockstep.Collision2D {
                 return curDeg + turnVal * LMath.Sign(diff);
             }
         }
+
         public static LFloat AbsDeg(LFloat deg){
             var rawVal = deg._val % ((LFloat) 360)._val;
             return new LFloat(true, rawVal);
@@ -101,7 +96,7 @@ namespace Lockstep.Collision2D {
         public static Transform2D operator +(CTransform2D a, CTransform2D b){
             return new Transform2D {pos = a.pos + b.pos, y = a.y + b.y, deg = a.deg + b.deg};
         }
-
+        [NoBackup]
         public LVector3 Pos3 {
             get => new LVector3(pos.x, y, pos.y);
             set {

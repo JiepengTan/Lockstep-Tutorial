@@ -22,7 +22,7 @@ namespace NetMsg.Common {
                 this.Commands = inputs.ToArray();
             }
         }
-        public Msg_PlayerInput(int tick, byte actorID, InputCmd[] inputs){
+        public Msg_PlayerInput(int tick, byte actorID, InputCmd[] inputs = null){
             this.Tick = tick;
             this.ActorId = actorID;
             if (inputs != null && inputs.Length > 0) {

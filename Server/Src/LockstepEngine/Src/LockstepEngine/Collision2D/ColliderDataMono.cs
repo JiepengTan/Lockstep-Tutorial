@@ -11,7 +11,7 @@ namespace Lockstep.Collision2D {
     }
 #endif
     [Serializable]
-    public class ColliderData {
+    public partial class ColliderData :IComponent{
 #if UNITY_5_3_OR_NEWER
         [Header("Offset")]
 #endif

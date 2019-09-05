@@ -3,14 +3,15 @@ using Lockstep.UnsafeCollision2D;
 using Lockstep.Math;
 #if UNITY_EDITOR
 using UnityEngine;
+
 #endif
 namespace Lockstep.Collision2D {
     public delegate void FuncOnTriggerEvent(ColliderProxy other, ECollisionEvent type);
 
-    public partial class ColliderProxy :ILPCollisionEventHandler,ILPTriggerEventHandler {
+    public partial class ColliderProxy : ILPCollisionEventHandler, ILPTriggerEventHandler {
         public object EntityObject;
 #if UNITY_EDITOR
-        public Transform UnityTransform;
+        public Transform UnityTransform => (EntityObject as BaseEntity)?.engineTransform as Transform;
 #endif
         public int Id;
         public int LayerType { get; set; }
@@ -23,7 +24,7 @@ namespace Lockstep.Collision2D {
 
         private LVector2 _prePos;
         private LFloat _preDeg;
-        public static LFloat DegGap = new LFloat(true,100);
+        public static LFloat DegGap = new LFloat(true, 100);
 
         private LRect _bound;
 
@@ -40,9 +41,11 @@ namespace Lockstep.Collision2D {
         public void Init(ColliderPrefab prefab, LVector2 pos){
             Init(prefab, pos, LFloat.zero, LFloat.zero);
         }
+
         public void Init(ColliderPrefab prefab, LVector2 pos, LFloat y, LFloat deg){
             Init(prefab, new CTransform2D(pos, y, deg));
         }
+
         public void Init(ColliderPrefab prefab, CTransform2D trans){
             this.Prefab = prefab;
             _bound = prefab.GetBounds();
@@ -53,6 +56,7 @@ namespace Lockstep.Collision2D {
                 Id = autoIncId++;
             }
         }
+
         public void DoUpdate(LFloat deltaTime){
             var curPos = Transform2D.pos;
             if (_prePos != curPos) {
@@ -66,8 +70,8 @@ namespace Lockstep.Collision2D {
                 IsMoved = true;
             }
         }
-        
-        
+
+
         public bool IsMoved = true;
 
         public LVector2 pos {
@@ -106,11 +110,13 @@ namespace Lockstep.Collision2D {
         public virtual void OnLPCollisionStay(ColliderProxy other){ }
         public virtual void OnLPCollisionExit(ColliderProxy other){ }
     }
+
     public interface ILPCollisionEventHandler {
         void OnLPTriggerEnter(ColliderProxy other);
         void OnLPTriggerStay(ColliderProxy other);
         void OnLPTriggerExit(ColliderProxy other);
     }
+
     public interface ILPTriggerEventHandler {
         void OnLPTriggerEnter(ColliderProxy other);
         void OnLPTriggerStay(ColliderProxy other);

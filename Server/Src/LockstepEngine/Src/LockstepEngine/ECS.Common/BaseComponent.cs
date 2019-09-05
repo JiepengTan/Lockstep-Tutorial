@@ -8,7 +8,7 @@ namespace Lockstep.ECS {
         object Clone();
     }
 
-    public class BaseComponent :BaseFormater, ICloneable {
+    public partial class BaseComponent :BaseFormater, ICloneable {
         public virtual void CopyTo(object comp){ }
 
         public virtual object Clone(){

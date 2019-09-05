@@ -1,6 +1,21 @@
 
 
+using Lockstep.Math;
+
 namespace Lockstep.Game {
+
+    public partial class CommonStateService : ICommonStateService {
+       public int Tick { get; set; }
+       public LFloat DeltaTime { get;set;  }
+       public LFloat TimeSinceGameStart { get; set;}
+       public int Hash { get; set; }
+       public bool IsPause { get; set; }
+
+       public void SetTick(int val){ Tick = val;}
+       public void SetDeltaTime(LFloat val) {DeltaTime = val; }
+       public void SetTimeSinceGameStart(LFloat val){TimeSinceGameStart = val; }
+    }
+
     public partial class ConstStateService : BaseService, IConstStateService {
         public static ConstStateService Instance { get; private set; }
 
@@ -30,5 +45,6 @@ namespace Lockstep.Game {
             get => _relPath;
             set => _relPath = value;
         }
+
     }
 }
