@@ -15,7 +15,7 @@ namespace Lockstep.FakeServer {
         private delegate BaseMsg ParseNetMsg(Deserializer reader);
 
 
-        public const int MaxPlayerCount = 1;
+        public const int MaxPlayerCount = 2;
 
         public int MapId { get; set; }
         public string GameHash { get; set; }

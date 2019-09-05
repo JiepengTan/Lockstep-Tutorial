@@ -21,7 +21,7 @@ namespace Lockstep.Game {
         void SendInput(Msg_PlayerInput msg);
         void SendMissFrameReq(int missFrameTick);
         void SendMissFrameRepAck(int missFrameTick);
-        void SendHashCodes(int firstHashTick, List<long> allHashCodes, int startIdx, int count);
+        void SendHashCodes(int firstHashTick, List<int> allHashCodes, int startIdx, int count);
 
         void SendGameEvent(byte[] data);
         void SendLoadingProgress(byte progress);
@@ -254,10 +254,10 @@ namespace Lockstep.Game {
             SendUdp(EMsgSC.C2G_RepMissFrameAck, new Msg_RepMissFrameAck() {MissFrameTick = missFrameTick});
         }
 
-        public void SendHashCodes(int firstHashTick, List<long> allHashCodes, int startIdx, int count){
+        public void SendHashCodes(int firstHashTick, List<int> allHashCodes, int startIdx, int count){
             Msg_HashCode msg = new Msg_HashCode();
             msg.StartTick = firstHashTick;
-            msg.HashCodes = new long[count];
+            msg.HashCodes = new int[count];
             for (int i = startIdx; i < count; i++) {
                 msg.HashCodes[i] = allHashCodes[i];
             }

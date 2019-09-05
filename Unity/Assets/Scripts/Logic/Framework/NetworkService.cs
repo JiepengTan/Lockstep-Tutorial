@@ -153,7 +153,7 @@ namespace Lockstep.Game {
             _roomMsgMgr.SendMissFrameRepAck(missFrameTick);
         }
 
-        public void SendHashCodes(int firstHashTick, List<long> allHashCodes, int startIdx, int count){
+        public void SendHashCodes(int firstHashTick, List<int> allHashCodes, int startIdx, int count){
             if (_noNetwork) return;
             _roomMsgMgr.SendHashCodes(firstHashTick, allHashCodes, startIdx, count);
         }
