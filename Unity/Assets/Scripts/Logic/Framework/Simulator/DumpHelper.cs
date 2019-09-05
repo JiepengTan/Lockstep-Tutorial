@@ -12,16 +12,20 @@ namespace Lockstep.Game {
 
 
 #if UNITY_EDITOR
-        public string dumpPath => Path.Combine(UnityEngine.Application.dataPath, _serviceContainer.GetService<IGameConfigService>().DumpStrPath);
+        private string dumpPath => Path.Combine(UnityEngine.Application.dataPath, _serviceContainer.GetService<IGameConfigService>().DumpStrPath);
 #endif
+        
+        private string dumpAllPath => "/Users/jiepengtan/Projects/Tutorial/LockstepTutorial/DumpLog";
         private HashHelper _hashHelper;
 
         public void DumpFrame(bool isNewFrame){
-            if (isNewFrame) { 
-                _tick2RawFrameData[Tick] = DumpFrame();}
+            var data = DumpFrame();
+            if (isNewFrame) {
+                _tick2RawFrameData[Tick] = data;
+            }
             else {
                 
-                _tick2OverrideFrameData[Tick] = DumpFrame();
+                _tick2OverrideFrameData[Tick] = data;
             }
         }
 
@@ -32,7 +36,6 @@ namespace Lockstep.Game {
             if (!Directory.Exists(dir)) {
                 Directory.CreateDirectory(dir);
             }
-
             var minTick = _tick2OverrideFrameData.Keys.Min();
             StringBuilder sbResume = new StringBuilder();
             StringBuilder sbRaw = new StringBuilder();
@@ -44,9 +47,24 @@ namespace Lockstep.Game {
             File.WriteAllText(dumpPath + "/resume.txt", sbResume.ToString());
             File.WriteAllText(dumpPath + "/raw.txt", sbRaw.ToString());
             UnityEngine.Debug.Break();
-#endif
+#endif 
         }
-        
+
+        public void DumpAll(){
+            var path = dumpAllPath + "/cur.txt";
+            var dir = Path.GetDirectoryName(path);
+            if (!Directory.Exists(dir)) {
+                Directory.CreateDirectory(dir);
+            }
+            StringBuilder sbRaw = new StringBuilder();
+            for (int i = 0; i <= Tick; i++) {
+                if (_tick2RawFrameData.TryGetValue(i, out var data)) {
+                    sbRaw.AppendLine(data.ToString());
+                }
+            }
+            File.WriteAllText(dumpAllPath + $"/All_{_serviceContainer.GetService<IConstStateService>().LocalActorId}.txt", sbRaw.ToString());
+        }
+
         public StringBuilder DumpFrame(){
             var sb = new StringBuilder();
             sb.AppendLine("Tick : " + Tick + "--------------------");

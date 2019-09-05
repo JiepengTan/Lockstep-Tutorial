@@ -34,5 +34,7 @@ namespace Lockstep.Game {
         EPureModeType RunMode { get; set; }
         string ClientConfigPath { get; }
         string RelPath { get; set; }
+
+        byte LocalActorId { get; set; }
     }
 }

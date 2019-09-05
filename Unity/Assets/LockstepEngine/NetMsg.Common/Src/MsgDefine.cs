@@ -237,6 +237,7 @@ namespace NetMsg.Common {
     }
 
     public partial class Msg_G2C_GameStartInfo : BaseMsg {
+        public byte LocalId;
         public byte UserCount;
         public int MapId;
         public int RoomId;

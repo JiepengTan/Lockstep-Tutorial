@@ -36,6 +36,7 @@ namespace Lockstep.Game {
         public IContexts Contexts { get; set; }
         public int SnapshotFrameInterval { get; set; }
         public EPureModeType RunMode{ get; set; }
+        public byte LocalActorId { get; set; }
         
         private string _clientConfigPath;
         public string ClientConfigPath => _clientConfigPath ?? (_clientConfigPath = _relPath + $"Data/Client/{GameName}/");

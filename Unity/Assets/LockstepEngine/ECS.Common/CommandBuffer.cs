@@ -46,8 +46,8 @@ namespace Lockstep.Game {
 
         ///RevertTo tick , so all cmd between [tick,~)(Include tick) should undo
         public void Jump(int curTick, int dstTick){
-            Debug.Assert(curTick > dstTick, $"Not video mode should not roll forward curTick{curTick} dstTick{dstTick}");
-            if (_tail == null || _tail.Tick < dstTick) {
+            //Debug.Assert(curTick > dstTick, $"Not video mode should not roll forward curTick{curTick} dstTick{dstTick}");
+            if (_tail == null || _tail.Tick <= dstTick) {
                 return;
             }
 

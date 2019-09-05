@@ -333,6 +333,7 @@ namespace NetMsg.Common{
     [System.Serializable]                                                                           
     public partial class Msg_G2C_GameStartInfo{                                                                  
        public override void Serialize(Serializer writer){                                           
+			writer.Write(LocalId);
 			writer.Write(MapId);
 			writer.Write(RoomId);
 			writer.Write(Seed);
@@ -344,6 +345,7 @@ namespace NetMsg.Common{
        }                                                                                            
                                                                                                     
        public override void Deserialize(Deserializer reader){                                       
+			LocalId = reader.ReadByte();
 			MapId = reader.ReadInt32();
 			RoomId = reader.ReadInt32();
 			Seed = reader.ReadInt32();

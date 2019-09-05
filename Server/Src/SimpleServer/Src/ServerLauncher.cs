@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Lockstep.Logging;
 using Lockstep.Network;
+using Lockstep.Util;
 
 namespace Lockstep.FakeServer{
     public class ServerLauncher {
@@ -12,6 +13,7 @@ namespace Lockstep.FakeServer{
             OneThreadSynchronizationContext contex = new OneThreadSynchronizationContext();
             SynchronizationContext.SetSynchronizationContext(contex);
             Debug.Log("Main start");
+            Utils.StartServices();
             try {
                 DoAwake();
                 while (true) {

@@ -6,8 +6,10 @@ using UnityEngine;
 
 namespace Lockstep.Game {
     public class PingMono : UnityEngine.MonoBehaviour {
+       [SerializeField] private int PingVal;
         private void OnGUI(){
-            GUI.Label(new Rect(0, 0, 100, 100), $"!!Ping: {SimulatorService.Instance.PingVal}ms");
+            PingVal = SimulatorService.Instance.PingVal;
+            GUI.Label(new Rect(0, 0, 100, 100), $"!!Ping: {PingVal}ms");
         }
     }
 }

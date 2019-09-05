@@ -17,6 +17,7 @@ namespace Lockstep {
         VideoLoadProgress,
         VideoLoadDone,
         
+        OnServerHello,//连接GameServer 成功
         OnGameCreate,//连接GameServer 成功
         SimulationInit,//初始化Simulation
         LevelLoadProgress,//开始加载地图 本地load progress

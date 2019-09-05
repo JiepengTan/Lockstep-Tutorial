@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Lockstep.Logging;
+using Lockstep.Math;
 using Lockstep.Serialization;
 using NetMsg.Common;
 using Lockstep.Util;
@@ -15,7 +16,7 @@ namespace Lockstep.FakeServer {
         private delegate BaseMsg ParseNetMsg(Deserializer reader);
 
 
-        public const int MaxPlayerCount = 1;
+        public const int MaxPlayerCount = 2;
 
         public int MapId { get; set; }
         public string GameHash { get; set; }
@@ -93,6 +94,14 @@ namespace Lockstep.FakeServer {
 
             var playerCount = MaxPlayerCount;
             if (hasRecvAll) {
+                //TODO 
+                for (int i = 0; i < playerCount; i++) {
+                    var helloMsg = new Msg_G2C_Hello() {
+                        LocalId = (byte) i
+                    };
+                    Players[i].SendTcp(EMsgSC.G2C_Hello, helloMsg);
+                }
+
                 var userInfos = new GameData[playerCount];
                 for (int i = 0; i < playerCount; i++) {
                     userInfos[i] = Players[i]?.GameData;
@@ -106,7 +115,7 @@ namespace Lockstep.FakeServer {
                     UserCount = MaxPlayerCount,
                     TcpEnd = TcpEnd,
                     UdpEnd = UdpEnd,
-                    SimulationSpeed = 60,
+                    SimulationSpeed = 30,
                     UserInfos = userInfos
                 });
             }
@@ -157,7 +166,10 @@ namespace Lockstep.FakeServer {
         public void DoUpdate(float deltaTime){
             _timeSinceLoaded += deltaTime;
             _waitTimer += deltaTime;
-            CheckBorderServerFrame();
+            if (State != EGameState.Playing) return;
+            while (Tick < _tickSinceGameStart) {
+                _CheckBorderServerFrame(true);
+            }
         }
 
         public void DoDestroy(){
@@ -175,67 +187,68 @@ namespace Lockstep.FakeServer {
             return player;
         }
 
+        private bool _CheckBorderServerFrame(bool isForce = false){
+            if (State != EGameState.Playing) return false;
+            var frame = GetOrCreateFrame(Tick);
+            var inputs = frame.Inputs;
+            //超时等待 移除超时玩家
+            //if (_waitTimer > (NetworkDefine.MAX_DELAY_TIME_MS / 1000.0f)) {
+            //    _waitTimer = 0;
+            //    //移除还没有到来的帧的Player
+            //    for (int i = 0; i < inputs.Length; i++) {
+            //        if (inputs[i] == null) {
+            //            if (Players[i] != null) {
+            //                Log($"Overtime wait remove localId = {i}");
+            //            }
+//
+            //            _allNeedWaitInputPlayerIds.Remove((byte) i);
+            //        }
+            //    }
+            //}
 
-        private void CheckBorderServerFrame(){
-            if (State != EGameState.Playing) return;
-            while (true) { // 如果落后太多 就一直追帧
-                if (_allHistoryFrames.Count <= Tick) {
-                    return;
-                }
-
-                var frame = _allHistoryFrames[Tick];
-                if (frame == null) {
-                    return;
-                }
-
-                var inputs = frame.Inputs;
-                //超时等待 移除超时玩家
-                if (_waitTimer > (NetworkDefine.MAX_DELAY_TIME_MS / 1000.0f)) {
-                    _waitTimer = 0;
-                    //移除还没有到来的帧的Player
-                    for (int i = 0; i < inputs.Length; i++) {
-                        if (inputs[i] == null) {
-                            if (Players[i] != null) {
-                                //Log($"Overtime wait remove localId = {i}");
-                            }
-
-                            _allNeedWaitInputPlayerIds.Remove((byte) i);
-                        }
-                    }
-                }
-
+            //if (!isForce) {
+            //    //是否所有的输入  都已经等到
+            //    foreach (var id in _allNeedWaitInputPlayerIds) {
+            //        if (inputs[id] == null) {
+            //            return false;
+            //        }
+            //    }
+            //}
+            if (!isForce) {
                 //是否所有的输入  都已经等到
-                foreach (var id in _allNeedWaitInputPlayerIds) {
-                    if (inputs[id] == null) {
-                        return;
-                    }
-                }
-
-                //将所有未到的包 给予默认的输入
                 for (int i = 0; i < inputs.Length; i++) {
                     if (inputs[i] == null) {
-                        inputs[i] = new Msg_PlayerInput(Tick, (byte) i);
+                        return false;
                     }
                 }
-
-                //Debug.Log("Border input " + Tick);
-                var msg = new Msg_ServerFrames();
-                int count = Tick < 2 ? Tick + 1 : 3;
-                var frames = new ServerFrame[count];
-                for (int i = 0; i < count; i++) {
-                    frames[count - i - 1] = _allHistoryFrames[Tick - i];
-                }
-
-                msg.startTick = frames[0].tick;
-                msg.frames = frames;
-                BorderUdp(EMsgSC.G2C_FrameData, msg);
-                if (_firstFrameTimeStamp <= 0) {
-                    _firstFrameTimeStamp = _timeSinceLoaded;
-                }
-
-                Tick++;
             }
+
+            //将所有未到的包 给予默认的输入
+            for (int i = 0; i < inputs.Length; i++) {
+                if (inputs[i] == null) {
+                    inputs[i] = new Msg_PlayerInput(Tick, (byte) i);
+                }
+            }
+
+            //Debug.Log("Border input " + Tick);
+            var msg = new Msg_ServerFrames();
+            int count = Tick < 2 ? Tick + 1 : 3;
+            var frames = new ServerFrame[count];
+            for (int i = 0; i < count; i++) {
+                frames[count - i - 1] = _allHistoryFrames[Tick - i];
+            }
+
+            msg.startTick = frames[0].tick;
+            msg.frames = frames;
+            BorderUdp(EMsgSC.G2C_FrameData, msg);
+            if (_firstFrameTimeStamp <= 0) {
+                _firstFrameTimeStamp = _timeSinceLoaded;
+            }
+
+            Tick++;
+            return true;
         }
+
 
         private void DumpGameFrames(){
             var msg = new Msg_RepMissFrame();
@@ -508,38 +521,38 @@ namespace Lockstep.FakeServer {
             }
         }
 
+        public long _gameStartTimestampMs;
+        public int _ServerTickDealy = 2;
+
+        public int _tickSinceGameStart =>
+            (int) ((LTime.realtimeSinceStartupMS - _gameStartTimestampMs) / NetworkDefine.UPDATE_DELTATIME);
+
         void C2G_PlayerInput(Player player, BaseMsg data){
             if (State != EGameState.PartLoaded && State != EGameState.Playing) return;
             if (State == EGameState.PartLoaded) {
                 Log("First input: game start playing");
                 State = EGameState.Playing;
+                _gameStartTimestampMs =
+                    LTime.realtimeSinceStartupMS + NetworkDefine.UPDATE_DELTATIME * _ServerTickDealy;
             }
 
             var input = data as Msg_PlayerInput;
+#if DEBUG_SHOW_INPUT
+            if (input.Commands.Length > 0) {
+                var cmd = input.Commands[0];
+                var playerInput = new Deserializer(cmd.content).Parse<Lockstep.Game.PlayerInput>();
+                if (playerInput.inputUV != LVector2.zero) {
+                    Debug.Log( $"curTick{Tick} isOutdate{input.Tick < Tick} RecvInput actorID:{input.ActorId}  inputTick:{input.Tick}  move:{playerInput.inputUV}");
+                }
+            }
+#endif
+
             //Debug.Log($"RecvInput actorID:{input.ActorId} inputTick:{input.Tick} Tick{Tick}");
             if (input.Tick < Tick) {
                 return;
             }
 
-            var tick = input.Tick;
-            var iTick = (int) tick;
-            //扩充帧队列
-            var frameCount = _allHistoryFrames.Count;
-            if (frameCount <= iTick) {
-                var count = iTick - _allHistoryFrames.Count + 1;
-                for (int i = 0; i < count; i++) {
-                    _allHistoryFrames.Add(null);
-                }
-            }
-
-            if (_allHistoryFrames[iTick] == null) {
-                _allHistoryFrames[iTick] = new ServerFrame() {tick = tick};
-            }
-
-            var frame = _allHistoryFrames[iTick];
-            if (frame.Inputs == null || frame.Inputs.Length != MaxPlayerCount) {
-                frame.Inputs = new Msg_PlayerInput[MaxPlayerCount];
-            }
+            var frame = GetOrCreateFrame(input.Tick);
 
             var id = input.ActorId;
             if (!_allNeedWaitInputPlayerIds.Contains(id)) {
@@ -547,10 +560,30 @@ namespace Lockstep.FakeServer {
             }
 
             frame.Inputs[id] = input;
-            //if (input.Commands.Count > 0) {
-            //    Debug.Log($"RecvInput actorID:{input.ActorId}  inputTick:{input.Tick}  cmd:{(ECmdType)(input.Commands[0].type)}");
-            //}
-            CheckBorderServerFrame();
+
+            while (_CheckBorderServerFrame(false)) { }
+        }
+
+        ServerFrame GetOrCreateFrame(int tick){
+            //扩充帧队列
+            var frameCount = _allHistoryFrames.Count;
+            if (frameCount <= tick) {
+                var count = tick - _allHistoryFrames.Count + 1;
+                for (int i = 0; i < count; i++) {
+                    _allHistoryFrames.Add(null);
+                }
+            }
+
+            if (_allHistoryFrames[tick] == null) {
+                _allHistoryFrames[tick] = new ServerFrame() {tick = tick};
+            }
+
+            var frame = _allHistoryFrames[tick];
+            if (frame.Inputs == null || frame.Inputs.Length != MaxPlayerCount) {
+                frame.Inputs = new Msg_PlayerInput[MaxPlayerCount];
+            }
+
+            return frame;
         }
 
 
@@ -560,6 +593,7 @@ namespace Lockstep.FakeServer {
             for (int i = 0; i < hashInfo.HashCodes.Length; i++) {
                 var code = hashInfo.HashCodes[i];
                 var tick = hashInfo.StartTick + i;
+                //Debug.Log($"tick: {tick} Hash {code}"  );
                 if (_hashCodes.TryGetValue(tick, out HashCodeMatcher matcher1)) {
                     if (matcher1 == null || matcher1.sendResult[id]) {
                         continue;

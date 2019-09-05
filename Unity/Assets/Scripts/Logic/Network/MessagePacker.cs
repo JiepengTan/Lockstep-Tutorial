@@ -16,6 +16,7 @@ namespace Lockstep.Game{
                 case EMsgSC.C2L_LeaveRoom: return BaseFormater.FromBytes<Msg_C2L_LeaveRoom>(bytes, index, count);
 
                 //room
+                case EMsgSC.G2C_Hello: return BaseFormater.FromBytes<Msg_G2C_Hello>(bytes, index, count);
                 case EMsgSC.G2C_FrameData: return BaseFormater.FromBytes<Msg_ServerFrames>(bytes, index, count);
                 case EMsgSC.G2C_RepMissFrame: return BaseFormater.FromBytes<Msg_RepMissFrame>(bytes, index, count);
                 case EMsgSC.G2C_GameEvent: return BaseFormater.FromBytes<Msg_G2C_GameEvent>(bytes, index, count);

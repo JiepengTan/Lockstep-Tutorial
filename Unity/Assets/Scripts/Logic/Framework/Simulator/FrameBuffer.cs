@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Lockstep.Math;
+using Lockstep.Serialization;
 using Lockstep.Util;
 using NetMsg.Common;
 using Debug = Lockstep.Logging.Debug;
@@ -86,6 +87,7 @@ namespace Lockstep.Game {
         }
 
         public void PushServerFrames(ServerFrame[] frames, bool isNeedDebugCheck = true){
+            //Debug.Log("PushServerFrames");
             var count = frames.Length;
             for (int i = 0; i < count; i++) {
                 var data = frames[i];
@@ -154,10 +156,12 @@ namespace Lockstep.Game {
             }
 
             MaxContinueServerTick = tick - 1;
+            if(MaxContinueServerTick <= 0) return;
             if (MaxContinueServerTick < CurTickInServer // has some middle frame pack was lost
                 || _nextClientTick >
                 MaxContinueServerTick + (_maxClientPredictFrameCount - 3) //client has predict too much
             ) {
+                Debug.Log("SendMissFrameReq " + MaxContinueServerTick);
                 _networkService.SendMissFrameReq(MaxContinueServerTick);
             }
         }
@@ -173,6 +177,13 @@ namespace Lockstep.Game {
 
         public void SendInput(Msg_PlayerInput input){
             _tick2SendTimestamp[input.Tick] = LTime.realtimeSinceStartupMS;
+#if DEBUG_SHOW_INPUT
+            var cmd = input.Commands[0];
+            var playerInput = new Deserializer(cmd.content).Parse<Lockstep.Game. PlayerInput>();
+            if (playerInput.inputUV != LVector2.zero) {
+                Debug.Log($"SendInput tick:{input.Tick} uv:{playerInput.inputUV}");
+            }
+#endif
             _networkService.SendInput(input);
         }
 

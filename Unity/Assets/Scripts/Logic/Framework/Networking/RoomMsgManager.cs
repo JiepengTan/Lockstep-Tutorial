@@ -85,6 +85,7 @@ namespace Lockstep.Game {
                // case EMsgSC.L2C_JoinRoomResult: 
 
                 //room
+                case EMsgSC.G2C_Hello:    G2C_Hello(msg); break;
                 case EMsgSC.G2C_FrameData:    G2C_FrameData(msg); break;
                 case EMsgSC.G2C_RepMissFrame:  G2C_RepMissFrame(msg); break;
                 case EMsgSC.G2C_GameEvent:   G2C_GameEvent(msg); break;  
@@ -172,8 +173,11 @@ namespace Lockstep.Game {
         #region tcp
 
         public Msg_G2C_GameStartInfo GameStartInfo { get; private set; }
-
-
+        
+        protected void G2C_Hello(object reader){
+            var msg = reader as Msg_G2C_Hello;
+            EventHelper.Trigger(EEvent.OnServerHello, msg);
+        }
         protected void G2C_GameEvent(object reader){
             var msg = reader as Msg_G2C_GameEvent;
             _handler.OnGameEvent(msg.Data);
