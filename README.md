@@ -16,7 +16,10 @@
 4 | v0.1.1
 5 | v0.2.1
 6 | v0.3.1
-7 | v0.3.1
+7 | v0.4.0
+8 | v0.4.0
+9 | v0.4.0
+10 | v0.4.0
 
 
 ### 教程大纲
@@ -31,12 +34,13 @@
 7. [添加技能][16]
 
 #### 阶段二：预测&回滚式 
-0. 预测回滚式框架概要讲解
-1. 重构：全局变量对支持回滚
-2. 碰撞检测系统的备份
-3. 行为树的备份
-4. 逻辑的备份
-6. 回滚系统的处理
+10. [预测回滚式效果预览][17]
+11. [预测回滚式框架概要][18]
+12. [多平台,多实例 框架设计][19]
+13. [多平台,多实例 框架实现][20]
+14. "回滚" 数据的备份与还原
+15. "预测" 策略与失败后的回滚处理
+16. 预测回滚中的不同步的检测
 
 #### 阶段三：服务器相关处理
 0. 重构:逻辑代码剥离
@@ -52,6 +56,9 @@
 - 使用的帧同步库 [https://github.com/JiepengTan/LockstepEngine][1]
 - 简单的帧同步ARPG Demo [https://github.com/JiepengTan/LockstepEngine_ARPGDemo][2]
 
+#### **QQ 群：** 
+帧同步技术交流  839944367
+渔夫游戏开发教程（帧同步 ECS shader 框架 碰撞检测） 860820019
 
  [1]: https://github.com/JiepengTan/LockstepEngine
  [2]: https://github.com/JiepengTan/LockstepEngine_ARPGDemo
@@ -69,3 +76,7 @@
  [14]: https://www.bilibili.com/video/av64716600
  [15]: https://www.bilibili.com/video/av64739012
  [16]: https://www.bilibili.com/video/av64899372
+ [17]: https://www.bilibili.com/video/av66791686
+ [18]: https://www.bilibili.com/video/av66821535
+ [19]: https://www.bilibili.com/video/av66822773
+ [20]: https://www.bilibili.com/video/av66822584
