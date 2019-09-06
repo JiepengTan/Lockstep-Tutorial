@@ -12,7 +12,11 @@ namespace Lockstep.Game {
             base.BindEntity(e);
             e.EntityView = this;
             this.entity = e as Entity;
-            uiFloatBar = FloatBarManager.CreateFloatBar(transform, this.entity.curHealth, this.entity.maxHealth);
+            if (oldEntity != null) {
+                uiFloatBar = (oldEntity.EntityView as EntityView).uiFloatBar;
+            }else{
+                uiFloatBar = FloatBarManager.CreateFloatBar(transform, this.entity.curHealth, this.entity.maxHealth);
+            }
         }
 
         public override void OnTakeDamage(int amount, LVector3 hitPoint){

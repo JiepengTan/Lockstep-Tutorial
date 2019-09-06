@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Lockstep.Game;
 using Lockstep.Logging;
 using Lockstep.Math;
 using Lockstep.Serialization;
@@ -167,6 +168,7 @@ namespace Lockstep.FakeServer {
             _timeSinceLoaded += deltaTime;
             _waitTimer += deltaTime;
             if (State != EGameState.Playing) return;
+            if(_gameStartTimestampMs <=0) return;
             while (Tick < _tickSinceGameStart) {
                 _CheckBorderServerFrame(true);
             }
@@ -191,29 +193,6 @@ namespace Lockstep.FakeServer {
             if (State != EGameState.Playing) return false;
             var frame = GetOrCreateFrame(Tick);
             var inputs = frame.Inputs;
-            //超时等待 移除超时玩家
-            //if (_waitTimer > (NetworkDefine.MAX_DELAY_TIME_MS / 1000.0f)) {
-            //    _waitTimer = 0;
-            //    //移除还没有到来的帧的Player
-            //    for (int i = 0; i < inputs.Length; i++) {
-            //        if (inputs[i] == null) {
-            //            if (Players[i] != null) {
-            //                Log($"Overtime wait remove localId = {i}");
-            //            }
-//
-            //            _allNeedWaitInputPlayerIds.Remove((byte) i);
-            //        }
-            //    }
-            //}
-
-            //if (!isForce) {
-            //    //是否所有的输入  都已经等到
-            //    foreach (var id in _allNeedWaitInputPlayerIds) {
-            //        if (inputs[id] == null) {
-            //            return false;
-            //        }
-            //    }
-            //}
             if (!isForce) {
                 //是否所有的输入  都已经等到
                 for (int i = 0; i < inputs.Length; i++) {
@@ -226,11 +205,14 @@ namespace Lockstep.FakeServer {
             //将所有未到的包 给予默认的输入
             for (int i = 0; i < inputs.Length; i++) {
                 if (inputs[i] == null) {
-                    inputs[i] = new Msg_PlayerInput(Tick, (byte) i);
+                    inputs[i] = new Msg_PlayerInput(Tick, (byte) i,new InputCmd[]{
+                        new InputCmd() {
+                            content = new PlayerInput().ToBytes(),
+                        }});
                 }
             }
 
-            //Debug.Log("Border input " + Tick);
+            //Debug.Log($" Border input {Tick} isUpdate:{isForce} _tickSinceGameStart:{_tickSinceGameStart}");
             var msg = new Msg_ServerFrames();
             int count = Tick < 2 ? Tick + 1 : 3;
             var frames = new ServerFrame[count];
@@ -243,6 +225,10 @@ namespace Lockstep.FakeServer {
             BorderUdp(EMsgSC.G2C_FrameData, msg);
             if (_firstFrameTimeStamp <= 0) {
                 _firstFrameTimeStamp = _timeSinceLoaded;
+            }
+
+            if (_gameStartTimestampMs < 0) {
+                _gameStartTimestampMs = LTime.realtimeSinceStartupMS + NetworkDefine.UPDATE_DELTATIME * _ServerTickDealy;
             }
 
             Tick++;
@@ -521,8 +507,8 @@ namespace Lockstep.FakeServer {
             }
         }
 
-        public long _gameStartTimestampMs;
-        public int _ServerTickDealy = 2;
+        public long _gameStartTimestampMs = -1;
+        public int _ServerTickDealy = 0;
 
         public int _tickSinceGameStart =>
             (int) ((LTime.realtimeSinceStartupMS - _gameStartTimestampMs) / NetworkDefine.UPDATE_DELTATIME);
@@ -532,8 +518,6 @@ namespace Lockstep.FakeServer {
             if (State == EGameState.PartLoaded) {
                 Log("First input: game start playing");
                 State = EGameState.Playing;
-                _gameStartTimestampMs =
-                    LTime.realtimeSinceStartupMS + NetworkDefine.UPDATE_DELTATIME * _ServerTickDealy;
             }
 
             var input = data as Msg_PlayerInput;
@@ -560,8 +544,7 @@ namespace Lockstep.FakeServer {
             }
 
             frame.Inputs[id] = input;
-
-            while (_CheckBorderServerFrame(false)) { }
+            _CheckBorderServerFrame(false);
         }
 
         ServerFrame GetOrCreateFrame(int tick){

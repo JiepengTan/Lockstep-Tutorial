@@ -15,7 +15,7 @@ namespace Lockstep.FakeServer {
         private NetOuterProxy _netProxy = new NetOuterProxy();
 
         //update
-        private const double UpdateInterval = 0.015; //frame rate = 30
+        private const double UpdateInterval = NetworkDefine.UPDATE_DELTATIME /1000.0f; //frame rate = 30
         private DateTime _lastUpdateTimeStamp;
         private DateTime _startUpTimeStamp;
         private double _deltaTime;

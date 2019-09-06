@@ -42,14 +42,20 @@ namespace Lockstep.Game {
         public bool IsRunning { get; set; }
 
         /// frame count that need predict(TODO should change according current network's delay)
-        public int TickPredict = 2;
+        public int FramePredictCount = 0;//~~~
 
         /// game init timestamp
         private long _gameStartTimestampMs = -1;
 
         private int _tickSinceGameStart;
-        public int TargetTick => _tickSinceGameStart + TickPredict;
+        public int TargetTick => _tickSinceGameStart + FramePredictCount;
 
+        // input presend
+        public int PreSendInputCount = 2;//~~~
+        public int inputTick = 0;
+        public int inputTargetTick => _tickSinceGameStart + PreSendInputCount;
+        
+        
         //video mode
         private Msg_RepMissFrame _videoFrames;
         private bool _isInitVideo = false;
@@ -108,16 +114,24 @@ namespace Lockstep.Game {
             EventHelper.Trigger(EEvent.LevelLoadProgress, 1f);
         }
 
+
         public void StartSimulate(){
             if (IsRunning) {
                 Debug.LogError("Already started!");
                 return;
             }
 
-            _world.StartGame(_gameStartInfo, _localActorId);
             IsRunning = true;
+            if (_constStateService.IsClientMode) {
+                _gameStartTimestampMs = LTime.realtimeSinceStartupMS;
+            }
+
+            _world.StartGame(_gameStartInfo, _localActorId);
             Debug.Log($"Game Start");
             EventHelper.Trigger(EEvent.SimulationStart, null);
+            while (inputTick < PreSendInputCount) {
+                SendInputs(inputTick++);
+            }
         }
 
 
@@ -180,11 +194,12 @@ namespace Lockstep.Game {
                 return;
             }
 
-            if (_gameStartTimestampMs == -1) {
-                _gameStartTimestampMs = LTime.realtimeSinceStartupMS;
+            if (_gameStartTimestampMs <= 0) {
+                return;
             }
 
-            _tickSinceGameStart = (int) ((LTime.realtimeSinceStartupMS - _gameStartTimestampMs) / NetworkDefine.UPDATE_DELTATIME);
+            _tickSinceGameStart =
+                (int) ((LTime.realtimeSinceStartupMS - _gameStartTimestampMs) / NetworkDefine.UPDATE_DELTATIME);
             if (_constStateService.IsVideoMode) {
                 return;
             }
@@ -199,20 +214,25 @@ namespace Lockstep.Game {
                 return;
             }
 
-            _cmdBuffer.DoUpdate(deltaTime);
+            _cmdBuffer.DoUpdate(deltaTime, _world.Tick );
 
             //client mode no network
             if (_constStateService.IsClientMode) {
                 DoClientUpdate();
             }
             else {
+                while (inputTick <= inputTargetTick) {
+                    SendInputs(inputTick++);
+                }
+
                 DoNormalUpdate();
             }
         }
 
+
         private void DoClientUpdate(){
             while (_world.Tick < TargetTick) {
-                TickPredict = 0;
+                FramePredictCount = 0;
                 var input = new Msg_PlayerInput(_world.Tick, _localActorId, _inputService.GetInputCmds());
                 var frame = new ServerFrame() {
                     tick = _world.Tick,
@@ -259,12 +279,12 @@ namespace Lockstep.Game {
 
 
             // Roll back
-            if (_cmdBuffer.IsNeedRollback) {
+            if (_cmdBuffer.IsNeedRollback ) {
                 RollbackTo(_cmdBuffer.NextTickToCheck, maxContinueServerTick);
                 CleanUselessSnapshot(System.Math.Min(_cmdBuffer.NextTickToCheck - 1, _world.Tick));
 
                 minTickToBackup = System.Math.Max(minTickToBackup, _world.Tick + 1);
-                while (_world.Tick < maxContinueServerTick) {
+                while (_world.Tick <= maxContinueServerTick) {
                     var sFrame = _cmdBuffer.GetServerFrame(_world.Tick);
                     Logging.Debug.Assert(sFrame != null && sFrame.tick == _world.Tick,
                         $" logic error: server Frame  must exist tick {_world.Tick}");
@@ -275,7 +295,7 @@ namespace Lockstep.Game {
 
 
             //Run frames
-            while (_world.Tick < TargetTick) {
+            while (_world.Tick <= TargetTick) {
                 var curTick = _world.Tick;
                 ServerFrame frame = null;
                 var sFrame = _cmdBuffer.GetServerFrame(curTick);
@@ -284,19 +304,6 @@ namespace Lockstep.Game {
                 }
                 else {
                     var cFrame = _cmdBuffer.GetLocalFrame(curTick);
-                    if (cFrame == null) {
-                        var input = new Msg_PlayerInput(curTick, _localActorId, _inputService.GetInputCmds());
-                        cFrame = new ServerFrame();
-                        var inputs = new Msg_PlayerInput[_actorCount];
-                        inputs[_localActorId] = input;
-                        cFrame.Inputs = inputs;
-                        cFrame.tick = curTick;
-                        if (curTick > _cmdBuffer.MaxServerTickInBuffer) {
-                            //TODO combine all history inputs into one Msg 
-                            _cmdBuffer.SendInput(input);
-                        }
-                    }
-
                     FillInputWithLastFrame(cFrame);
                     frame = cFrame;
                 }
@@ -308,6 +315,22 @@ namespace Lockstep.Game {
             _hashHelper.CheckAndSendHashCodes();
         }
 
+        void SendInputs(int curTick){
+            var input = new Msg_PlayerInput(curTick, _localActorId, _inputService.GetInputCmds());
+            var cFrame = new ServerFrame();
+            var inputs = new Msg_PlayerInput[_actorCount];
+            inputs[_localActorId] = input;
+            cFrame.Inputs = inputs;
+            cFrame.tick = curTick;
+            FillInputWithLastFrame(cFrame);
+            _cmdBuffer.PushLocalFrame(cFrame);
+            if (curTick > _cmdBuffer.MaxServerTickInBuffer) {
+                //TODO combine all history inputs into one Msg 
+                //Debug.Log("SendInput " + curTick +" _tickSinceGameStart " + _tickSinceGameStart);
+                _cmdBuffer.SendInput(input);
+            }
+        }
+
 
         private void Simulate(ServerFrame frame, bool isNeedGenSnap = true){
             Step(frame, isNeedGenSnap);
@@ -317,8 +340,8 @@ namespace Lockstep.Game {
             Step(frame, isNeedGenSnap);
         }
 
-        private void RollbackTo(int tick, int missFrameTick, bool isNeedClear = true){
-            _world.RollbackTo(tick, missFrameTick, isNeedClear);
+        private void RollbackTo(int tick, int maxContinueServerTick, bool isNeedClear = true){
+            _world.RollbackTo(tick, maxContinueServerTick, isNeedClear);
             var hash = _commonStateService.Hash;
             var curHash = _hashHelper.CalcHash();
             if (hash != curHash) {
@@ -328,6 +351,7 @@ namespace Lockstep.Game {
 
 
         void Step(ServerFrame frame, bool isNeedGenSnap = true){
+            //Debug.Log("Step: " + _world.Tick + " TargetTick: " + TargetTick);
             _commonStateService.SetTick(_world.Tick);
             var hash = _hashHelper.CalcHash();
             _commonStateService.Hash = hash;
@@ -374,7 +398,10 @@ namespace Lockstep.Game {
             var myInput = inputs[_localActorId];
             //fill inputs with last frame's input (Input predict)
             for (int i = 0; i < _actorCount; i++) {
-                inputs[i] = new Msg_PlayerInput(tick, _allActors[i], lastServerInputs?[i]?.Commands);
+                inputs[i] = new Msg_PlayerInput(tick, _allActors[i], lastServerInputs?[i]?.Commands??new InputCmd[]{
+                    new InputCmd() {
+                    content = new PlayerInput().ToBytes(),
+                }});
             }
 
             inputs[_localActorId] = myInput;
@@ -413,6 +440,10 @@ namespace Lockstep.Game {
 
         void OnEvent_OnServerFrame(object param){
             var msg = param as Msg_ServerFrames;
+            if (_gameStartTimestampMs == -1) {
+                _gameStartTimestampMs = LTime.realtimeSinceStartupMS;
+            }
+
             _cmdBuffer.PushServerFrames(msg.frames);
         }
 

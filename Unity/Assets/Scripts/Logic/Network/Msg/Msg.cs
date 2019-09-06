@@ -22,7 +22,7 @@ namespace Lockstep.Game {
             mousePos = LVector2.zero;
             inputUV = LVector2.zero;
             isInputFire = false;
-            skillId = -1;
+            skillId = 0;
             isSpeedUp = false;
         }
 

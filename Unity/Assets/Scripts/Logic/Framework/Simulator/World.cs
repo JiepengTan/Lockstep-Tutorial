@@ -21,13 +21,13 @@ namespace Lockstep.Game {
         private bool _hasStart = false;
 
 
-        public void RollbackTo(int tick, int missFrameTick, bool isNeedClear = true){
+        public void RollbackTo(int tick, int maxContinueServerTick, bool isNeedClear = true){
             if (tick < 0) {
                 Debug.LogError("Target Tick invalid!" + tick);
                 return;
             }
 
-            Debug.Log($" curTick {Tick} RevertTo {tick} {missFrameTick} {isNeedClear}");
+            Debug.Log($" Rollback diff:{Tick - tick} From{Tick}->{tick}  maxContinueServerTick:{maxContinueServerTick} {isNeedClear}");
             _timeMachineService.RollbackTo(tick);
             _commonStateService.SetTick(tick);
             Tick = tick;

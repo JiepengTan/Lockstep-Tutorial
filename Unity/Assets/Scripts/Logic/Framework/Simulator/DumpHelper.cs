@@ -17,8 +17,9 @@ namespace Lockstep.Game {
         
         private string dumpAllPath => "/Users/jiepengtan/Projects/Tutorial/LockstepTutorial/DumpLog";
         private HashHelper _hashHelper;
-
+        public bool enable = false;
         public void DumpFrame(bool isNewFrame){
+            if(!enable) return;
             var data = DumpFrame();
             if (isNewFrame) {
                 _tick2RawFrameData[Tick] = data;
@@ -30,6 +31,7 @@ namespace Lockstep.Game {
         }
 
         public void DumpToFile(){
+            if(!enable) return;
 #if UNITY_EDITOR
             var path = dumpPath + "/cur.txt";
             var dir = Path.GetDirectoryName(path);
@@ -51,6 +53,7 @@ namespace Lockstep.Game {
         }
 
         public void DumpAll(){
+            if(!enable) return;
             var path = dumpAllPath + "/cur.txt";
             var dir = Path.GetDirectoryName(path);
             if (!Directory.Exists(dir)) {

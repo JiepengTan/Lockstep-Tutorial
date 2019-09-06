@@ -37,10 +37,10 @@ namespace Lockstep.Game {
                     }
                 }
 
-                skillId = -1;
+                skillId = 0;
                 for (int i = 0; i < 6; i++) {
                     if (Input.GetKey(KeyCode.Keypad1 + i)) {
-                        skillId = i;
+                        skillId = i+1;
                     }
                 }
 

@@ -19,7 +19,7 @@ namespace Lockstep.Game {
         void SetClientTick(int tick);
         void SendInput(Msg_PlayerInput input);
 
-        void DoUpdate(float deltaTime);
+        void DoUpdate(float deltaTime,int worldTick);
         int NextTickToCheck { get; }
         int MaxServerTickInBuffer { get; }
         bool IsNeedRollback { get; }
@@ -87,11 +87,10 @@ namespace Lockstep.Game {
         }
 
         public void PushServerFrames(ServerFrame[] frames, bool isNeedDebugCheck = true){
-            //Debug.Log("PushServerFrames");
             var count = frames.Length;
             for (int i = 0; i < count; i++) {
                 var data = frames[i];
-
+                //Debug.Log("PushServerFrames" + data.tick);
                 if (_tick2SendTimestamp.TryGetValue(data.tick, out var sendTick)) {
                     var delay = LTime.realtimeSinceStartupMS - sendTick;
                     _delays.Add(delay);
@@ -112,6 +111,7 @@ namespace Lockstep.Game {
                     return;
                 }
 
+                //Debug.Log("PushServerFramesSucc" + data.tick);
                 if (data.tick > MaxServerTickInBuffer) {
                     MaxServerTickInBuffer = data.tick;
                 }
@@ -123,13 +123,13 @@ namespace Lockstep.Game {
             }
         }
 
-        public void DoUpdate(float deltaTime){
+        public void DoUpdate(float deltaTime,int worldTick){
             UpdatePingVal(deltaTime);
 
             //Debug.Assert(nextTickToCheck <= nextClientTick, "localServerTick <= localClientTick ");
             //Confirm frames
             IsNeedRollback = false;
-            while (NextTickToCheck <= MaxServerTickInBuffer) {
+            while (NextTickToCheck <= MaxServerTickInBuffer && NextTickToCheck<worldTick) {
                 var sIdx = NextTickToCheck % _bufferSize;
                 var cFrame = _clientBuffer[sIdx];
                 var sFrame = _serverBuffer[sIdx];

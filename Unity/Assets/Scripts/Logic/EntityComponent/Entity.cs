@@ -45,7 +45,7 @@ namespace Lockstep.Game {
         }
 
         public bool Fire(int idx = 0){
-            return skillBox.Fire(idx);
+            return skillBox.Fire(idx-1);
         }
 
         public void StopSkill(int idx = -1){

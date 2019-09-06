@@ -19,7 +19,7 @@ namespace Lockstep.Game {
         }
         public override void DoUpdate(LFloat deltaTime){
             base.DoUpdate(deltaTime);
-            if (input.skillId != -1) {
+            if (input.skillId != 0) {
                 Fire(input.skillId);
             }
         }
