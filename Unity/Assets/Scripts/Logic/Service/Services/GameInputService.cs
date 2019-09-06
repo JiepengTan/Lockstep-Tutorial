@@ -20,6 +20,10 @@ namespace Lockstep.Game {
         }
 
         public List<InputCmd> GetInputCmds(){
+            if (CurGameInput.Equals(PlayerInput.Empty)) {
+                return null;
+            }
+
             return new List<InputCmd>() {
                 new InputCmd() {
                     content = CurGameInput.ToBytes()

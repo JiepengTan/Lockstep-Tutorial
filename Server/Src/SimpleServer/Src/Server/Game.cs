@@ -205,10 +205,7 @@ namespace Lockstep.FakeServer {
             //将所有未到的包 给予默认的输入
             for (int i = 0; i < inputs.Length; i++) {
                 if (inputs[i] == null) {
-                    inputs[i] = new Msg_PlayerInput(Tick, (byte) i,new InputCmd[]{
-                        new InputCmd() {
-                            content = new PlayerInput().ToBytes(),
-                        }});
+                    inputs[i] = new Msg_PlayerInput(Tick, (byte) i);
                 }
             }
 

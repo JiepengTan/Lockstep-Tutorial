@@ -34,6 +34,23 @@ namespace Lockstep.Game {
             isSpeedUp = reader.ReadBoolean();
         }
 
+        public static PlayerInput Empty = new PlayerInput();
+        public override bool Equals(object obj){
+            if (ReferenceEquals(this,obj)) return true;
+            var other = obj as PlayerInput;
+            return Equals(other);
+        }
+
+        public bool Equals(PlayerInput other){
+            if (other == null) return false;
+            if (mousePos != other.mousePos) return false;
+            if (inputUV != other.inputUV) return false;
+            if (isInputFire != other.isInputFire) return false;
+            if (skillId != other.skillId) return false;
+            if (isSpeedUp != other.isSpeedUp) return false;
+            return true;
+        }
+
         public PlayerInput Clone(){
             var tThis = this;
             return new PlayerInput() {

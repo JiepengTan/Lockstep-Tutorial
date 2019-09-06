@@ -398,10 +398,7 @@ namespace Lockstep.Game {
             var myInput = inputs[_localActorId];
             //fill inputs with last frame's input (Input predict)
             for (int i = 0; i < _actorCount; i++) {
-                inputs[i] = new Msg_PlayerInput(tick, _allActors[i], lastServerInputs?[i]?.Commands??new InputCmd[]{
-                    new InputCmd() {
-                    content = new PlayerInput().ToBytes(),
-                }});
+                inputs[i] = new Msg_PlayerInput(tick, _allActors[i], lastServerInputs?[i]?.Commands);
             }
 
             inputs[_localActorId] = myInput;
