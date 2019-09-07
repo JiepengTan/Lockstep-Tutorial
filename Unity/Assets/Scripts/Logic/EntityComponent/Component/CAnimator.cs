@@ -6,9 +6,9 @@ using Lockstep.Math;
 using Lockstep.Game;
 using Lockstep.UnityExt;
 using Debug = Lockstep.Logging.Debug;
-
 #if UNITY_5_3_OR_NEWER
 using HideInInspector = UnityEngine.HideInInspector;
+
 #endif
 
 namespace Lockstep.Game {

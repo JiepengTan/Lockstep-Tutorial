@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using Lockstep.Math;
 using Lockstep.Util;
 using Lockstep.Game;
+using Lockstep.Network;
 using NetMsg.Common;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -38,8 +40,10 @@ namespace Lockstep.Game {
         public bool IsClientMode => _constStateService.IsClientMode;
 
         public object transform;
-
+        private OneThreadSynchronizationContext _syncContext; 
         public void DoAwake(IServiceContainer services){
+            _syncContext = new OneThreadSynchronizationContext();
+            SynchronizationContext.SetSynchronizationContext(_syncContext);
             Utils.StartServices();
             if (Instance != null) {
                 Debug.LogError("LifeCycle Error: Awake more than once!!");
@@ -126,6 +130,7 @@ namespace Lockstep.Game {
         }
 
         public void DoUpdate(float fDeltaTime){
+            _syncContext.Update();
             Utils.UpdateServices();
             var deltaTime = fDeltaTime.ToLFloat();
             _networkService.DoUpdate(deltaTime);
