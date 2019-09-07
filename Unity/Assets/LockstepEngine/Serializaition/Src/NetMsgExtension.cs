@@ -2,7 +2,6 @@ using System;
 using Lockstep.Serialization;
 
 namespace Lockstep.Serialization {
-
     public class NoToBytesAttribute : Attribute { }
 
     public class ToBytesAttribute : Attribute { }
@@ -16,6 +15,16 @@ namespace Lockstep.Serialization {
         }
     }
 
+    [AttributeUsage(AttributeTargets.Class)]
+    public class TypeIdAttribute : Attribute {
+        public int idx;
+
+        public TypeIdAttribute(int idx){
+            this.idx = idx;
+        }
+    }
+
+    
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public class ExtFormatAttribute : Attribute { }
     

@@ -40,6 +40,35 @@ namespace Lockstep.Serialization {
     }
 
     public partial class Serializer {
+        //for ext
+        protected int[] offsets;
+
+        public void SetPosition(int pos){
+            _position = pos;
+        }
+
+        public int[] GetOffsetTable(int len){
+            if (offsets == null) {
+                offsets = new int[len];
+                return offsets;
+            }
+            else {
+                var rawLen = offsets.Length;
+                if (rawLen >= len) {
+                    for (int i = 0; i < len; i++) {
+                        offsets[i] = 0;
+                    }
+                    return offsets;
+                }
+
+                while (rawLen < len) {
+                    rawLen *= 2;
+                }
+                offsets = new int[rawLen];
+                return offsets;
+            }
+        }
+        
         protected byte[] _data;
         protected int _position;
         private const int InitialSize = 64;
