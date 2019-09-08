@@ -42,7 +42,6 @@
 
 #### **QQ 群：** 
 - 帧同步技术交流  839944367
-- 渔夫游戏开发教程（帧同步 ECS shader 框架 碰撞检测） 860820019
 
  [1]: https://github.com/JiepengTan/LockstepEngine
  [2]: https://github.com/JiepengTan/LockstepEngine_ARPGDemo
