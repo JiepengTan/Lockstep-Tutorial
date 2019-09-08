@@ -62,7 +62,9 @@ namespace Lockstep.Logging {
         public static void LogFormat(string format, params object[] args){
             Lockstep.Logging.Logger.Info(0, prefix + format, args);
         }
-
+        public static void LogWarning(string format, params object[] args){
+            Lockstep.Logging.Logger.Warn(0, prefix + format, args);
+        }
         public static void LogError(string format, params object[] args){
             Lockstep.Logging.Logger.Err(0, prefix + format, args);
         }

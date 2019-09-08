@@ -6,6 +6,7 @@ using Lockstep.Math;
 using Lockstep.Serialization;
 using Lockstep.Util;
 using NetMsg.Common;
+using UnityEngine;
 using Debug = Lockstep.Logging.Debug;
 
 namespace Lockstep.Game {
@@ -13,19 +14,21 @@ namespace Lockstep.Game {
         void PushLocalFrame(ServerFrame frame);
         void PushServerFrames(ServerFrame[] frames, bool isNeedDebugCheck = true);
         void PushMissServerFrames(ServerFrame[] frames, bool isNeedDebugCheck = true);
+        void OnPlayerPing(Msg_G2C_PlayerPing msg);
         ServerFrame GetFrame(int tick);
         ServerFrame GetServerFrame(int tick);
         ServerFrame GetLocalFrame(int tick);
         void SetClientTick(int tick);
         void SendInput(Msg_PlayerInput input);
 
-        void DoUpdate(float deltaTime,int worldTick);
+        void DoUpdate(float deltaTime);
         int NextTickToCheck { get; }
         int MaxServerTickInBuffer { get; }
         bool IsNeedRollback { get; }
         int MaxContinueServerTick { get; }
         int CurTickInServer { get; }
         int PingVal { get; }
+        int DelayVal { get; }
     }
 
     public class FrameBuffer : IFrameBuffer {
@@ -43,6 +46,12 @@ namespace Lockstep.Game {
 
         //ping 
         public int PingVal { get; private set; }
+        private List<long> _pings = new List<long>();
+        private long _guessServerStartTimestamp = Int64.MaxValue;
+        private long _historyMinPing = Int64.MaxValue;
+        private long _minPing = Int64.MaxValue;
+        private long _maxPing = Int64.MinValue;
+        public int DelayVal { get; private set; }
         private float _pingTimer;
         private List<long> _delays = new List<long>();
         Dictionary<int, long> _tick2SendTimestamp = new Dictionary<int, long>();
@@ -56,11 +65,18 @@ namespace Lockstep.Game {
         public bool IsNeedRollback { get; private set; }
         public int MaxContinueServerTick { get; private set; }
 
+        public byte LocalId;
 
         public INetworkService _networkService;
 
-        public FrameBuffer(INetworkService networkService, int bufferSize, int snapshotFrameInterval,
+        private PredictCountHelper helper;
+        private SimulatorService _simulatorService;
+
+        public FrameBuffer(SimulatorService _simulatorService, INetworkService networkService, int bufferSize,
+            int snapshotFrameInterval,
             int maxClientPredictFrameCount){
+            this._simulatorService = _simulatorService;
+            helper = new PredictCountHelper(_simulatorService, this);
             this._bufferSize = bufferSize;
             this._networkService = networkService;
             this._maxClientPredictFrameCount = maxClientPredictFrameCount;
@@ -79,6 +95,20 @@ namespace Lockstep.Game {
             Debug.Assert(_clientBuffer[sIdx] == null || _clientBuffer[sIdx].tick <= frame.tick,
                 "Push local frame error!");
             _clientBuffer[sIdx] = frame;
+        }
+
+
+        public void OnPlayerPing(Msg_G2C_PlayerPing msg){
+            //PushServerFrames(frames, isNeedDebugCheck);
+            var ping = LTime.realtimeSinceStartupMS - msg.sendTimestamp;
+            _pings.Add(ping);
+            if (ping > _maxPing) _maxPing = ping;
+            if (ping < _minPing) {
+                _minPing = ping;
+                _guessServerStartTimestamp = (LTime.realtimeSinceStartupMS - msg.timeSinceServerStart) - _minPing / 2;
+            }
+
+            //Debug.Log("OnPlayerPing " + ping);
         }
 
         public void PushMissServerFrames(ServerFrame[] frames, bool isNeedDebugCheck = true){
@@ -119,17 +149,83 @@ namespace Lockstep.Game {
                 var targetIdx = data.tick % _bufferSize;
                 if (_serverBuffer[targetIdx] == null || _serverBuffer[targetIdx].tick != data.tick) {
                     _serverBuffer[targetIdx] = data;
+                    if (data.tick > helper.nextCheckMissTick && data.Inputs[LocalId].IsMiss && helper.missTick == -1) {
+                        helper.missTick = data.tick;
+                    }
                 }
             }
         }
 
-        public void DoUpdate(float deltaTime,int worldTick){
+        public class PredictCountHelper {
+            public PredictCountHelper(SimulatorService simulatorService, FrameBuffer cmdBuffer){
+                this._cmdBuffer = cmdBuffer;
+                this._simulatorService = simulatorService;
+            }
+
+            public int missTick = -1;
+            public int nextCheckMissTick = 0;
+            public bool hasMissTick;
+
+            private SimulatorService _simulatorService;
+            private FrameBuffer _cmdBuffer;
+            private float _timer;
+            private float _checkInterval = 0.5f;
+            private float _incPercent = 0.3f;
+
+            private float _targetPreSendTick;
+            private float _oldPercent = 0.6f;
+
+            public void DoUpdate(float deltaTime){
+                _timer += deltaTime;
+                if (_timer > _checkInterval) {
+                    _timer = 0;
+                    if (!hasMissTick) { //一定时间内没有 lost pack 
+                        var preSend = _cmdBuffer._maxPing * 1.0f / NetworkDefine.UPDATE_DELTATIME;
+                        _targetPreSendTick = _targetPreSendTick * _oldPercent + preSend * (1 - _oldPercent);
+
+                        var targetPreSendTick = Mathf.Clamp(Mathf.CeilToInt(_targetPreSendTick), 1, 60);
+#if UNITY_EDITOR
+                        //if (targetPreSendTick != _simulatorService.PreSendInputCount) 
+                        {
+                            Debug.LogWarning(
+                                $"Shrink preSend buffer old:{_simulatorService.PreSendInputCount} new:{_targetPreSendTick} " +
+                                $"PING: min:{_cmdBuffer._minPing} max:{_cmdBuffer._maxPing} avg:{_cmdBuffer.PingVal}");
+                        }
+#endif
+                        _simulatorService.PreSendInputCount = targetPreSendTick;
+                    }
+
+                    hasMissTick = false;
+                }
+
+                if (missTick != -1) {
+                    var delayTick = _simulatorService.TargetTick - missTick;
+                    var targetPreSendTick =
+                        _simulatorService.PreSendInputCount + Mathf.CeilToInt(delayTick * _incPercent);
+                    targetPreSendTick = Mathf.Clamp(targetPreSendTick, 1, 60);
+#if UNITY_EDITOR
+                    Debug.LogWarning(
+                        $"Expend preSend buffer old:{_simulatorService.PreSendInputCount} new:{targetPreSendTick}");
+#endif
+                    _simulatorService.PreSendInputCount = targetPreSendTick;
+                    nextCheckMissTick = _simulatorService.TargetTick;
+                    missTick = -1;
+                    hasMissTick = true;
+                }
+            }
+        }
+
+
+        public void DoUpdate(float deltaTime){
+            _networkService.SendPing(_simulatorService.LocalActorId, LTime.realtimeSinceStartupMS);
+            helper.DoUpdate(deltaTime);
+            int worldTick = _simulatorService.World.Tick;
             UpdatePingVal(deltaTime);
 
             //Debug.Assert(nextTickToCheck <= nextClientTick, "localServerTick <= localClientTick ");
             //Confirm frames
             IsNeedRollback = false;
-            while (NextTickToCheck <= MaxServerTickInBuffer && NextTickToCheck<worldTick) {
+            while (NextTickToCheck <= MaxServerTickInBuffer && NextTickToCheck < worldTick) {
                 var sIdx = NextTickToCheck % _bufferSize;
                 var cFrame = _clientBuffer[sIdx];
                 var sFrame = _serverBuffer[sIdx];
@@ -156,7 +252,7 @@ namespace Lockstep.Game {
             }
 
             MaxContinueServerTick = tick - 1;
-            if(MaxContinueServerTick <= 0) return;
+            if (MaxContinueServerTick <= 0) return;
             if (MaxContinueServerTick < CurTickInServer // has some middle frame pack was lost
                 || _nextClientTick >
                 MaxContinueServerTick + (_maxClientPredictFrameCount - 3) //client has predict too much
@@ -170,8 +266,23 @@ namespace Lockstep.Game {
             _pingTimer += deltaTime;
             if (_pingTimer > 0.5f) {
                 _pingTimer = 0;
-                PingVal = (int) (_delays.Sum() / LMath.Max(_delays.Count, 1));
+                DelayVal = (int) (_delays.Sum() / LMath.Max(_delays.Count, 1));
                 _delays.Clear();
+                PingVal = (int) (_pings.Sum() / LMath.Max(_pings.Count, 1));
+                _pings.Clear();
+
+                if (_minPing < _historyMinPing && _simulatorService._gameStartTimestampMs != -1) {
+                    _historyMinPing = _minPing;
+#if UNITY_EDITOR
+                    Debug.LogWarning(
+                        $"Recalc _gameStartTimestampMs {_simulatorService._gameStartTimestampMs} _guessServerStartTimestamp:{_guessServerStartTimestamp}");
+#endif
+                    _simulatorService._gameStartTimestampMs = LMath.Min(_guessServerStartTimestamp,
+                        _simulatorService._gameStartTimestampMs);
+                }
+
+                _minPing = Int64.MaxValue;
+                _maxPing = Int64.MinValue;
             }
         }
 

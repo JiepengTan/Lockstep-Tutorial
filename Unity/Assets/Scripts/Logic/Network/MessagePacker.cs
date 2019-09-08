@@ -9,11 +9,14 @@ namespace Lockstep.Game{
         public object DeserializeFrom(ushort opcode, byte[] bytes, int index, int count){
             var type = (EMsgSC) opcode;
             switch (type) {
+                //ping 
+                case EMsgSC.C2G_PlayerPing: return BaseFormater.FromBytes<Msg_C2G_PlayerPing>(bytes, index, count);
+                case EMsgSC.G2C_PlayerPing: return BaseFormater.FromBytes<Msg_G2C_PlayerPing>(bytes, index, count);
                 //login
                 case EMsgSC.L2C_JoinRoomResult: return BaseFormater.FromBytes<Msg_L2C_JoinRoomResult>(bytes, index, count);
-
                 case EMsgSC.C2L_JoinRoom: return BaseFormater.FromBytes<Msg_C2L_JoinRoom>(bytes, index, count);
                 case EMsgSC.C2L_LeaveRoom: return BaseFormater.FromBytes<Msg_C2L_LeaveRoom>(bytes, index, count);
+                case EMsgSC.C2G_LoadingProgress: return BaseFormater.FromBytes<Msg_C2G_LoadingProgress>(bytes, index, count);
 
                 //room
                 case EMsgSC.G2C_Hello: return BaseFormater.FromBytes<Msg_G2C_Hello>(bytes, index, count);

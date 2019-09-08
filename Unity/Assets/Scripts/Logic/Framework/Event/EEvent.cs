@@ -17,6 +17,7 @@ namespace Lockstep {
         VideoLoadProgress,
         VideoLoadDone,
         
+        OnPlayerPing,
         OnServerHello,//连接GameServer 成功
         OnGameCreate,//连接GameServer 成功
         SimulationInit,//初始化Simulation

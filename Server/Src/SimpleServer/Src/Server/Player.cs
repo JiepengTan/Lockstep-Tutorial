@@ -2,6 +2,7 @@ using Lockstep.Network;
 using Lockstep.Util;
 using NetMsg.Common;
 
+
 namespace Lockstep.FakeServer {
     public class Player : BaseRecyclable {
         public long UserId;
@@ -29,6 +30,9 @@ namespace Lockstep.FakeServer {
 
         public void SendUdp(EMsgSC type, byte[] data){
             PeerUdp?.Send(0x00, (ushort) type, data);
+        }     
+        public void SendUdp(EMsgSC type, BaseMsg msg){
+            PeerUdp?.Send(0x00, (ushort) type, msg.ToBytes());
         }
 
         public override void OnRecycle(){

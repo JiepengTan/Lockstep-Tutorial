@@ -49,6 +49,8 @@ namespace NetMsg.Common {
         C2G_HashCode,
         C2G_PlayerInput,
         G2C_FrameData,
+        C2G_PlayerPing,
+        G2C_PlayerPing,
         //end of Udp
         EnumEndOfUdpMessage,
         

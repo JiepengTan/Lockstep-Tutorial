@@ -138,6 +138,11 @@ namespace Lockstep.Game {
             _roomMsgMgr.SendGameEvent(data);
         }
 
+        public void SendPing(byte localId, long timestamp){
+            if (_noNetwork) return;
+            _roomMsgMgr.SendPing(localId,timestamp);
+        }
+
         public void SendInput(Msg_PlayerInput msg){
             if (_noNetwork) return;
             _roomMsgMgr.SendInput(msg);

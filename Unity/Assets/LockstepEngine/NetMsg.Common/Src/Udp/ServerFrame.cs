@@ -1,6 +1,44 @@
 using Lockstep.Serialization;
 
 namespace NetMsg.Common {
+    [System.Serializable]
+    [SelfImplement]
+    [Udp]
+    public partial class PlayerPing : BaseMsg {
+        public byte localId;
+        public long sendTimestamp;
+        
+        public override void Serialize(Serializer writer){
+            writer.Write(localId);
+            writer.Write(sendTimestamp);
+        }
+
+        public override void Deserialize(Deserializer reader){
+            localId = reader.ReadByte();
+            sendTimestamp = reader.ReadInt64();
+        }
+    }
+
+    [System.Serializable]
+    [SelfImplement]
+    [Udp]
+    public partial class Msg_C2G_PlayerPing : PlayerPing { }
+
+    [System.Serializable]
+    [SelfImplement]
+    [Udp]
+    public partial class Msg_G2C_PlayerPing : PlayerPing {
+        public long timeSinceServerStart;
+        public override void Serialize(Serializer writer){
+            base.Serialize(writer);
+            writer.Write(timeSinceServerStart);
+        }
+
+        public override void Deserialize(Deserializer reader){
+            base.Deserialize(reader);
+            timeSinceServerStart = reader.ReadInt64();
+        }
+    }
 
     [System.Serializable]
     [SelfImplement]

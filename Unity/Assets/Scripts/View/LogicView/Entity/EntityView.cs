@@ -9,7 +9,7 @@ namespace Lockstep.Game {
         protected bool isDead => entity?.isDead ?? true;
 
         public override void BindEntity(BaseEntity e, BaseEntity oldEntity = null){
-            base.BindEntity(e);
+            base.BindEntity(e,oldEntity);
             e.EntityView = this;
             this.entity = e as Entity;
             if (oldEntity != null) {

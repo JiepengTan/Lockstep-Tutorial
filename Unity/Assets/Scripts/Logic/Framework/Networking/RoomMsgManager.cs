@@ -85,6 +85,7 @@ namespace Lockstep.Game {
                // case EMsgSC.L2C_JoinRoomResult: 
 
                 //room
+                case EMsgSC.G2C_PlayerPing:    G2C_PlayerPing(msg); break;
                 case EMsgSC.G2C_Hello:    G2C_Hello(msg); break;
                 case EMsgSC.G2C_FrameData:    G2C_FrameData(msg); break;
                 case EMsgSC.G2C_RepMissFrame:  G2C_RepMissFrame(msg); break;
@@ -173,7 +174,10 @@ namespace Lockstep.Game {
         #region tcp
 
         public Msg_G2C_GameStartInfo GameStartInfo { get; private set; }
-        
+        protected void G2C_PlayerPing(object reader){
+            var msg = reader as Msg_G2C_PlayerPing;
+            EventHelper.Trigger(EEvent.OnPlayerPing, msg);
+        }
         protected void G2C_Hello(object reader){
             var msg = reader as Msg_G2C_Hello;
             EventHelper.Trigger(EEvent.OnServerHello, msg);
@@ -246,10 +250,13 @@ namespace Lockstep.Game {
             return reader.Parse<T>();
         }
 
+        public void SendPing(byte localId, long timestamp){
+            SendUdp(EMsgSC.C2G_PlayerPing, new Msg_C2G_PlayerPing(){localId = localId,sendTimestamp =  timestamp});
+        }
         public void SendInput(Msg_PlayerInput msg){
             SendUdp(EMsgSC.C2G_PlayerInput, msg);
         }
-
+        
         public void SendMissFrameReq(int missFrameTick){
             SendUdp(EMsgSC.C2G_ReqMissFrame, new Msg_ReqMissFrame() {StartTick = missFrameTick});
         }

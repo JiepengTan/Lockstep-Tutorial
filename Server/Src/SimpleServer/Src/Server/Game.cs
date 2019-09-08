@@ -1,3 +1,4 @@
+//#define DEBUG_SHOW_INPUT
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,6 +11,70 @@ using NetMsg.Common;
 using Lockstep.Util;
 using Random = System.Random;
 
+#if DEBUG_SHOW_INPUT
+namespace Lockstep.Game {
+    public partial class PlayerInput : BaseFormater, IComponent {
+        public LVector2 mousePos;
+        public LVector2 inputUV;
+        public bool isInputFire;
+        public int skillId;
+        public bool isSpeedUp;
+
+        public override void Serialize(Serializer writer){
+            writer.Write(mousePos);
+            writer.Write(inputUV);
+            writer.Write(isInputFire);
+            writer.Write(skillId);
+            writer.Write(isSpeedUp);
+        }
+
+        public void Reset(){
+            mousePos = LVector2.zero;
+            inputUV = LVector2.zero;
+            isInputFire = false;
+            skillId = 0;
+            isSpeedUp = false;
+        }
+
+        public override void Deserialize(Deserializer reader){
+            mousePos = reader.ReadLVector2();
+            inputUV = reader.ReadLVector2();
+            isInputFire = reader.ReadBoolean();
+            skillId = reader.ReadInt32();
+            isSpeedUp = reader.ReadBoolean();
+        }
+
+        public static PlayerInput Empty = new PlayerInput();
+
+        public override bool Equals(object obj){
+            if (ReferenceEquals(this, obj)) return true;
+            var other = obj as PlayerInput;
+            return Equals(other);
+        }
+
+        public bool Equals(PlayerInput other){
+            if (other == null) return false;
+            if (mousePos != other.mousePos) return false;
+            if (inputUV != other.inputUV) return false;
+            if (isInputFire != other.isInputFire) return false;
+            if (skillId != other.skillId) return false;
+            if (isSpeedUp != other.isSpeedUp) return false;
+            return true;
+        }
+
+        public PlayerInput Clone(){
+            var tThis = this;
+            return new PlayerInput() {
+                mousePos = tThis.mousePos,
+                inputUV = tThis.inputUV,
+                isInputFire = tThis.isInputFire,
+                skillId = tThis.skillId,
+                isSpeedUp = tThis.isSpeedUp,
+            };
+        }
+    }
+}
+#endif
 namespace Lockstep.FakeServer {
     public class Game : BaseLogger {
         private delegate void DealNetMsg(Player player, BaseMsg data);
@@ -168,7 +233,7 @@ namespace Lockstep.FakeServer {
             _timeSinceLoaded += deltaTime;
             _waitTimer += deltaTime;
             if (State != EGameState.Playing) return;
-            if(_gameStartTimestampMs <=0) return;
+            if (_gameStartTimestampMs <= 0) return;
             while (Tick < _tickSinceGameStart) {
                 _CheckBorderServerFrame(true);
             }
@@ -205,7 +270,7 @@ namespace Lockstep.FakeServer {
             //将所有未到的包 给予默认的输入
             for (int i = 0; i < inputs.Length; i++) {
                 if (inputs[i] == null) {
-                    inputs[i] = new Msg_PlayerInput(Tick, (byte) i);
+                    inputs[i] = new Msg_PlayerInput(Tick, (byte) i) {IsMiss = true};
                 }
             }
 
@@ -225,7 +290,8 @@ namespace Lockstep.FakeServer {
             }
 
             if (_gameStartTimestampMs < 0) {
-                _gameStartTimestampMs = LTime.realtimeSinceStartupMS + NetworkDefine.UPDATE_DELTATIME * _ServerTickDealy;
+                _gameStartTimestampMs =
+                    LTime.realtimeSinceStartupMS + NetworkDefine.UPDATE_DELTATIME * _ServerTickDealy;
             }
 
             Tick++;
@@ -316,6 +382,8 @@ namespace Lockstep.FakeServer {
         private void RegisterMsgHandlers(){
             RegisterHandler(EMsgSC.C2G_PlayerInput, C2G_PlayerInput,
                 (reader) => { return ParseData<Msg_PlayerInput>(reader); });
+            RegisterHandler(EMsgSC.C2G_PlayerPing, C2G_PlayerPing,
+                (reader) => { return ParseData<Msg_C2G_PlayerPing>(reader); });
             RegisterHandler(EMsgSC.C2G_HashCode, C2G_HashCode,
                 (reader) => { return ParseData<Msg_HashCode>(reader); });
             RegisterHandler(EMsgSC.C2G_LoadingProgress, C2G_LoadingProgress,
@@ -481,6 +549,10 @@ namespace Lockstep.FakeServer {
         public void OnNetMsg(Player player, ushort opcode, BaseMsg msg){
             var type = (EMsgSC) opcode;
             switch (type) {
+                //ping 
+                case EMsgSC.C2G_PlayerPing:
+                    C2G_PlayerPing(player, msg);
+                    break;
                 //login
                 //room
                 case EMsgSC.C2G_PlayerInput:
@@ -510,6 +582,15 @@ namespace Lockstep.FakeServer {
         public int _tickSinceGameStart =>
             (int) ((LTime.realtimeSinceStartupMS - _gameStartTimestampMs) / NetworkDefine.UPDATE_DELTATIME);
 
+        void C2G_PlayerPing(Player player, BaseMsg data){
+            var msg = data as Msg_C2G_PlayerPing;
+            player?.SendUdp(EMsgSC.G2C_PlayerPing, new Msg_G2C_PlayerPing() {
+                localId = msg.localId,
+                sendTimestamp = msg.sendTimestamp,
+                timeSinceServerStart = LTime.realtimeSinceStartupMS - _gameStartTimestampMs
+            });
+        }
+
         void C2G_PlayerInput(Player player, BaseMsg data){
             if (State != EGameState.PartLoaded && State != EGameState.Playing) return;
             if (State == EGameState.PartLoaded) {
@@ -519,11 +600,12 @@ namespace Lockstep.FakeServer {
 
             var input = data as Msg_PlayerInput;
 #if DEBUG_SHOW_INPUT
-            if (input.Commands.Length > 0) {
+            if (input.Commands != null && input.Commands?.Length > 0) {
                 var cmd = input.Commands[0];
                 var playerInput = new Deserializer(cmd.content).Parse<Lockstep.Game.PlayerInput>();
                 if (playerInput.inputUV != LVector2.zero) {
-                    Debug.Log( $"curTick{Tick} isOutdate{input.Tick < Tick} RecvInput actorID:{input.ActorId}  inputTick:{input.Tick}  move:{playerInput.inputUV}");
+                    Debug.Log(
+                        $"curTick{Tick} isOutdate{input.Tick < Tick} RecvInput actorID:{input.ActorId}  inputTick:{input.Tick}  move:{playerInput.inputUV}");
                 }
             }
 #endif

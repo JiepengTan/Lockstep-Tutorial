@@ -4,6 +4,8 @@ using System.Text;
 using Lockstep.Math;
 
 namespace Lockstep.Serialization {
+    public delegate uint FuncReadSlot(uint vTblOffset, int idx);
+
     public class Deserializer {
         protected byte[] _data;
         protected int _position;
@@ -32,6 +34,22 @@ namespace Lockstep.Serialization {
 
         public int Position {
             get { return _position; }
+        }
+
+        public void SetPosition(int pos){
+            _position = pos;
+        }
+
+        public bool SkipLen(long len){
+            var dst = _position + len;
+            if (dst > _dataSize) {
+                throw new Exception(
+                    $"Skip len is out of range _dataSize:{_dataSize} _position:{_position}  skipLen:{len}");
+                return false;
+            }
+
+            _position += (int) len;
+            return true;
         }
 
         public bool EndOfData {
@@ -88,7 +106,28 @@ namespace Lockstep.Serialization {
             SetSource(source, offset, maxSize);
         }
 
-        #region GetMethods      
+        #region GetMethods    
+
+        public bool SetSlotOffset(int vTblOffset, int slotSize, int idx){
+            int offset = (int) (vTblOffset + idx * slotSize);
+            int dataOffset = _data[offset];
+            if (slotSize == 4) {
+                dataOffset = (int) FastBitConverter.ToUInt32(_data, offset);
+            }
+            else if (slotSize == 2) {
+                dataOffset = FastBitConverter.ToUInt16(_data, offset);
+            }
+            _position = dataOffset;
+            return dataOffset != 0;
+        }
+
+        public uint ReadSlotInt16(uint offset, int idx){
+            return FastBitConverter.ToUInt16(_data, (int) (offset + idx * 2));
+        }
+
+        public uint ReadSlotInt32(uint offset, int idx){
+            return FastBitConverter.ToUInt32(_data, (int) (offset + idx * 2));
+        }
 
         public byte ReadByte(){
             byte res = _data[_position];
@@ -161,6 +200,7 @@ namespace Lockstep.Serialization {
             _position += 8;
             return result;
         }
+
         public LFloat ReadLFloat(){
             var x = ReadInt32();
             return new LFloat(true, x);
@@ -178,8 +218,8 @@ namespace Lockstep.Serialization {
             var z = ReadInt32();
             return new LVector3(true, x, y, z);
         }
-        
-        
+
+
         public T ReadRef<T>(ref T _) where T : BaseFormater, new(){
             if (ReadBoolean())
                 return null;

@@ -8,6 +8,7 @@ namespace NetMsg.Common {
     [Udp]
     public partial class Msg_PlayerInput : BaseMsg {
         public byte[] InputDatas; //real data
+        public bool IsMiss;
         public byte ActorId;
         public int Tick;
         public InputCmd[] Commands;
@@ -56,6 +57,7 @@ namespace NetMsg.Common {
 #if DEBUG_FRAME_DELAY
             writer.Write(timeSinceStartUp);
 #endif
+            writer.Write(IsMiss);
             writer.Write(ActorId);
             writer.Write(Tick);
             int count = Commands?.Length ?? 0;
@@ -69,6 +71,7 @@ namespace NetMsg.Common {
 #if DEBUG_FRAME_DELAY
             timeSinceStartUp = reader.ReadSingle();
 #endif
+            IsMiss = reader.ReadBoolean();
             ActorId = reader.ReadByte();
             Tick = reader.ReadInt32();
             int count = reader.ReadByte();
