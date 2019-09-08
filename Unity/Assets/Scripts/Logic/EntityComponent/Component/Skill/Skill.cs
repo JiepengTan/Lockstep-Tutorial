@@ -161,7 +161,7 @@ namespace Lockstep.Game {
             }
 #endif
             foreach (var other in _tempEntities) {
-                other.TakeDamage(CurPart.damage, other.transform.pos.ToLVector3());
+                other.TakeDamage(entity, CurPart.damage, other.transform.pos.ToLVector3());
             }
 
             //add force

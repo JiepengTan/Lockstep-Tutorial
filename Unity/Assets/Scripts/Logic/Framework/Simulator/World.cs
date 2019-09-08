@@ -71,7 +71,7 @@ namespace Lockstep.Game {
 #endif
             Debug.TraceSavePath = _traceLogPath;
 
-            Debug.Trace("CreatePlayer " + playerCount);
+            _debugService.Trace("CreatePlayer " + playerCount);
             //create Players 
             for (int i = 0; i < playerCount; i++) {
                 var PrefabId = 0; //TODO

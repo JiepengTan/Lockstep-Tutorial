@@ -20,6 +20,7 @@ namespace Lockstep.Game {
             foreach (var spawner in Spawners) {
                 spawner.ServiceContainer = _serviceContainer;
                 spawner.GameStateService = _gameStateService;
+                spawner.DebugService = _debugService;
                 spawner.DoStart();
             }
         }

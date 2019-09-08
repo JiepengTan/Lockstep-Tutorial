@@ -23,7 +23,7 @@ namespace Lockstep.Game {
                 DumpEntity(entity);
             }
 
-            Debug.Trace(_dumpSb.ToString(), true);
+            //_debugService.Trace(_dumpSb.ToString(), true);
             _dumpSb.Clear();
         }
 

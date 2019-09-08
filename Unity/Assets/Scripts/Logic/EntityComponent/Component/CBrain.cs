@@ -9,7 +9,7 @@ namespace Lockstep.Game {
         public int targetId;
         public LFloat stopDistSqr = 1 * 1;
         public LFloat atkInterval = 1;
-        private LFloat atkTimer;
+        [Backup] private LFloat _atkTimer;
 
         public override void BindEntity(BaseEntity e){
             base.BindEntity(e);
@@ -59,11 +59,11 @@ namespace Lockstep.Game {
             }
             else {
                 //atk target
-                atkTimer -= deltaTime;
-                if (atkTimer <= 0) {
-                    atkTimer = atkInterval;
+                _atkTimer -= deltaTime;
+                if (_atkTimer <= 0) {
+                    _atkTimer = atkInterval;
                     //Atk
-                    target.TakeDamage(entity.damage, target.transform.Pos3);
+                    target.TakeDamage(entity, entity.damage, target.transform.Pos3);
                 }
             }
         }

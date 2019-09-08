@@ -19,6 +19,7 @@ namespace Lockstep.Game {
 
         [ReRefBackup] public IGameStateService GameStateService { get; set; }
         [ReRefBackup] public IServiceContainer ServiceContainer { get; set; }
+        [ReRefBackup] public IDebugService DebugService { get; set; }
 
         [ReRefBackup] public IEntityView EntityView;
 

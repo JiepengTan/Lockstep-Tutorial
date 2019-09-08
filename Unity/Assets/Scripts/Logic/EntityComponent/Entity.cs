@@ -12,7 +12,7 @@ namespace Lockstep.Game {
         public ColliderData colliderData = new ColliderData();
         public CAnimator animator = new CAnimator();
         public CSkillBox skillBox = new CSkillBox();
-        
+
         public LFloat moveSpd = 5;
         public LFloat turnSpd = 360;
         public int curHealth;
@@ -23,7 +23,6 @@ namespace Lockstep.Game {
         public bool isFire;
 
         public bool isDead => curHealth <= 0;
-
 
 
         protected override void BindRef(){
@@ -45,15 +44,16 @@ namespace Lockstep.Game {
         }
 
         public bool Fire(int idx = 0){
-            return skillBox.Fire(idx-1);
+            return skillBox.Fire(idx - 1);
         }
 
         public void StopSkill(int idx = -1){
             skillBox.ForceStop(idx);
         }
 
-        public virtual void TakeDamage(int amount, LVector3 hitPoint){
+        public virtual void TakeDamage(BaseEntity atker,int amount, LVector3 hitPoint){
             if (isInvincible || isDead) return;
+            DebugService.Trace($"{atker.EntityId} attack {EntityId}  damage:{amount} hitPos:{hitPoint}");
             curHealth -= amount;
             EntityView?.OnTakeDamage(amount, hitPoint);
             OnTakeDamage(amount, hitPoint);
@@ -69,6 +69,5 @@ namespace Lockstep.Game {
             PhysicSystem.Instance.RemoveCollider(this);
             GameStateService.DestroyEntity(this);
         }
-
     }
 }

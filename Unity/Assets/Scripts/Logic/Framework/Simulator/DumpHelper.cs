@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,16 +18,17 @@ namespace Lockstep.Game {
         
         private string dumpAllPath => "/Users/jiepengtan/Projects/Tutorial/LockstepTutorial/DumpLog";
         private HashHelper _hashHelper;
-        public bool enable = false;
+        private StringBuilder _curSb;
+        public bool enable = true;
         public void DumpFrame(bool isNewFrame){
             if(!enable) return;
-            var data = DumpFrame();
+            _curSb = DumpFrame();
             if (isNewFrame) {
-                _tick2RawFrameData[Tick] = data;
+                _tick2RawFrameData[Tick] = _curSb;
             }
             else {
                 
-                _tick2OverrideFrameData[Tick] = data;
+                _tick2OverrideFrameData[Tick] = _curSb;
             }
         }
 
@@ -52,6 +54,30 @@ namespace Lockstep.Game {
 #endif 
         }
 
+
+        public void OnFrameEnd(){
+            _curSb = null;
+        }
+
+        public void Trace(string msg, bool isNewLine = false, bool isNeedLogTrace = false){
+            if(_curSb == null) return;
+            if (isNewLine) {
+                _curSb.AppendLine(msg);
+            }
+            else {
+                _curSb.Append(msg);
+            }
+
+            if (isNeedLogTrace) {
+                StackTrace st = new StackTrace(true);
+                StackFrame[] sf = st.GetFrames();
+                for (int i = 2; i < sf.Length; ++i) {
+                    var frame = sf[i];
+                    _curSb.AppendLine(frame.GetMethod().DeclaringType.FullName + "::" + frame.GetMethod().Name);
+                }
+            }
+
+        }
         public void DumpAll(){
             if(!enable) return;
             var path = dumpAllPath + "/cur.txt";
@@ -68,7 +94,7 @@ namespace Lockstep.Game {
             File.WriteAllText(dumpAllPath + $"/All_{_serviceContainer.GetService<IConstStateService>().LocalActorId}.txt", sbRaw.ToString());
         }
 
-        public StringBuilder DumpFrame(){
+        private StringBuilder DumpFrame(){
             var sb = new StringBuilder();
             sb.AppendLine("Tick : " + Tick + "--------------------");
             _DumpStr(sb, "");

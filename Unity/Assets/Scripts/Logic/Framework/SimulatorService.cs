@@ -16,7 +16,7 @@ using Debug = Lockstep.Logging.Debug;
 using Logger = Lockstep.Logging.Logger;
 
 namespace Lockstep.Game {
-    public class SimulatorService : BaseGameService, ISimulatorService {
+    public class SimulatorService : BaseGameService, ISimulatorService,IDebugService {
         public static SimulatorService Instance { get; private set; }
         public int __debugRockbackToTick;
 
@@ -137,6 +137,10 @@ namespace Lockstep.Game {
             }
         }
 
+        public void Trace(string msg, bool isNewLine = false, bool isNeedLogTrace = false){
+            _dumpHelper.Trace(msg,isNewLine,isNeedLogTrace);
+        }
+        
 
         public void JumpTo(int tick){
             if (tick + 1 == _world.Tick || tick == _world.Tick) return;
@@ -373,6 +377,7 @@ namespace Lockstep.Game {
             DumpFrame(hash);
             ProcessInputQueue(frame);
             _world.Step(isNeedGenSnap);
+            _dumpHelper.OnFrameEnd();
             var tick = _world.Tick;
             _cmdBuffer.SetClientTick(tick);
             //clean useless snapshot

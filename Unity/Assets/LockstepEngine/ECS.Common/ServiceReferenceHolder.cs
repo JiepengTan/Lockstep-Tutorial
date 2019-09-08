@@ -17,6 +17,8 @@ namespace Lockstep.Game {
         protected IEventRegisterService _eventRegisterService;
         protected IIdService _idService;
         protected ICommonStateService _commonStateService;
+        protected IDebugService _debugService;
+        
         
         protected T GetService<T>() where T : IService{
             return _serviceContainer.GetService<T>();
@@ -38,6 +40,7 @@ namespace Lockstep.Game {
             _eventRegisterService = serviceContainer.GetService<IEventRegisterService>();
             _idService = serviceContainer.GetService<IIdService>();
             _commonStateService = serviceContainer.GetService<ICommonStateService>();
+            _debugService = serviceContainer.GetService<IDebugService>();
             
         }
     }

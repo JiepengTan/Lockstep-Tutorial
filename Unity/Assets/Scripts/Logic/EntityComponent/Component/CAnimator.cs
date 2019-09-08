@@ -89,7 +89,7 @@ namespace Lockstep.Game {
                 return;
             }
 
-            Debug.Trace($"{baseEntity.EntityId} PlayAnim {name} rawName {_curAnimName}");
+            DebugService.Trace($"{baseEntity.EntityId} PlayAnim {name} rawName {_curAnimName}");
             var hasChangedAnim = _curAnimName != name;
             _curAnimName = name;
             _curAnimIdx = idx;
@@ -106,7 +106,7 @@ namespace Lockstep.Game {
             if (config == null) return;
             var idx = GetTimeIdx(timer);
             _intiPos = transform.Pos3 - curAnimInfo[idx].pos;
-            Debug.Trace(
+            DebugService.Trace(
                 $"{baseEntity.EntityId} SetTime  idx:{idx} intiPos {baseEntity.transform.Pos3}",
                 true);
             this._timer = timer;

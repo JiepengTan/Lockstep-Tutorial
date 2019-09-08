@@ -60,12 +60,14 @@ namespace Lockstep.Game{
     public partial class CBrain :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(atkInterval);
+			writer.Write(_atkTimer);
 			writer.Write(stopDistSqr);
 			writer.Write(targetId);                                                                                     
        }                                                                                            
                                                                                                     
        public void ReadBackup(Deserializer reader){                                       
 			atkInterval = reader.ReadLFloat();
+			_atkTimer = reader.ReadLFloat();
 			stopDistSqr = reader.ReadLFloat();
 			targetId = reader.ReadInt32();                                                                                     
        }                                                                                            
@@ -73,6 +75,7 @@ namespace Lockstep.Game{
        public int GetHash(ref int idx){                                      
            int hash = 1;                                                                             
 			hash += atkInterval.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += _atkTimer.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += stopDistSqr.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += targetId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
            return hash;                                                                                    
@@ -80,6 +83,7 @@ namespace Lockstep.Game{
                                                                                                     
        public void DumpStr(StringBuilder sb,string prefix){                                       
 			sb.AppendLine(prefix + "atkInterval"+":" + atkInterval.ToString());
+			sb.AppendLine(prefix + "atkTimer"+":" + _atkTimer.ToString());
 			sb.AppendLine(prefix + "stopDistSqr"+":" + stopDistSqr.ToString());
 			sb.AppendLine(prefix + "targetId"+":" + targetId.ToString());                                                                                     
        }                                                                                            

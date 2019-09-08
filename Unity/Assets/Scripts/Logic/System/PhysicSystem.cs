@@ -58,7 +58,7 @@ namespace Lockstep.Game {
                 minNodeSize = minNodeSize,
                 loosenessval = loosenessval
             };
-            Debug.Trace($"worldSize:{worldSize} pos:{pos} minNodeSize:{minNodeSize} loosenessval:{loosenessval}");
+            _debugService.Trace($"worldSize:{worldSize} pos:{pos} minNodeSize:{minNodeSize} loosenessval:{loosenessval}");
             this.collisionSystem = collisionSystem;
             collisionSystem.DoStart(collisionMatrix, allTypes);
             collisionSystem.funcGlobalOnTriggerEvent += GlobalOnTriggerEvent;

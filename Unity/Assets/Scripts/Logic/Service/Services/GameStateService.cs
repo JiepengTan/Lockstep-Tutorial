@@ -80,14 +80,15 @@ namespace Lockstep.Game {
         }
 
         public T CreateEntity<T>(int prefabId, LVector3 position) where T : BaseEntity, new(){
-            Debug.Trace($"CreateEntity {prefabId} pos {prefabId}");
             var baseEntity = new T();
             _gameConfigService.GetEntityConfig(prefabId)?.CopyTo(baseEntity);
             baseEntity.EntityId = _idService.GenId();
             baseEntity.PrefabId = prefabId;
             baseEntity.GameStateService = _gameStateService;
             baseEntity.ServiceContainer = _serviceContainer;
+            baseEntity.DebugService = _debugService;
             baseEntity.transform.Pos3 = position;
+            _debugService.Trace($"CreateEntity {prefabId} pos {prefabId} entityId:{baseEntity.EntityId}");
             baseEntity.DoBindRef();
             if (baseEntity is Entity entity) {
                 PhysicSystem.Instance.RegisterEntity(prefabId, entity);
@@ -148,6 +149,7 @@ namespace Lockstep.Game {
                 foreach (var entity in _id2Entities.Values) {
                     entity.GameStateService = _gameStateService;
                     entity.ServiceContainer = _serviceContainer;
+                    entity.DebugService = _debugService;
                     entity.DoBindRef();
                 }
 

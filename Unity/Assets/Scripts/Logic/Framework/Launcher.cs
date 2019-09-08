@@ -107,7 +107,7 @@ namespace Lockstep.Game {
         }
 
         public void _DoStart(){
-            //Debug.Trace("Before StartGame _IdCounter" + BaseEntity.IdCounter);
+            //_debugService.Trace("Before StartGame _IdCounter" + BaseEntity.IdCounter);
             //if (!IsReplay && !IsClientMode) {
             //    netClient = new NetClient();
             //    netClient.Start();
