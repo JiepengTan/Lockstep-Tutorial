@@ -23,7 +23,7 @@
 10. 多平台,多实例 框架实现[code][40][video][20]
 11. "回滚" 基本生命期&数据的备份与还原[code][41][video][21]
 12. "预测" 实现&守望先锋网络方案比对[code][42][video][22]
-13. "预测" 自动伸缩的Predict FrameBuffer[code][43][video][23]
+13. "预测" 自动伸缩的预测缓冲区[code][43][video][23]
 14. 预测回滚中的不同步的检测
 
 #### 阶段三：服务器相关处理
@@ -66,7 +66,7 @@
  [20]: https://www.bilibili.com/video/av66822584
  [21]: https://www.bilibili.com/video/av66860995
  [22]: https://www.bilibili.com/video/av66902132
- [23]: https://www.bilibili.com/video/av66902132
+ [23]: https://www.bilibili.com/video/av67045101
  [24]: https://www.bilibili.com/video/av66822584
  [25]: https://www.bilibili.com/video/av66822584
  [26]: https://www.bilibili.com/video/av66822584
