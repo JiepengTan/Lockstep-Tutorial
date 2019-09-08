@@ -6,7 +6,6 @@ using Lockstep.Math;
 using Lockstep.Serialization;
 using Lockstep.Util;
 using NetMsg.Common;
-using UnityEngine;
 using Debug = Lockstep.Logging.Debug;
 
 namespace Lockstep.Game {
@@ -32,6 +31,65 @@ namespace Lockstep.Game {
     }
 
     public class FrameBuffer : IFrameBuffer {
+        public class PredictCountHelper {
+            public PredictCountHelper(SimulatorService simulatorService, FrameBuffer cmdBuffer){
+                this._cmdBuffer = cmdBuffer;
+                this._simulatorService = simulatorService;
+            }
+
+            public int missTick = -1;
+            public int nextCheckMissTick = 0;
+            public bool hasMissTick;
+
+            private SimulatorService _simulatorService;
+            private FrameBuffer _cmdBuffer;
+            private float _timer;
+            private float _checkInterval = 0.5f;
+            private float _incPercent = 0.3f;
+
+            private float _targetPreSendTick;
+            private float _oldPercent = 0.6f;
+
+            public void DoUpdate(float deltaTime){
+                _timer += deltaTime;
+                if (_timer > _checkInterval) {
+                    _timer = 0;
+                    if (!hasMissTick) { 
+                        var preSend = _cmdBuffer._maxPing * 1.0f / NetworkDefine.UPDATE_DELTATIME;
+                        _targetPreSendTick = _targetPreSendTick * _oldPercent + preSend * (1 - _oldPercent);
+
+                        var targetPreSendTick = LMath.Clamp((int) System.Math.Ceiling(_targetPreSendTick), 1, 60);
+#if UNITY_EDITOR
+                        //if (targetPreSendTick != _simulatorService.PreSendInputCount) 
+                        {
+                            Debug.LogWarning(
+                                $"Shrink preSend buffer old:{_simulatorService.PreSendInputCount} new:{_targetPreSendTick} " +
+                                $"PING: min:{_cmdBuffer._minPing} max:{_cmdBuffer._maxPing} avg:{_cmdBuffer.PingVal}");
+                        }
+#endif
+                        _simulatorService.PreSendInputCount = targetPreSendTick;
+                    }
+
+                    hasMissTick = false;
+                }
+
+                if (missTick != -1) {
+                    var delayTick = _simulatorService.TargetTick - missTick;
+                    var targetPreSendTick =
+                        _simulatorService.PreSendInputCount + (int) System.Math.Ceiling(delayTick * _incPercent);
+                    targetPreSendTick = LMath.Clamp(targetPreSendTick, 1, 60);
+#if UNITY_EDITOR
+                    Debug.LogWarning(
+                        $"Expend preSend buffer old:{_simulatorService.PreSendInputCount} new:{targetPreSendTick}");
+#endif
+                    _simulatorService.PreSendInputCount = targetPreSendTick;
+                    nextCheckMissTick = _simulatorService.TargetTick;
+                    missTick = -1;
+                    hasMissTick = true;
+                }
+            }
+        }
+
         /// for debug
         public static byte __debugMainActorID;
 
@@ -69,14 +127,14 @@ namespace Lockstep.Game {
 
         public INetworkService _networkService;
 
-        private PredictCountHelper helper;
+        private PredictCountHelper _predictHelper;
         private SimulatorService _simulatorService;
 
         public FrameBuffer(SimulatorService _simulatorService, INetworkService networkService, int bufferSize,
             int snapshotFrameInterval,
             int maxClientPredictFrameCount){
             this._simulatorService = _simulatorService;
-            helper = new PredictCountHelper(_simulatorService, this);
+            _predictHelper = new PredictCountHelper(_simulatorService, this);
             this._bufferSize = bufferSize;
             this._networkService = networkService;
             this._maxClientPredictFrameCount = maxClientPredictFrameCount;
@@ -149,68 +207,10 @@ namespace Lockstep.Game {
                 var targetIdx = data.tick % _bufferSize;
                 if (_serverBuffer[targetIdx] == null || _serverBuffer[targetIdx].tick != data.tick) {
                     _serverBuffer[targetIdx] = data;
-                    if (data.tick > helper.nextCheckMissTick && data.Inputs[LocalId].IsMiss && helper.missTick == -1) {
-                        helper.missTick = data.tick;
+                    if (data.tick > _predictHelper.nextCheckMissTick && data.Inputs[LocalId].IsMiss &&
+                        _predictHelper.missTick == -1) {
+                        _predictHelper.missTick = data.tick;
                     }
-                }
-            }
-        }
-
-        public class PredictCountHelper {
-            public PredictCountHelper(SimulatorService simulatorService, FrameBuffer cmdBuffer){
-                this._cmdBuffer = cmdBuffer;
-                this._simulatorService = simulatorService;
-            }
-
-            public int missTick = -1;
-            public int nextCheckMissTick = 0;
-            public bool hasMissTick;
-
-            private SimulatorService _simulatorService;
-            private FrameBuffer _cmdBuffer;
-            private float _timer;
-            private float _checkInterval = 0.5f;
-            private float _incPercent = 0.3f;
-
-            private float _targetPreSendTick;
-            private float _oldPercent = 0.6f;
-
-            public void DoUpdate(float deltaTime){
-                _timer += deltaTime;
-                if (_timer > _checkInterval) {
-                    _timer = 0;
-                    if (!hasMissTick) { //一定时间内没有 lost pack 
-                        var preSend = _cmdBuffer._maxPing * 1.0f / NetworkDefine.UPDATE_DELTATIME;
-                        _targetPreSendTick = _targetPreSendTick * _oldPercent + preSend * (1 - _oldPercent);
-
-                        var targetPreSendTick = Mathf.Clamp(Mathf.CeilToInt(_targetPreSendTick), 1, 60);
-#if UNITY_EDITOR
-                        //if (targetPreSendTick != _simulatorService.PreSendInputCount) 
-                        {
-                            Debug.LogWarning(
-                                $"Shrink preSend buffer old:{_simulatorService.PreSendInputCount} new:{_targetPreSendTick} " +
-                                $"PING: min:{_cmdBuffer._minPing} max:{_cmdBuffer._maxPing} avg:{_cmdBuffer.PingVal}");
-                        }
-#endif
-                        _simulatorService.PreSendInputCount = targetPreSendTick;
-                    }
-
-                    hasMissTick = false;
-                }
-
-                if (missTick != -1) {
-                    var delayTick = _simulatorService.TargetTick - missTick;
-                    var targetPreSendTick =
-                        _simulatorService.PreSendInputCount + Mathf.CeilToInt(delayTick * _incPercent);
-                    targetPreSendTick = Mathf.Clamp(targetPreSendTick, 1, 60);
-#if UNITY_EDITOR
-                    Debug.LogWarning(
-                        $"Expend preSend buffer old:{_simulatorService.PreSendInputCount} new:{targetPreSendTick}");
-#endif
-                    _simulatorService.PreSendInputCount = targetPreSendTick;
-                    nextCheckMissTick = _simulatorService.TargetTick;
-                    missTick = -1;
-                    hasMissTick = true;
                 }
             }
         }
@@ -218,7 +218,7 @@ namespace Lockstep.Game {
 
         public void DoUpdate(float deltaTime){
             _networkService.SendPing(_simulatorService.LocalActorId, LTime.realtimeSinceStartupMS);
-            helper.DoUpdate(deltaTime);
+            _predictHelper.DoUpdate(deltaTime);
             int worldTick = _simulatorService.World.Tick;
             UpdatePingVal(deltaTime);
 
