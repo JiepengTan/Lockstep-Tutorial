@@ -15,8 +15,11 @@ namespace Lockstep.Game {
 #if UNITY_EDITOR
         private string dumpPath => Path.Combine(UnityEngine.Application.dataPath, _serviceContainer.GetService<IGameConfigService>().DumpStrPath);
 #endif
-        
+#if UNITY_STANDALONE_WIN
+        private string dumpAllPath => "c:\temp\Tutorial\LockstepTutorial\DumpLog";
+#else
         private string dumpAllPath => "/Users/jiepengtan/Projects/Tutorial/LockstepTutorial/DumpLog";
+#endif  
         private HashHelper _hashHelper;
         private StringBuilder _curSb;
         public bool enable = true;

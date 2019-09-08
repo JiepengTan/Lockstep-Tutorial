@@ -67,7 +67,7 @@ namespace Lockstep.Game {
 #if UNITY_STANDALONE_OSX
             _traceLogPath = $"/tmp/LPDemo/Dump_{localPlayerId}.txt";
 #else
-            _traceLogPath = $"c:/tmp/LPDemo/Dump_{Instance.localPlayerId}.txt";
+            _traceLogPath = $"c:/tmp/LPDemo/Dump_{localPlayerId}.txt";
 #endif
             Debug.TraceSavePath = _traceLogPath;
 
