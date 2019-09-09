@@ -18,7 +18,7 @@ namespace Lockstep.Game {
 #if UNITY_STANDALONE_WIN
         private string dumpAllPath => "c:\temp\Tutorial\LockstepTutorial\DumpLog";
 #else
-        private string dumpAllPath => "/Users/jiepengtan/Projects/Tutorial/LockstepTutorial/DumpLog";
+        private string dumpAllPath => "/tmp/Tutorial/LockstepTutorial/DumpLog";
 #endif  
         private HashHelper _hashHelper;
         private StringBuilder _curSb;
