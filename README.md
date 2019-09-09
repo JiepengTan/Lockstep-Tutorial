@@ -8,23 +8,23 @@
 
 ### 教程大纲
 #### 阶段一: 基础帧同步
-0. 大纲最[code][30][video][10]
+0. 大纲最  [code][30]  [video][10]
 1. 环境搭建
-2. 帧同步开发注意事项[code][32][video][12]
-3. 服务器，回放，客户端模式，基础框架，移动[code][33][video][13]
-4. 不同步的检测与定位[code][34][video][14]
-5. 帧同步逻辑编写[code][35][video][15]
-6. 碰撞检测&技能系统[code][36][video][16]
+2. 帧同步开发注意事项  [code][32]  [video][12]
+3. 服务器，回放，客户端模式，基础框架，移动  [code][33]  [video][13]
+4. 不同步的检测与定位  [code][34]  [video][14]
+5. 帧同步逻辑编写  [code][35]  [video][15]
+6. 碰撞检测&技能系统  [code][36]  [video][16]
 
 #### 阶段二：预测&回滚式 
-7. 帧同步预测回滚框架演示[code][37][video][17]
-8. 预测回滚式框架概要[code][38]][video][18]
-9. 多平台,多实例 框架设计[code][39]][video][19]
-10. 多平台,多实例 框架实现[code][40][video][20]
-11. "回滚" 基本生命期&数据的备份与还原[code][41][video][21]
-12. "预测" 实现&守望先锋网络方案比对[code][42][video][22]
-13. "预测" 自动伸缩的预测缓冲区[code][43][video][23]
-14. 预测回滚中的不同步的检测
+7. 帧同步预测回滚框架演示  [code][37]  [video][17]
+8. 预测回滚式框架概要[  code][38]]  [video][18]
+9. 多平台,多实例 框架设计[  code][39]]  [video][19]
+10. 多平台,多实例 框架实现  [code][40]  [video][20]
+11. "回滚" 基本生命期&数据的备份与还原  [code][41]  [video][21]
+12. "预测" 实现&守望先锋网络方案比对  [code][42]  [video][22]
+13. "预测" 自动伸缩的预测缓冲区  [code][43]  [video][23]
+14. 预测回滚中的不同步的检测  [code][44]  [video][24]
 
 #### 阶段三：服务器相关处理
 15. 重构:逻辑代码剥离
@@ -71,7 +71,7 @@
  [21]: https://www.bilibili.com/video/av66860995
  [22]: https://www.bilibili.com/video/av66902132
  [23]: https://www.bilibili.com/video/av67045101
- [24]: https://www.bilibili.com/video/av66822584
+ [24]: https://www.bilibili.com/video/av67085710
  [25]: https://www.bilibili.com/video/av66822584
  [26]: https://www.bilibili.com/video/av66822584
  [27]: https://www.bilibili.com/video/av66822584
@@ -93,7 +93,7 @@
  [42]: https://github.com/JiepengTan/Lockstep-Tutorial/releases/tag/v0.4.2
  [43]: https://github.com/JiepengTan/Lockstep-Tutorial/releases/tag/v0.4.2
  [44]: https://github.com/JiepengTan/Lockstep-Tutorial/releases/tag/v0.4.2
- [45]: https://github.com/JiepengTan/Lockstep-Tutorial/releases/tag/v0.4.2
+ [45]: https://github.com/JiepengTan/Lockstep-Tutorial/releases/tag/v0.4.3
  [46]: https://github.com/JiepengTan/Lockstep-Tutorial/releases/tag/v0.4.2
  [47]: https://github.com/JiepengTan/Lockstep-Tutorial/releases/tag/v0.4.2
  [48]: https://github.com/JiepengTan/Lockstep-Tutorial/releases/tag/v0.4.2
