@@ -51,7 +51,7 @@ namespace Lockstep.Game {
             foreach (var svc in _serviceContainer.GetAllServices()) {
                 if (svc is IHashCode hashSvc) {
                     hashCode += hashSvc.GetHash(ref hashIdx) * PrimerLUT.GetPrimer(hashIdx++);
-                    if (isNeedTrace) { debug.Trace($"svc {svc.GetType().Name} hashCode{hashCode}" ,true);}
+                    //if (isNeedTrace) { debug.Trace($"svc {svc.GetType().Name} hashCode{hashCode}" ,true);}
                 }
             }
 

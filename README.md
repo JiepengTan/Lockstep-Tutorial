@@ -25,6 +25,7 @@
 12. "预测" 实现&守望先锋网络方案比对  [code][42]  [video][22]
 13. "预测" 自动伸缩的预测缓冲区  [code][43]  [video][23]
 14. 预测回滚中的不同步的检测  [code][44]  [video][24]
+15. 预测回滚帧同步中网络相关随机bug的重现与定位技巧  [code][45]  [video][25]
 
 #### 阶段三：服务器相关处理
 15. 重构:逻辑代码剥离
@@ -89,7 +90,7 @@
  [42]: https://github.com/JiepengTan/Lockstep-Tutorial/releases/tag/v0.4.2
  [43]: https://github.com/JiepengTan/Lockstep-Tutorial/releases/tag/v0.4.2
  [44]: https://github.com/JiepengTan/Lockstep-Tutorial/releases/tag/v0.4.3
- [45]: https://github.com/JiepengTan/Lockstep-Tutorial/releases/tag/v0.4.3
+ [45]: https://github.com/JiepengTan/Lockstep-Tutorial/releases/tag/v0.4.4
  [46]: https://github.com/JiepengTan/Lockstep-Tutorial/releases/tag/v0.4.2
  [47]: https://github.com/JiepengTan/Lockstep-Tutorial/releases/tag/v0.4.2
  [48]: https://github.com/JiepengTan/Lockstep-Tutorial/releases/tag/v0.4.2
