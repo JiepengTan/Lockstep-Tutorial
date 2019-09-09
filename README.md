@@ -44,6 +44,13 @@
 #### **QQ 群：** 
 - 帧同步技术交流  839944367
 
+#### **赞助** 
+- 如果你觉得该教程对你很有帮助，可以请我喝杯奶茶
+- 你的赞助将出现在感谢名单，当然害羞的话也可以选择匿名，在备注中说一下就好
+
+
+<p align="center"> <img src="https://github.com/JiepengTan/JiepengTan.github.io/blob/master/assets/img/blog/LockstepTutorial/WXMoney.png?raw=true" width="256"/></p>
+
 
  [1]: https://github.com/JiepengTan/LockstepEngine
  [2]: https://github.com/JiepengTan/LockstepEngine_ARPGDemo
