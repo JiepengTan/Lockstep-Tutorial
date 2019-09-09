@@ -10,6 +10,7 @@ using Debug = Lockstep.Logging.Debug;
 
 namespace Lockstep.Game {
     public interface IFrameBuffer {
+        void ForcePushDebugFrame(ServerFrame frame);
         void PushLocalFrame(ServerFrame frame);
         void PushServerFrames(ServerFrame[] frames, bool isNeedDebugCheck = true);
         void PushMissServerFrames(ServerFrame[] frames, bool isNeedDebugCheck = true);
@@ -172,6 +173,12 @@ namespace Lockstep.Game {
         public void PushMissServerFrames(ServerFrame[] frames, bool isNeedDebugCheck = true){
             PushServerFrames(frames, isNeedDebugCheck);
             _networkService.SendMissFrameRepAck(MaxContinueServerTick + 1);
+        }
+
+        public void ForcePushDebugFrame(ServerFrame data){
+            var targetIdx = data.tick % _bufferSize;
+            _serverBuffer[targetIdx] = data;
+            _clientBuffer[targetIdx] = data;
         }
 
         public void PushServerFrames(ServerFrame[] frames, bool isNeedDebugCheck = true){

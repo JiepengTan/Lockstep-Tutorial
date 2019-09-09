@@ -1,19 +1,42 @@
-
-
+using System.Collections.Generic;
 using Lockstep.Math;
 
 namespace Lockstep.Game {
+    public partial class CommonStateService : ICommonStateService, ITimeMachine {
+        public int Tick { get; set; }
+        public LFloat DeltaTime { get; set; }
+        public LFloat TimeSinceGameStart { get; set; }
+        public int Hash { get; set; }
+        public bool IsPause { get; set; }
 
-    public partial class CommonStateService : ICommonStateService {
-       public int Tick { get; set; }
-       public LFloat DeltaTime { get;set;  }
-       public LFloat TimeSinceGameStart { get; set;}
-       public int Hash { get; set; }
-       public bool IsPause { get; set; }
+        public void SetTick(int val){
+            Tick = val;
+        }
 
-       public void SetTick(int val){ Tick = val;}
-       public void SetDeltaTime(LFloat val) {DeltaTime = val; }
-       public void SetTimeSinceGameStart(LFloat val){TimeSinceGameStart = val; }
+        public void SetDeltaTime(LFloat val){
+            DeltaTime = val;
+        }
+
+        public void SetTimeSinceGameStart(LFloat val){
+            TimeSinceGameStart = val;
+        }
+
+
+        public int CurTick { get; set; }
+
+        Dictionary<int, int> _tick2State = new Dictionary<int, int>();
+
+        public void RollbackTo(int tick){
+            Hash = _tick2State[tick];
+        }
+
+        public void Backup(int tick){
+            _tick2State[tick] = Hash;
+        }
+
+        public void Clean(int maxVerifiedTick){ }
+
+
     }
 
     public partial class ConstStateService : BaseService, IConstStateService {
@@ -35,17 +58,19 @@ namespace Lockstep.Game {
         public int CurLevel { get; set; }
         public IContexts Contexts { get; set; }
         public int SnapshotFrameInterval { get; set; }
-        public EPureModeType RunMode{ get; set; }
+        public EPureModeType RunMode { get; set; }
         public byte LocalActorId { get; set; }
-        
+
         private string _clientConfigPath;
-        public string ClientConfigPath => _clientConfigPath ?? (_clientConfigPath = _relPath + $"Data/Client/{GameName}/");
+
+        public string ClientConfigPath =>
+            _clientConfigPath ?? (_clientConfigPath = _relPath + $"Data/Client/{GameName}/");
 
         private string _relPath = "";
+
         public string RelPath {
             get => _relPath;
             set => _relPath = value;
         }
-
     }
 }

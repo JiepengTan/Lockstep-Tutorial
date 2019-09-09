@@ -9,5 +9,8 @@ namespace Lockstep.Game {
         public List<InputCmd> GetInputCmds(){
             return cmds;
         }
+        public List<InputCmd> GetDebugInputCmds(){
+            return cmds;
+        }
     }
 }

@@ -11,6 +11,7 @@ using Lockstep.Util;
 
 namespace Lockstep.Game {
     public partial class GameStateService : BaseGameService, IGameStateService {
+        private Dictionary<int,GameState> _tick2State = new Dictionary<int,GameState>();
         private GameState _curGameState;
         private Dictionary<Type, IList> _type2Entities = new Dictionary<Type, IList>();
         private Dictionary<int, BaseEntity> _id2Entities = new Dictionary<int, BaseEntity>();
@@ -107,29 +108,19 @@ namespace Lockstep.Game {
 
  
         public override void Backup(int tick){
-            if (_constStateService.IsClientMode) {
-                if (_tick2Backup.TryGetValue(tick, out var val)) {
-                    var reader = new Deserializer(val.Data);
-                    var hash = reader.ReadInt32();
-                    if (hash != _commonStateService.Hash) {
-                        Debug.LogError(
-                            $"Backup data invalid ! CurHash {_commonStateService.Hash} is different from oldHash {val}");
-                    }
-                }
-            }
-
+            base.Backup(tick);
+            _tick2State[tick] = _curGameState;
             Serializer writer = new Serializer();
             writer.Write(_commonStateService.Hash); //hash
             BackUpEntities(GetPlayers(), writer);
             BackUpEntities(GetEnemies(), writer);
             BackUpEntities(GetSpawners(), writer);
             _tick2Backup[tick] = writer;
-
-            cmdBuffer.Execute(tick, new CopyStateCmd());
         }
 
         public override void RollbackTo(int tick){
             base.RollbackTo(tick);
+            _curGameState = _tick2State[tick];
             if (_tick2Backup.TryGetValue(tick, out var backupData)) {
                 //.TODO reduce the unnecessary create and destroy 
                 var reader = new Deserializer(backupData.Data);
@@ -199,24 +190,6 @@ namespace Lockstep.Game {
             }
 
             return lst;
-        }
-
-
-        public class CopyStateCmd : BaseCommand {
-            private GameState _state;
-
-            public override void Do(object param){
-                _state = ((GameStateService) param)._curGameState;
-            }
-
-            public override void Undo(object param){
-                ((GameStateService) param)._curGameState = _state;
-            }
-        }
-
-
-        protected override FuncUndoCommands GetRollbackFunc(){
-            return (minTickNode, maxTickNode, param) => { minTickNode.cmd.Undo(param); };
         }
 
         public struct GameState {

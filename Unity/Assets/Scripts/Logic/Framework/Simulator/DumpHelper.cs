@@ -6,7 +6,9 @@ using System.Text;
 
 namespace Lockstep.Game {
     public class DumpHelper : BaseSimulatorHelper {
-        public DumpHelper(IServiceContainer serviceContainer, World world) : base(serviceContainer, world){ }
+        public DumpHelper(IServiceContainer serviceContainer, World world, HashHelper hashHelper) : base(
+            serviceContainer, world){
+            this._hashHelper = hashHelper;}
 
         public Dictionary<int, StringBuilder> _tick2RawFrameData = new Dictionary<int, StringBuilder>();
         public Dictionary<int, StringBuilder> _tick2OverrideFrameData = new Dictionary<int, StringBuilder>();
@@ -22,20 +24,22 @@ namespace Lockstep.Game {
 #endif  
         private HashHelper _hashHelper;
         private StringBuilder _curSb;
-        public bool enable = true;
+        public bool enable = false;
         public void DumpFrame(bool isNewFrame){
             if(!enable) return;
             _curSb = DumpFrame();
             if (isNewFrame) {
                 _tick2RawFrameData[Tick] = _curSb;
+                _tick2OverrideFrameData[Tick] = _curSb;
             }
             else {
-                
                 _tick2OverrideFrameData[Tick] = _curSb;
             }
         }
 
-        public void DumpToFile(){
+    
+
+        public void DumpToFile(bool withCurFrame = false){
             if(!enable) return;
 #if UNITY_EDITOR
             var path = dumpPath + "/cur.txt";
@@ -43,16 +47,23 @@ namespace Lockstep.Game {
             if (!Directory.Exists(dir)) {
                 Directory.CreateDirectory(dir);
             }
-            var minTick = _tick2OverrideFrameData.Keys.Min();
+            //var minTick = _tick2OverrideFrameData.Keys.Min();
             StringBuilder sbResume = new StringBuilder();
             StringBuilder sbRaw = new StringBuilder();
-            for (int i = minTick; i <= Tick; i++) {
+            for (int i = 0; i <= Tick; i++) {
                 sbRaw.AppendLine(_tick2RawFrameData[i].ToString());
                 sbResume.AppendLine(_tick2OverrideFrameData[i].ToString());
             }
 
             File.WriteAllText(dumpPath + "/resume.txt", sbResume.ToString());
             File.WriteAllText(dumpPath + "/raw.txt", sbRaw.ToString());
+            if (withCurFrame) {
+                _curSb = DumpFrame();
+                var curHash = _hashHelper.CalcHash(true);
+                File.WriteAllText(dumpPath + "/cur_single.txt", _curSb.ToString());
+                File.WriteAllText(dumpPath + "/raw_single.txt", _tick2RawFrameData[Tick].ToString());
+            }
+
             UnityEngine.Debug.Break();
 #endif 
         }

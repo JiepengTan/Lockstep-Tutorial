@@ -38,18 +38,20 @@ namespace Lockstep.Game {
             return _tick2Hash.TryGetValue(tick, out hash);
         }
 
-        public int CalcHash(){
+        public int CalcHash(bool isNeedTrace = false){
             int idx = 0;
-            return CalcHash(ref idx);
+            return CalcHash(ref idx,isNeedTrace);
         }
 
 
-        private int CalcHash(ref int idx){
+        private int CalcHash(ref int idx,bool isNeedTrace){
             int hashIdx = 0;
             int hashCode = 0;
+            var debug = _serviceContainer.GetService<IDebugService>();
             foreach (var svc in _serviceContainer.GetAllServices()) {
                 if (svc is IHashCode hashSvc) {
                     hashCode += hashSvc.GetHash(ref hashIdx) * PrimerLUT.GetPrimer(hashIdx++);
+                    if (isNeedTrace) { debug.Trace($"svc {svc.GetType().Name} hashCode{hashCode}" ,true);}
                 }
             }
 

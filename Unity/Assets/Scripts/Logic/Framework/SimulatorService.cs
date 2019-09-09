@@ -16,7 +16,7 @@ using Debug = Lockstep.Logging.Debug;
 using Logger = Lockstep.Logging.Logger;
 
 namespace Lockstep.Game {
-    public class SimulatorService : BaseGameService, ISimulatorService,IDebugService {
+    public class SimulatorService : BaseGameService, ISimulatorService, IDebugService {
         public static SimulatorService Instance { get; private set; }
         public int __debugRockbackToTick;
 
@@ -36,7 +36,7 @@ namespace Lockstep.Game {
 
         // game status
         private Msg_G2C_GameStartInfo _gameStartInfo;
-        public byte LocalActorId { get;private set; }
+        public byte LocalActorId { get; private set; }
         private byte[] _allActors;
         private int _actorCount => _allActors.Length;
         private PlayerInput[] _playerInputs => _world.PlayerInputs;
@@ -47,6 +47,7 @@ namespace Lockstep.Game {
 
         /// game init timestamp
         public long _gameStartTimestampMs = -1;
+
         private int _tickSinceGameStart;
         public int TargetTick => _tickSinceGameStart + FramePredictCount;
 
@@ -56,12 +57,13 @@ namespace Lockstep.Game {
         public int inputTargetTick => _tickSinceGameStart + PreSendInputCount;
 
 
-        
         //video mode
         private Msg_RepMissFrame _videoFrames;
         private bool _isInitVideo = false;
         private int _tickOnLastJumpTo;
         private long _timestampOnLastJumpToMs;
+
+        private bool _isDebugRollback = true;
 
         //refs 
         private IManagerContainer _mgrContainer;
@@ -87,10 +89,10 @@ namespace Lockstep.Game {
                 snapshotFrameInterval = _constStateService.SnapshotFrameInterval;
             }
 
-            _cmdBuffer = new FrameBuffer(this,_networkService, 2000, snapshotFrameInterval, MaxPredictFrameCount);
+            _cmdBuffer = new FrameBuffer(this, _networkService, 2000, snapshotFrameInterval, MaxPredictFrameCount);
             _world = new World();
-            _dumpHelper = new DumpHelper(_serviceContainer, _world);
             _hashHelper = new HashHelper(_serviceContainer, _world, _networkService, _cmdBuffer);
+            _dumpHelper = new DumpHelper(_serviceContainer, _world,_hashHelper);
         }
 
         public override void DoDestroy(){
@@ -131,16 +133,16 @@ namespace Lockstep.Game {
             _world.StartGame(_gameStartInfo, LocalActorId);
             Debug.Log($"Game Start");
             EventHelper.Trigger(EEvent.SimulationStart, null);
-            
+
             while (inputTick < PreSendInputCount) {
                 SendInputs(inputTick++);
             }
         }
 
         public void Trace(string msg, bool isNewLine = false, bool isNeedLogTrace = false){
-            _dumpHelper.Trace(msg,isNewLine,isNeedLogTrace);
+            _dumpHelper.Trace(msg, isNewLine, isNeedLogTrace);
         }
-        
+
 
         public void JumpTo(int tick){
             if (tick + 1 == _world.Tick || tick == _world.Tick) return;
@@ -244,6 +246,36 @@ namespace Lockstep.Game {
 
 
         private void DoClientUpdate(){
+            int maxRollbackCount = 5;
+            if (_isDebugRollback && _world.Tick > maxRollbackCount && _world.Tick % maxRollbackCount == 0) {
+                var rawTick = _world.Tick;
+                var revertCount = LRandom.Range(1, maxRollbackCount);
+                for (int i = 0; i < revertCount; i++) {
+                    var input = new Msg_PlayerInput(_world.Tick, LocalActorId, _inputService.GetDebugInputCmds());
+                    var frame = new ServerFrame() {
+                        tick = rawTick - i,
+                        _inputs = new Msg_PlayerInput[] {input}
+                    };
+                    _cmdBuffer.ForcePushDebugFrame(frame);
+                }
+                _debugService.Trace("RollbackTo " + (_world.Tick - revertCount));
+                if (!RollbackTo(_world.Tick - revertCount, _world.Tick)) {
+                    _commonStateService.IsPause = true;
+                    return;
+                }
+
+                while (_world.Tick < rawTick) {
+                    var sFrame = _cmdBuffer.GetServerFrame(_world.Tick);
+                    Logging.Debug.Assert(sFrame != null && sFrame.tick == _world.Tick,
+                        $" logic error: server Frame  must exist tick {_world.Tick}");
+                    _cmdBuffer.PushLocalFrame(sFrame);
+                    Simulate(sFrame);
+                    if (_commonStateService.IsPause) {
+                        return;
+                    }
+                }
+            }
+
             while (_world.Tick < TargetTick) {
                 FramePredictCount = 0;
                 var input = new Msg_PlayerInput(_world.Tick, LocalActorId, _inputService.GetInputCmds());
@@ -254,6 +286,9 @@ namespace Lockstep.Game {
                 _cmdBuffer.PushLocalFrame(frame);
                 _cmdBuffer.PushServerFrames(new ServerFrame[] {frame});
                 Simulate(_cmdBuffer.GetFrame(_world.Tick));
+                if (_commonStateService.IsPause) {
+                    return;
+                }
             }
         }
 
@@ -357,13 +392,18 @@ namespace Lockstep.Game {
             Step(frame, isNeedGenSnap);
         }
 
-        private void RollbackTo(int tick, int maxContinueServerTick, bool isNeedClear = true){
+        private bool RollbackTo(int tick, int maxContinueServerTick, bool isNeedClear = true){
             _world.RollbackTo(tick, maxContinueServerTick, isNeedClear);
             var hash = _commonStateService.Hash;
             var curHash = _hashHelper.CalcHash();
             if (hash != curHash) {
-                Debug.LogError($"Rollback error: Hash isDiff oldHash ={hash}  curHash{curHash}");
+                Debug.LogError($"tick:{tick} Rollback error: Hash isDiff oldHash ={hash}  curHash{curHash}");
+#if UNITY_EDITOR
+                _dumpHelper.DumpToFile(true);
+                return false;
+#endif
             }
+            return true;
         }
 
 
@@ -373,8 +413,9 @@ namespace Lockstep.Game {
             var hash = _hashHelper.CalcHash();
             _commonStateService.Hash = hash;
             _timeMachineService.Backup(_world.Tick);
-            _hashHelper.SetHash(_world.Tick, hash);
             DumpFrame(hash);
+            hash = _hashHelper.CalcHash(true);
+            _hashHelper.SetHash(_world.Tick, hash);
             ProcessInputQueue(frame);
             _world.Step(isNeedGenSnap);
             _dumpHelper.OnFrameEnd();
@@ -392,17 +433,7 @@ namespace Lockstep.Game {
 
         private void DumpFrame(int hash){
             if (_constStateService.IsClientMode) {
-                if (_hashHelper.TryGetValue(_world.Tick, out var val)) {
-                    _dumpHelper.DumpFrame(false);
-                    if (hash != val) {
-                        Debug.LogError($"Tick : CurHash {hash} is different from oldHash {val}");
-                        _dumpHelper.DumpToFile();
-                        _commonStateService.IsPause = true;
-                    }
-                }
-                else {
-                    _dumpHelper.DumpFrame(true);
-                }
+                _dumpHelper.DumpFrame(!_hashHelper.TryGetValue(_world.Tick, out var val));
             }
             else {
                 _dumpHelper.DumpFrame(true);

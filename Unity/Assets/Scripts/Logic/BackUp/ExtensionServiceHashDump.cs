@@ -14,20 +14,25 @@ namespace Lockstep.Game {
                 hash += entity.skillBox.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
             }
 
+            //_debugService.Trace($"GetPlayers hash {hash}",true);
             foreach (var entity in GetEnemies()) {
                 hash += entity.curHealth.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
                 hash += entity.transform.GetHash(ref idx)  * PrimerLUT.GetPrimer(idx++);
             }
+            //_debugService.Trace($"GetEnemies hash {hash}",true);
 
             foreach (var entity in GetSpawners()) {
                 hash += entity.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
             }
+            //_debugService.Trace($"GetSpawners hash {hash}",true);
 
             hash += _curGameState.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+            //_debugService.Trace($"GetHash hash {hash}",true);
             return hash;
         }
 
         public override void DumpStr(StringBuilder sb, string prefix){
+            sb.AppendLine("Hash ------: " +_commonStateService.Hash);
             BackUpUtil.DumpList("GetPlayers", GetPlayers(), sb, prefix);
             BackUpUtil.DumpList("GetEnemies", GetEnemies(), sb, prefix);
             BackUpUtil.DumpList("GetSpawners", GetSpawners(), sb, prefix);
