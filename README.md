@@ -54,8 +54,11 @@
 #### **赞助名单**
 - 天天
 - 大佬嚯阔落
+- 轨迹一生
+- 啊好好搞
+- 流月木槿
 
-非常感谢!
+非常感谢你们的支持!
 
  [1]: https://github.com/JiepengTan/LockstepEngine
  [2]: https://github.com/JiepengTan/LockstepEngine_ARPGDemo
