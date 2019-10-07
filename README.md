@@ -7,35 +7,29 @@
 
 
 ### 教程大纲
-#### 阶段一: 基础帧同步
-0. 大纲最  [code][30]  [video][10]
+#### 阶段零: 帧同步概要
+0. 中高级程序员只需要看这个[视频][50]，再看看这个[代码][45]就够了,其他的视频不用看哈
+
+
+#### 阶段一: 基础帧同步(视频重置中...)
+0. 大纲最  
 1. 环境搭建
-2. 帧同步开发注意事项  [code][32]  [video][12]
-3. 服务器，回放，客户端模式，基础框架，移动  [code][33]  [video][13]
-4. 不同步的检测与定位  [code][34]  [video][14]
-5. 帧同步逻辑编写  [code][35]  [video][15]
-6. 碰撞检测&技能系统  [code][36]  [video][16]
+2. 帧同步开发注意事项  
+3. 服务器，回放，客户端模式，基础框架，移动  
+4. 不同步的检测与定位  
+5. 帧同步逻辑编写  
+6. 碰撞检测&技能系统  
 
-#### 阶段二：预测&回滚式 
-7. 帧同步预测回滚框架演示  [code][37]  [video][17]
-8. 预测回滚式框架概要 [code][38]  [video][18]
-9. 多平台,多实例 框架设计 [code][39]  [video][19]
-10. 多平台,多实例 框架实现  [code][40]  [video][20]
-11. "回滚" 基本生命期&数据的备份与还原  [code][41]  [video][21]
-12. "预测" 实现&守望先锋网络方案比对  [code][42]  [video][22]
-13. "预测" 自动伸缩的预测缓冲区  [code][43]  [video][23]
-14. 预测回滚中的不同步的检测  [code][44]  [video][24]
-15. 预测回滚帧同步中网络相关随机bug的重现与定位技巧  [code][45]  [video][25]
-
-#### 阶段三：服务器相关处理
-15. 重构:逻辑代码剥离
-16. 关键数据服务器逻辑分离
-17. 服务器运行游戏逻辑
-
-
-
-最终大概效果
-<p align="center"> <img src="https://github.com/JiepengTan/JiepengTan.github.io/blob/master/assets/img/blog/LockstepPlatform/LPD_11_Network.gif?raw=true" width="512"/></p>
+#### 阶段二：预测&回滚式 (视频重置中...)
+7. 帧同步预测回滚框架演示  
+8. 预测回滚式框架概要 
+9. 多平台,多实例 框架设计 
+10. 多平台,多实例 框架实现  
+11. "回滚" 基本生命期&数据的备份与还原  
+12. "预测" 实现&守望先锋网络方案比对  
+13. "预测" 自动伸缩的预测缓冲区  
+14. 预测回滚中的不同步的检测  
+15. 预测回滚帧同步中网络相关随机bug的重现与定位技巧  
 
 #### **References：** 
 - 使用的帧同步库 [https://github.com/JiepengTan/LockstepEngine][1]
@@ -43,13 +37,6 @@
 
 #### **QQ 群：** 
 - 帧同步技术交流  839944367
-
-#### **赞助** 
-- 如果你觉得该教程对你很有帮助，可以请我喝杯奶茶
-- 你的赞助将出现在感谢名单，当然害羞的话也可以选择匿名，在备注中说一下就好
-
-
-<p align="center"> <img src="https://github.com/JiepengTan/JiepengTan.github.io/blob/master/assets/img/blog/LockstepTutorial/WXMoney.png?raw=true" width="256"/></p>
 
 #### **赞助名单**
 - 天天
@@ -110,5 +97,6 @@
  [47]: https://github.com/JiepengTan/Lockstep-Tutorial/releases/tag/v0.4.2
  [48]: https://github.com/JiepengTan/Lockstep-Tutorial/releases/tag/v0.4.2
  [49]: https://github.com/JiepengTan/Lockstep-Tutorial/releases/tag/v0.4.2
+ [50]: https://www.bilibili.com/video/av70422751/
 
 
