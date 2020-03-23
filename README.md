@@ -8,8 +8,6 @@
 
 ### 教程大纲
 #### 阶段零: 帧同步概要
-0. 中高级程序员只需要看这个[视频][50]，再看看这个[代码][45]就够了,其他的视频不用看哈
-
 
 #### 阶段一: 基础帧同步(视频重置中...)
 0. 大纲最  
@@ -33,10 +31,6 @@
 
 #### **References：** 
 - 使用的帧同步库 [https://github.com/JiepengTan/LockstepEngine][1]
-- 简单的帧同步ARPG Demo [https://github.com/JiepengTan/LockstepEngine_ARPGDemo][2]
-
-#### **QQ 群：** 
-- 帧同步技术交流  839944367
 
 #### **赞助名单**
 - 天天
@@ -49,7 +43,7 @@
 
  [1]: https://github.com/JiepengTan/LockstepEngine
  [2]: https://github.com/JiepengTan/LockstepEngine_ARPGDemo
- [3]: https://space.bilibili.com/308864667/channel/detail?cid=86562
+ [3]: https://www.bilibili.com/video/av70422751/
  [4]: https://github.com/JiepengTan/LockstepMath
  [5]: https://github.com/JiepengTan/LockstepCollision
  [6]: https://github.com/JiepengTan/LockstepPlatform/releases
